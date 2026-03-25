@@ -9,9 +9,12 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <span className="font-display text-sm md:text-base font-bold tracking-wider text-primary neon-text">
-          LOGICIA
-        </span>
+        <a href="#home" className="flex items-center gap-2">
+          <img src="/logo.png" alt="Logicia" className="w-8 h-8" />
+          <span className="font-display text-sm md:text-base font-bold tracking-wider text-primary neon-text">
+            LOGICIA
+          </span>
+        </a>
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
