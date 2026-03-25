@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 
+const mathSymbols = ["∑", "π", "∫", "√", "∞", "Δ", "θ", "λ", "∂", "≈", "±", "÷", "×", "φ", "Ω"];
+
 const AnimatedBackground = () => {
   const streaks = useMemo(() =>
     Array.from({ length: 15 }, (_, i) => ({
@@ -22,6 +24,20 @@ const AnimatedBackground = () => {
       delay: `${Math.random() * 10}s`,
       duration: `${6 + Math.random() * 8}s`,
       opacity: 0.2 + Math.random() * 0.5,
+    })),
+    []
+  );
+
+  const symbols = useMemo(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      symbol: mathSymbols[i % mathSymbols.length],
+      left: `${5 + Math.random() * 90}%`,
+      size: 16 + Math.random() * 24,
+      delay: `${Math.random() * 12}s`,
+      duration: `${10 + Math.random() * 10}s`,
+      opacity: 0.08 + Math.random() * 0.12,
+      rotate: Math.random() * 360,
     })),
     []
   );
@@ -72,6 +88,25 @@ const AnimatedBackground = () => {
             animationDuration: p.duration,
           }}
         />
+      ))}
+
+      {/* Floating math symbols */}
+      {symbols.map((s) => (
+        <div
+          key={`sym-${s.id}`}
+          className="absolute animate-float-up font-display select-none"
+          style={{
+            left: s.left,
+            fontSize: s.size,
+            color: `hsl(120 100% 54% / ${s.opacity})`,
+            textShadow: `0 0 ${s.size * 0.8}px hsl(120 100% 54% / ${s.opacity * 0.6})`,
+            animationDelay: s.delay,
+            animationDuration: s.duration,
+            transform: `rotate(${s.rotate}deg)`,
+          }}
+        >
+          {s.symbol}
+        </div>
       ))}
     </div>
   );
