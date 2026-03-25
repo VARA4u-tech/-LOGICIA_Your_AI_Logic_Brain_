@@ -67,6 +67,9 @@ html {
     @apply bg-background text-foreground font-body;
     overflow-x: hidden;
   }
+  section {
+    scroll-margin-top: 80px;
+  }
 }
 
 @layer utilities {
