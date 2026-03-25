@@ -19,7 +19,7 @@ const Index = () => {
 
       <footer className="relative z-10 text-center py-10 border-t border-border">
         <p className="font-body text-xs tracking-[0.3em] text-muted-foreground">
-          AI MATH ASSISTANT — POWERED BY INTELLIGENCE
+          LOGICIA — YOUR AI MATH BRAIN
         </p>
       </footer>
     </div>
