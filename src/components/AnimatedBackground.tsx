@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-const AnimatedBackground = () => {
+const mathSymbols = ["∑", "π", "∫", "√", "∞", "Δ", "θ", "λ", "∂", "≈", "±", "÷", "×", "φ", "Ω"];
   const streaks = useMemo(() =>
     Array.from({ length: 15 }, (_, i) => ({
       id: i,
