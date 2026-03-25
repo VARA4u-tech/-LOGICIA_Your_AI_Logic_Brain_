@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 
-const mathSymbols = ["∑", "π", "∫", "√", "∞", "Δ", "θ", "λ", "∂", "≈", "±", "÷", "×", "φ", "Ω"];
+const mathSymbols = ["∑", "π", "∫", "√", "∞", "Δ", "θ", "λ"];
 
 const AnimatedBackground = () => {
   const streaks = useMemo(() =>
-    Array.from({ length: 15 }, (_, i) => ({
+    Array.from({ length: 8 }, (_, i) => ({
       id: i,
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 50}%`,
@@ -17,7 +17,7 @@ const AnimatedBackground = () => {
   );
 
   const particles = useMemo(() =>
-    Array.from({ length: 30 }, (_, i) => ({
+    Array.from({ length: 12 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
       size: 1 + Math.random() * 3,
@@ -29,7 +29,7 @@ const AnimatedBackground = () => {
   );
 
   const symbols = useMemo(() =>
-    Array.from({ length: 12 }, (_, i) => ({
+    Array.from({ length: 6 }, (_, i) => ({
       id: i,
       symbol: mathSymbols[i % mathSymbols.length],
       left: `${5 + Math.random() * 90}%`,
@@ -43,7 +43,7 @@ const AnimatedBackground = () => {
   );
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 will-change-auto">
       {/* Base gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-secondary" />
 
@@ -55,11 +55,11 @@ const AnimatedBackground = () => {
         }}
       />
 
-      {/* Diagonal streaks */}
+      {/* Diagonal streaks — GPU accelerated */}
       {streaks.map((s) => (
         <div
           key={s.id}
-          className="absolute h-[1px] animate-streak"
+          className="absolute h-[1px] animate-streak will-change-transform"
           style={{
             top: s.top,
             left: s.left,
@@ -67,42 +67,40 @@ const AnimatedBackground = () => {
             background: `linear-gradient(90deg, transparent, hsl(120 100% 54% / ${s.opacity}), transparent)`,
             animationDelay: s.delay,
             animationDuration: s.duration,
-            transform: "rotate(-35deg)",
+            transform: "rotate(-35deg) translateZ(0)",
             transformOrigin: "left center",
           }}
         />
       ))}
 
-      {/* Floating particles */}
+      {/* Floating particles — GPU accelerated */}
       {particles.map((p) => (
         <div
           key={p.id}
-          className="absolute rounded-full animate-float-up"
+          className="absolute rounded-full animate-float-up will-change-transform"
           style={{
             left: p.left,
             width: p.size,
             height: p.size,
             background: `hsl(120 100% 54% / ${p.opacity})`,
-            boxShadow: `0 0 ${p.size * 3}px hsl(120 100% 54% / ${p.opacity * 0.5})`,
             animationDelay: p.delay,
             animationDuration: p.duration,
           }}
         />
       ))}
 
-      {/* Floating math symbols */}
+      {/* Floating math symbols — GPU accelerated */}
       {symbols.map((s) => (
         <div
           key={`sym-${s.id}`}
-          className="absolute animate-float-up font-display select-none"
+          className="absolute animate-float-up font-display select-none will-change-transform"
           style={{
             left: s.left,
             fontSize: s.size,
             color: `hsl(120 100% 54% / ${s.opacity})`,
-            textShadow: `0 0 ${s.size * 0.8}px hsl(120 100% 54% / ${s.opacity * 0.6})`,
             animationDelay: s.delay,
             animationDuration: s.duration,
-            transform: `rotate(${s.rotate}deg)`,
+            transform: `rotate(${s.rotate}deg) translateZ(0)`,
           }}
         >
           {s.symbol}

@@ -96,13 +96,15 @@ html {
   .glass {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-strong {
-    background: hsl(120 20% 8% / 0.8);
+    background: hsl(120 20% 8% / 0.85);
     border: 1px solid hsl(120 100% 54% / 0.25);
-    backdrop-filter: blur(30px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 }
 
@@ -115,8 +117,8 @@ html {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 1; filter: brightness(1); }
-  50% { opacity: 0.85; filter: brightness(1.3); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
 }
 
 @keyframes float-up {
