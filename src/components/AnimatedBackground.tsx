@@ -28,6 +28,20 @@ const AnimatedBackground = () => {
     []
   );
 
+  const symbols = useMemo(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      symbol: mathSymbols[i % mathSymbols.length],
+      left: `${5 + Math.random() * 90}%`,
+      size: 16 + Math.random() * 24,
+      delay: `${Math.random() * 12}s`,
+      duration: `${10 + Math.random() * 10}s`,
+      opacity: 0.08 + Math.random() * 0.12,
+      rotate: Math.random() * 360,
+    })),
+    []
+  );
+
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
       {/* Base gradient */}
