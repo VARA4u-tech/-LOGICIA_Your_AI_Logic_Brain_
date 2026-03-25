@@ -25,22 +25,29 @@ const Navbar = () => {
   // Track active section via IntersectionObserver
   useEffect(() => {
     const sectionIds = navItems.map((n) => n.href.slice(1));
-    const observers: IntersectionObserver[] = [];
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // When a section takes up more than 20% of the 'active zone', set it as active
+          if (entry.isIntersecting && entry.intersectionRatio > 0) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { 
+        // Monitor when sections enter the middle-top area of the screen
+        rootMargin: "-20% 0px -60% 0px",
+        threshold: [0.1, 0.5] 
+      }
+    );
 
     sectionIds.forEach((id) => {
       const el = document.getElementById(id);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActiveSection(id);
-        },
-        { threshold: 0.35, rootMargin: "-10% 0px -60% 0px" }
-      );
-      obs.observe(el);
-      observers.push(obs);
+      if (el) observer.observe(el);
     });
 
-    return () => observers.forEach((o) => o.disconnect());
+    return () => observer.disconnect();
   }, []);
 
   const closeMobile = () => setOpen(false);

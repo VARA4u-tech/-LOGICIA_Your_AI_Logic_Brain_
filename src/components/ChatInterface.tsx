@@ -179,9 +179,15 @@ const ChatInterface = () => {
     } catch { /* ignore quota errors */ }
   }, [messages]);
 
-  // Scroll to bottom on new message
+  const isFirstRender = useRef(true);
+
+  // Scroll to bottom on new message, but ONLY after initial mount
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages, isTyping]);
 
   const sendMessage = useCallback((text: string) => {
