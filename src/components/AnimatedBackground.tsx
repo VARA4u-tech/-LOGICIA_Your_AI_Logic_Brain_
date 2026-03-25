@@ -108,6 +108,7 @@ const AnimatedBackground = () => {
           {s.symbol}
         </div>
       ))}
+    </div>
   );
 };
 
