@@ -89,7 +89,25 @@ const AnimatedBackground = () => {
           }}
         />
       ))}
-    </div>
+
+      {/* Floating math symbols */}
+      {symbols.map((s) => (
+        <div
+          key={`sym-${s.id}`}
+          className="absolute animate-float-up font-display select-none"
+          style={{
+            left: s.left,
+            fontSize: s.size,
+            color: `hsl(120 100% 54% / ${s.opacity})`,
+            textShadow: `0 0 ${s.size * 0.8}px hsl(120 100% 54% / ${s.opacity * 0.6})`,
+            animationDelay: s.delay,
+            animationDuration: s.duration,
+            transform: `rotate(${s.rotate}deg)`,
+          }}
+        >
+          {s.symbol}
+        </div>
+      ))}
   );
 };
 
