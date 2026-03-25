@@ -28,14 +28,12 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-10 text-center px-4 animate-fade-in-up">
-        <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-primary neon-text-strong animate-pulse-glow leading-tight">
-          AI MATH
-          <br />
-          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl">ASSISTANT</span>
+        <h1 className="font-display text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-black text-primary neon-text-strong animate-pulse-glow leading-none">
+          LOGICIA
         </h1>
 
         <p className="mt-6 md:mt-8 font-body text-sm sm:text-base md:text-lg tracking-[0.4em] text-secondary-foreground font-light uppercase">
-          Solve Any Problem Instantly
+          Your AI Math Brain.
         </p>
 
         <a

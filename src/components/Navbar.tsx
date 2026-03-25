@@ -10,7 +10,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <span className="font-display text-sm md:text-base font-bold tracking-wider text-primary neon-text">
-          AI MATH ASSISTANT
+          LOGICIA
         </span>
 
         {/* Desktop */}
