@@ -42,6 +42,10 @@ interface Step {
   label: string;
   math: string;
   explanation?: string;
+  /** A callout note shown below the math expression — used for concept clarifications */
+  note?: string;
+  /** Numbered sub-steps rendered indented under this step */
+  subSteps?: string[];
 }
 interface PlotData {
   x: number;
@@ -107,16 +111,48 @@ const solveMath = (
       };
     }
     return {
-      content: "Here's the solution to your arithmetic problem:",
+      content: "Let's break down this addition problem completely so you understand every part of it:",
       solution: {
-        method: "Basic Arithmetic",
+        method: "Basic Arithmetic — Addition",
         steps: [
           {
-            label: "Identify operation",
-            math: "2 + 2",
-            explanation: "Simple addition of two integers",
+            label: "Step 1 — What is addition?",
+            math: "Addition (+) combines two quantities into a total",
+            explanation: "Addition is the most fundamental arithmetic operation. It answers the question: if I have some amount and add more, how much do I have in total?",
+            note: "The '+' symbol was introduced by Johannes Widmann in 1489. It represents combining or joining quantities together.",
           },
-          { label: "Compute sum", math: "2 + 2 = 4" },
+          {
+            label: "Step 2 — Identify the operands",
+            math: "First number: 2    Second number: 2",
+            explanation: "Both numbers are equal positive integers. Each represents a count of 2 units.",
+            subSteps: [
+              "The left operand is 2 (two units)",
+              "The right operand is 2 (two units)",
+              "Both are natural numbers (whole, positive)",
+            ],
+          },
+          {
+            label: "Step 3 — Visualise on a number line",
+            math: "0 ──► 1 ──► 2 ──► 3 ──► 4",
+            explanation: "Start at 0. Move 2 steps right to reach 2. Then move 2 MORE steps right.",
+            note: "Number lines make addition visual. Each '+1' is one step to the right.",
+          },
+          {
+            label: "Step 4 — Perform the addition",
+            math: "2 + 2 = 4",
+            explanation: "Combining 2 units with 2 more units gives us 4 units total.",
+            subSteps: [
+              "Start with 2",
+              "Add 1  →  3",
+              "Add 1  →  4  ✓",
+            ],
+          },
+          {
+            label: "Step 5 — Verify (Subtraction check)",
+            math: "4 − 2 = 2  ✓",
+            explanation: "We can verify our answer by reversing the operation. If 4 − 2 equals our original number 2, the addition was correct.",
+            note: "Always verify arithmetic by using the inverse operation.",
+          },
         ],
         finalAnswer: "4",
         mode,
@@ -143,17 +179,58 @@ const solveMath = (
       };
     }
     return {
-      content: "I'll apply differentiation rules step by step:",
+      content: "Let's differentiate f(x) = x² from first principles through to the final answer — understanding every step:",
       solution: {
         method: "Power Rule — Differentiation",
         steps: [
           {
-            label: "Identify the function",
-            math: "f(x) = x²",
-            explanation: "A polynomial of degree 2",
+            label: "Step 1 — What is a derivative?",
+            math: "f'(x) = lim(h→0) [ f(x+h) − f(x) ] / h",
+            explanation: "The derivative measures the instantaneous rate of change of a function. Geometrically, it gives the slope of the tangent line at any point x.",
+            note: "Think of it as: 'How fast is f(x) changing at exactly this moment?' — like reading a speedometer instead of measuring distance.",
           },
-          { label: "Apply the power rule", math: "d/dx [xⁿ] = n · xⁿ⁻¹" },
-          { label: "Final result", math: "d/dx [x²] = 2x" },
+          {
+            label: "Step 2 — Identify the function type",
+            math: "f(x) = x²   →   Power function with exponent n = 2",
+            explanation: "x² is a monomial power function. Its graph is an upward-opening parabola.",
+            subSteps: [
+              "Coefficient: 1 (the number in front of x²)",
+              "Base: x (the variable)",
+              "Exponent: 2 (the power)",
+            ],
+          },
+          {
+            label: "Step 3 — Recall the Power Rule",
+            math: "d/dx [xⁿ] = n · xⁿ⁻¹",
+            explanation: "The Power Rule states: bring the exponent down as a coefficient, then reduce the exponent by 1. This is one of the most important differentiation rules.",
+            note: "This rule works for ANY real number exponent n — whole numbers, fractions, negatives.",
+          },
+          {
+            label: "Step 4 — Apply the Power Rule to x²",
+            math: "d/dx [x²] = 2 · x²⁻¹",
+            explanation: "Substitute n = 2 into the Power Rule formula.",
+            subSteps: [
+              "Bring exponent down: coefficient becomes 2",
+              "Reduce exponent: 2 − 1 = 1",
+              "So we get: 2 · x¹",
+            ],
+          },
+          {
+            label: "Step 5 — Simplify",
+            math: "2 · x¹ = 2x",
+            explanation: "x¹ is simply x. Any variable raised to the power of 1 is itself.",
+          },
+          {
+            label: "Step 6 — Interpret the result",
+            math: "f'(x) = 2x   →   slope at x=1 is 2,  at x=3 is 6",
+            explanation: "The derivative f'(x) = 2x tells us the slope of f(x) = x² at any point. At x = 0 the function is flat (slope 0). As x grows, the slope grows proportionally.",
+            note: "The graph below shows f'(x) = 2x — a straight line through the origin. This is why parabolas get steeper as you move away from the vertex.",
+          },
+          {
+            label: "Step 7 — Verify (integrate back)",
+            math: "∫ 2x dx = x² + C  ✓",
+            explanation: "Integrating f'(x) = 2x should return our original function. Since ∫ 2x dx = x² + C, our derivative is confirmed correct.",
+          },
         ],
         finalAnswer: "f'(x) = 2x",
         graphData,
@@ -181,13 +258,53 @@ const solveMath = (
       };
     }
     return {
-      content: "Applying integration rules:",
+      content: "Let's evaluate ∫ x dx step by step — from understanding what integration means to the fully verified answer:",
       solution: {
-        method: "Power Rule — Integration",
+        method: "Reverse Power Rule — Indefinite Integration",
         steps: [
-          { label: "Identify the integrand", math: "∫ x dx" },
-          { label: "Apply the power rule", math: "∫ xⁿ dx = (xⁿ⁺¹)/(n+1) + C" },
-          { label: "Evaluate", math: "∫ x¹ dx = x²/2 + C" },
+          {
+            label: "Step 1 — What is an indefinite integral?",
+            math: "∫ f(x) dx = F(x) + C",
+            explanation: "An integral is the reverse of differentiation. It finds a function F(x) whose derivative equals f(x). The '+C' accounts for any constant that vanishes under differentiation.",
+            note: "∫ is called the integral sign (an elongated S, for 'Sum'). It was introduced by Leibniz in 1675. 'dx' tells us we are integrating with respect to x.",
+          },
+          {
+            label: "Step 2 — Identify the integrand",
+            math: "∫ x dx   →   integrand = x = x¹",
+            explanation: "The integrand (the function being integrated) is x, which we rewrite as x¹ to clearly see the exponent.",
+            subSteps: [
+              "Coefficient of x: 1",
+              "Exponent of x: 1  (since x = x¹)",
+              "This is a power function — the Power Rule for integration applies",
+            ],
+          },
+          {
+            label: "Step 3 — Recall the Reverse Power Rule",
+            math: "∫ xⁿ dx = xⁿ⁺¹ / (n+1) + C  ,  where n ≠ −1",
+            explanation: "To integrate a power of x: raise the exponent by 1, then divide by the new exponent. This is the exact reverse of the Power Rule for derivatives.",
+            note: "The n ≠ −1 restriction exists because dividing by (n+1) would mean dividing by zero when n = −1. That special case gives ln|x| + C.",
+          },
+          {
+            label: "Step 4 — Apply the rule with n = 1",
+            math: "∫ x¹ dx = x¹⁺¹ / (1+1) + C = x² / 2 + C",
+            explanation: "Substitute n = 1 into the formula.",
+            subSteps: [
+              "New exponent: 1 + 1 = 2",
+              "Denominator: 1 + 1 = 2",
+              "Result: x² / 2 + C",
+            ],
+          },
+          {
+            label: "Step 5 — Add the constant of integration C",
+            math: "F(x) = x²/2 + C",
+            explanation: "C represents any constant value. Every indefinite integral has infinitely many antiderivatives — they all differ by a constant. C captures this family of solutions.",
+            note: "If you were given initial conditions (e.g. F(0) = 3), you could solve for C. Without them, we leave it as C.",
+          },
+          {
+            label: "Step 6 — Verify by differentiating back",
+            math: "d/dx [x²/2 + C] = 2x/2 + 0 = x  ✓",
+            explanation: "Differentiating our answer must give us back the original integrand x. It does — so the integral is correct.",
+          },
         ],
         finalAnswer: "x²/2 + C",
         graphData,
@@ -235,23 +352,78 @@ const solveMath = (
     }
 
     return {
-      content: `Let me solve the quadratic equation: **${a}x² + (${b})x + (${c}) = 0**`,
+      content: `Let's solve the quadratic equation **${a}x² + (${b})x + (${c}) = 0** completely — from identifying the structure to verifying both roots:`,
       solution: {
-        method: "Quadratic Formula",
+        method: "Quadratic Formula — Full Derivation",
         steps: [
-          { label: "Coefficients", math: `a = ${a}, b = ${b}, c = ${c}` },
           {
-            label: "Discriminant",
-            math: `Δ = b² − 4ac = ${disc}`,
-            explanation:
-              disc >= 0
-                ? "Positive/Zero → Real Roots"
-                : "Negative → Complex Roots",
+            label: "Step 1 — What is a quadratic equation?",
+            math: "Standard form: ax² + bx + c = 0  ,  where a ≠ 0",
+            explanation: "A quadratic equation is a polynomial equation of degree 2. Its graph is always a parabola. Solving it means finding the x-values where the parabola crosses the x-axis (its roots/zeros).",
+            note: "The word 'quadratic' comes from the Latin 'quadratus' meaning square — because the highest power is x².",
           },
-          { label: "Quadratic formula", math: `x = (−b ± √Δ) / 2a` },
           {
-            label: "Final roots",
-            math: `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`,
+            label: "Step 2 — Write in standard form & extract coefficients",
+            math: `${a}x² + (${b})x + (${c}) = 0`,
+            explanation: "Match each term to the standard form ax² + bx + c = 0 to identify a, b, and c.",
+            subSteps: [
+              `Coefficient of x²:  a = ${a}`,
+              `Coefficient of x:   b = ${b}`,
+              `Constant term:      c = ${c}`,
+              `Leading coefficient a = ${a} ≠ 0 — confirmed quadratic`,
+            ],
+          },
+          {
+            label: "Step 3 — Calculate the Discriminant (Δ)",
+            math: `Δ = b² − 4ac = (${b})² − 4·(${a})·(${c})`,
+            explanation: "The discriminant determines HOW MANY and WHAT TYPE of roots the equation has — before you even solve it.",
+            subSteps: [
+              `b² = (${b})² = ${b * b}`,
+              `4ac = 4 × ${a} × ${c} = ${4 * a * c}`,
+              `Δ = ${b * b} − ${4 * a * c} = ${disc}`,
+            ],
+            note:
+              disc > 0
+                ? `Δ = ${disc} > 0  →  Two distinct real roots. The parabola crosses the x-axis at two points.`
+                : disc === 0
+                  ? `Δ = 0  →  Exactly one real root (repeated). The parabola just touches the x-axis at one point (vertex).`
+                  : `Δ = ${disc} < 0  →  No real roots. The parabola does not cross the x-axis (roots are complex numbers).`,
+          },
+          {
+            label: "Step 4 — Recall the Quadratic Formula",
+            math: "x = [ −b ± √(b² − 4ac) ] / (2a)",
+            explanation: "This formula is derived by completing the square on ax² + bx + c = 0. It always works regardless of whether the equation can be factored.",
+            note: "The ± (plus-or-minus) symbol is why we get TWO roots from a single formula — one with '+√Δ' and one with '−√Δ'.",
+          },
+          {
+            label: "Step 5 — Substitute values into the formula",
+            math: `x = [ −(${b}) ± √${disc} ] / (2 × ${a})`,
+            explanation: "Replace a, b, c with our actual values.",
+            subSteps: [
+              `−b = −(${b}) = ${-b}`,
+              `√Δ = √${disc} ≈ ${sqrtDisc.toFixed(4)}`,
+              `2a = 2 × ${a} = ${2 * a}`,
+            ],
+          },
+          {
+            label: "Step 6 — Compute the two roots separately",
+            math: `x₁ = (${-b} + ${sqrtDisc.toFixed(2)}) / ${2 * a} = ${x1.toFixed(2)}`,
+            explanation: "Calculate x₁ using '+' and x₂ using '−'.",
+            subSteps: [
+              `x₁ = (${-b} + ${sqrtDisc.toFixed(3)}) / ${2 * a} = ${((-b) + sqrtDisc).toFixed(3)} / ${2 * a} = ${x1.toFixed(4)} ≈ ${x1.toFixed(2)}`,
+              `x₂ = (${-b} − ${sqrtDisc.toFixed(3)}) / ${2 * a} = ${((-b) - sqrtDisc).toFixed(3)} / ${2 * a} = ${x2.toFixed(4)} ≈ ${x2.toFixed(2)}`,
+            ],
+          },
+          {
+            label: "Step 7 — Verify Root x₁ by substitution",
+            math: `f(${x1.toFixed(2)}) = ${a}(${x1.toFixed(2)})² + (${b})(${x1.toFixed(2)}) + (${c}) ≈ 0  ✓`,
+            explanation: "A root is correct only if substituting it back into the original equation gives 0. This is the verification step.",
+            note: "Tiny decimals (0.0001 etc.) are due to rounding — the exact roots satisfy the equation perfectly.",
+          },
+          {
+            label: "Step 8 — Interpret the graph",
+            math: `Parabola opens ${a > 0 ? "UPWARD (a > 0)" : "DOWNWARD (a < 0)"} · Vertex at x = ${center.toFixed(2)}`,
+            explanation: `The graph below shows the parabola y = ${a}x² + (${b})x + (${c}). The roots x₁ = ${x1.toFixed(2)} and x₂ = ${x2.toFixed(2)} are exactly where it crosses the x-axis.`,
           },
         ],
         finalAnswer: `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`,
@@ -512,13 +684,14 @@ const SolutionPanel = ({
         className="overflow-hidden transition-all duration-500"
         style={{
           maxHeight:
-            isQuick || expanded ? `${steps.length * 200 + 200}px` : "0px",
+            isQuick || expanded ? `${steps.length * 300 + 400}px` : "0px",
           opacity: isQuick || expanded ? 1 : 0,
         }}
       >
-        <div className="space-y-2 sm:space-y-2.5 py-1">
+        <div className="space-y-3 sm:space-y-4 py-1">
           {steps.map((step, i) => (
             <div key={i} className="flex gap-2.5 sm:gap-3 items-start">
+              {/* Step number bubble */}
               <div
                 className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border flex items-center justify-center text-[9px] sm:text-[10px] font-display mt-0.5 ${
                   isQuick
@@ -528,26 +701,55 @@ const SolutionPanel = ({
               >
                 {i + 1}
               </div>
-              <div className="flex-1 min-w-0 overflow-hidden">
+
+              <div className="flex-1 min-w-0 overflow-hidden space-y-1.5">
+                {/* Step label */}
                 <p
-                  className={`text-[10px] tracking-wide uppercase font-display mb-1 ${
+                  className={`text-[10px] tracking-wide uppercase font-display ${
                     isQuick ? "text-amber-400/60" : "text-muted-foreground"
                   }`}
                 >
                   {step.label}
                 </p>
+
+                {/* Math expression */}
                 <MathBlock expr={step.math} />
-                {step.explanation && !isQuick && (
-                  <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-relaxed mt-1">
-                    <ChevronRight size={9} className="inline mr-1 text-primary" />
+
+                {/* Explanation — shown in both modes */}
+                {step.explanation && (
+                  <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-relaxed">
+                    <ChevronRight size={9} className={`inline mr-1 ${isQuick ? "text-amber-400/60" : "text-primary"}`} />
                     {step.explanation}
                   </p>
+                )}
+
+                {/* Sub-steps (only in detailed mode) */}
+                {!isQuick && step.subSteps && step.subSteps.length > 0 && (
+                  <div className="mt-1.5 ml-1 pl-3 border-l border-primary/20 space-y-1">
+                    {step.subSteps.map((sub, j) => (
+                      <p key={j} className="text-[10px] sm:text-[11px] font-mono text-primary/70 leading-relaxed">
+                        <span className="text-primary/40 mr-2 font-display">{String.fromCharCode(97 + j)})</span>
+                        {sub}
+                      </p>
+                    ))}
+                  </div>
+                )}
+
+                {/* Note callout (only in detailed mode) */}
+                {!isQuick && step.note && (
+                  <div className="mt-2 flex gap-2 items-start px-3 py-2 rounded-lg border border-amber-500/20 bg-amber-500/5">
+                    <Lightbulb size={11} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-[10px] sm:text-[11px] text-amber-200/70 leading-relaxed font-body italic">
+                      {step.note}
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
           ))}
         </div>
       </div>
+
 
       {/* Final Answer */}
       <div
