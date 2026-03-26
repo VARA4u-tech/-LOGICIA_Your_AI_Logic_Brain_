@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { ChevronRight, CheckCircle2, Lightbulb, ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
+import { useState, useMemo } from "react";
+import { ChevronRight, CheckCircle2, Lightbulb, ChevronDown, ChevronUp, Copy, Check, BarChart2 } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface Step {
   label: string;
@@ -7,10 +8,16 @@ interface Step {
   explanation?: string;
 }
 
+interface PlotData {
+  x: number;
+  y: number;
+}
+
 interface SolutionPanelProps {
   steps: Step[];
   finalAnswer: string;
   method?: string;
+  graphData?: PlotData[]; // Added for graphing support
 }
 
 const CopyButton = ({ text }: { text: string }) => {
@@ -25,7 +32,7 @@ const CopyButton = ({ text }: { text: string }) => {
 
   return (
     <button
-      onClick={handleCopy}
+      onClick={(e) => { e.stopPropagation(); handleCopy(); }}
       title="Copy to clipboard"
       className="p-1 rounded text-muted-foreground hover:text-primary transition-colors duration-200 flex-shrink-0"
     >
@@ -43,7 +50,7 @@ const MathBlock = ({ expr }: { expr: string }) => (
   </div>
 );
 
-const SolutionPanel = ({ steps, finalAnswer, method }: SolutionPanelProps) => {
+const SolutionPanel = ({ steps, finalAnswer, method, graphData }: SolutionPanelProps) => {
   const [expanded, setExpanded] = useState(true);
 
   return (
@@ -68,10 +75,62 @@ const SolutionPanel = ({ steps, finalAnswer, method }: SolutionPanelProps) => {
         </button>
       </div>
 
+      {/* Graph Section (Optional Render) */}
+      {graphData && graphData.length > 0 && (
+        <div className="animate-fade-in-up">
+          <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground font-display tracking-widest uppercase">
+            <BarChart2 size={13} className="text-primary" />
+            VISUALIZATION
+          </div>
+          <div className="h-[200px] sm:h-[250px] w-full glass rounded-xl p-2 sm:p-4 border border-primary/10">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={graphData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(120 100% 54% / 0.1)" />
+                <XAxis 
+                  dataKey="x" 
+                  stroke="hsl(120 20% 50%)" 
+                  fontSize={10} 
+                  tickFormatter={(v) => v.toFixed(1)}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis 
+                  stroke="hsl(120 20% 50%)" 
+                  fontSize={10} 
+                  tickFormatter={(v) => v.toFixed(1)}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: "hsl(120 20% 6% / 0.95)", 
+                    borderColor: "hsl(120 100% 54% / 0.3)",
+                    borderRadius: "8px",
+                    fontSize: "11px",
+                    color: "white"
+                  }}
+                  itemStyle={{ color: "hsl(120 100% 54%)" }}
+                  cursor={{ stroke: 'hsl(120 100% 54% / 0.4)', strokeWidth: 2 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="y" 
+                  stroke="hsl(120 100% 54%)" 
+                  strokeWidth={2} 
+                  dot={false}
+                  activeDot={{ r: 4, fill: "hsl(120 100% 54%)", stroke: "white" }}
+                  animationDuration={1500}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
       {/* Collapsible Steps */}
       <div
         className="overflow-hidden transition-all duration-400 ease-in-out"
-        style={{ maxHeight: expanded ? `${steps.length * 200}px` : "0px", opacity: expanded ? 1 : 0 }}
+        style={{ maxHeight: expanded ? `${steps.length * 300 + 400}px` : "0px", opacity: expanded ? 1 : 0 }}
       >
         <div className="space-y-3 pb-1">
           {steps.map((step, i) => (
@@ -80,7 +139,6 @@ const SolutionPanel = ({ steps, finalAnswer, method }: SolutionPanelProps) => {
               className="flex gap-3 items-start animate-fade-in-up"
               style={{ animationDelay: `${(i + 1) * 0.1}s` }}
             >
-              {/* Step number bubble */}
               <div className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full border border-primary/30 flex items-center justify-center text-[10px] sm:text-xs font-display text-primary mt-0.5">
                 {i + 1}
               </div>
@@ -104,7 +162,7 @@ const SolutionPanel = ({ steps, finalAnswer, method }: SolutionPanelProps) => {
       {/* Final Answer */}
       <div
         className="mt-2 p-3 sm:p-4 rounded-lg border border-primary/40 bg-primary/10 neon-box animate-fade-in-up"
-        style={{ animationDelay: `${(steps.length + 1) * 0.1}s` }}
+        style={{ animationDelay: `${(steps.length + 2) * 0.1}s` }}
       >
         <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
           <div className="flex items-center gap-2">

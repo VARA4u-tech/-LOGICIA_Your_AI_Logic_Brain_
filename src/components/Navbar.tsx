@@ -25,28 +25,20 @@ const Navbar = () => {
   // Track active section via IntersectionObserver
   useEffect(() => {
     const sectionIds = navItems.map((n) => n.href.slice(1));
-    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // When a section takes up more than 20% of the 'active zone', set it as active
-          if (entry.isIntersecting && entry.intersectionRatio > 0) {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
             setActiveSection(entry.target.id);
           }
         });
       },
-      { 
-        // Monitor when sections enter the middle-top area of the screen
-        rootMargin: "-20% 0px -60% 0px",
-        threshold: [0.1, 0.5] 
-      }
+      { rootMargin: "-20% 0px -60% 0px", threshold: [0, 0.1, 0.5] }
     );
-
     sectionIds.forEach((id) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
-
     return () => observer.disconnect();
   }, []);
 
@@ -64,27 +56,21 @@ const Navbar = () => {
         }`}
       >
         {/* Logo */}
-        <a
-          href="#home"
-          className="flex items-center gap-2 group"
-          onClick={closeMobile}
-        >
+        <a href="#home" className="flex items-center gap-2 group" onClick={closeMobile}>
           <img
             src="/logo.png"
             alt="Logicia"
             className={`transition-all duration-300 ${scrolled ? "w-6 h-6 sm:w-7 sm:h-7" : "w-7 h-7 sm:w-8 sm:h-8"}`}
           />
-          <span
-            className={`font-display font-bold tracking-wider text-primary neon-text transition-all duration-300 ${
-              scrolled ? "text-xs sm:text-sm" : "text-sm sm:text-base"
-            }`}
-          >
+          <span className={`font-display font-bold tracking-wider text-primary neon-text transition-all duration-300 ${
+            scrolled ? "text-xs sm:text-sm" : "text-sm sm:text-base"
+          }`}>
             LOGICIA
           </span>
         </a>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-6 lg:gap-8">
+        <div className="hidden md:flex items-center gap-5 lg:gap-8">
           {navItems.map((item) => {
             const isActive = activeSection === item.href.slice(1);
             return (
@@ -96,34 +82,31 @@ const Navbar = () => {
                 }`}
               >
                 {item.label}
-                {/* Active underline indicator */}
-                <span
-                  className={`absolute -bottom-1 left-0 h-px bg-primary transition-all duration-300 ${
-                    isActive ? "w-full neon-box" : "w-0 group-hover:w-full"
-                  }`}
-                />
+                <span className={`absolute -bottom-1 left-0 h-px bg-primary transition-all duration-300 ${
+                  isActive ? "w-full neon-box" : "w-0 group-hover:w-full"
+                }`} />
               </a>
             );
           })}
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setOpen((p) => !p)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          className="md:hidden text-primary p-1.5 rounded border border-primary/20 hover:border-primary/50 hover:bg-primary/10 transition-all duration-200"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        {/* Mobile controls */}
+        <div className="flex items-center gap-3 md:hidden">
+          <button
+            onClick={() => setOpen((p) => !p)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            className="md:hidden text-primary p-2 rounded-lg border border-primary/20 hover:border-primary/50 hover:bg-primary/10 transition-all duration-200"
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile menu — animated slide-down */}
-      <div
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="glass-strong border-t border-border px-4 pb-4 pt-2 space-y-1">
+      {/* Mobile menu */}
+      <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+        open ? "max-h-96 opacity-100 shadow-2xl" : "max-h-0 opacity-0"
+      }`}>
+        <div className="glass-strong border-t border-border px-4 pb-6 pt-3 space-y-1">
           {navItems.map((item, i) => {
             const isActive = activeSection === item.href.slice(1);
             return (
@@ -132,13 +115,13 @@ const Navbar = () => {
                 href={item.href}
                 onClick={closeMobile}
                 style={{ animationDelay: `${i * 0.05}s` }}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm tracking-[0.2em] transition-all duration-200 ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-body text-sm tracking-[0.2em] transition-all duration-200 ${
                   isActive
-                    ? "text-primary bg-primary/10 border border-primary/30"
+                    ? "text-primary bg-primary/10 border border-primary/30 neon-box shadow-sm"
                     : "text-muted-foreground hover:text-primary hover:bg-primary/5"
                 }`}
               >
-                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse flex-shrink-0" />}
+                {isActive && <span className="w-2 h-2 rounded-full bg-primary animate-pulse flex-shrink-0" />}
                 {item.label}
               </a>
             );
