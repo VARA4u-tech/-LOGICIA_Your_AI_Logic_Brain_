@@ -76,3 +76,26 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# ==========================================
+# 6. PYTHON / BACKEND SPECIFIC
+# ==========================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env
+.env.example
+
+# Testing and Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log

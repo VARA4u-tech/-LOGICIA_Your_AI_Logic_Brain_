@@ -89,383 +89,6 @@ const MODE_KEY = "logicia_response_mode";
 const MAX_CHARS = 500;
 
 /* ═══════════════════════════════════════════════════════════════
-   MATH SOLVER ENGINE  (mode-aware)
-═══════════════════════════════════════════════════════════════ */
-const solveMath = (
-  input: string,
-  mode: ResponseMode,
-): { content: string; solution?: SolutionData } => {
-  const trimmed = input.trim().toLowerCase();
-
-  /* ── 2 + 2 ── */
-  if (trimmed.includes("2+2") || trimmed.match(/^2\s*\+\s*2$/)) {
-    if (mode === "quick") {
-      return {
-        content: "⚡ Quick Answer",
-        solution: {
-          method: "Arithmetic",
-          steps: [{ label: "Direct computation", math: "2 + 2 = 4" }],
-          finalAnswer: "4",
-          mode,
-        },
-      };
-    }
-    return {
-      content: "Let's break down this addition problem completely so you understand every part of it:",
-      solution: {
-        method: "Basic Arithmetic — Addition",
-        steps: [
-          {
-            label: "Step 1 — What is addition?",
-            math: "Addition (+) combines two quantities into a total",
-            explanation: "Addition is the most fundamental arithmetic operation. It answers the question: if I have some amount and add more, how much do I have in total?",
-            note: "The '+' symbol was introduced by Johannes Widmann in 1489. It represents combining or joining quantities together.",
-          },
-          {
-            label: "Step 2 — Identify the operands",
-            math: "First number: 2    Second number: 2",
-            explanation: "Both numbers are equal positive integers. Each represents a count of 2 units.",
-            subSteps: [
-              "The left operand is 2 (two units)",
-              "The right operand is 2 (two units)",
-              "Both are natural numbers (whole, positive)",
-            ],
-          },
-          {
-            label: "Step 3 — Visualise on a number line",
-            math: "0 ──► 1 ──► 2 ──► 3 ──► 4",
-            explanation: "Start at 0. Move 2 steps right to reach 2. Then move 2 MORE steps right.",
-            note: "Number lines make addition visual. Each '+1' is one step to the right.",
-          },
-          {
-            label: "Step 4 — Perform the addition",
-            math: "2 + 2 = 4",
-            explanation: "Combining 2 units with 2 more units gives us 4 units total.",
-            subSteps: [
-              "Start with 2",
-              "Add 1  →  3",
-              "Add 1  →  4  ✓",
-            ],
-          },
-          {
-            label: "Step 5 — Verify (Subtraction check)",
-            math: "4 − 2 = 2  ✓",
-            explanation: "We can verify our answer by reversing the operation. If 4 − 2 equals our original number 2, the addition was correct.",
-            note: "Always verify arithmetic by using the inverse operation.",
-          },
-        ],
-        finalAnswer: "4",
-        mode,
-      },
-    };
-  }
-
-  /* ── Derivative ── */
-  if (trimmed.includes("derivative") || trimmed.includes("d/dx")) {
-    const graphData: PlotData[] = [];
-    for (let x = -3; x <= 3; x += 0.5) graphData.push({ x, y: 2 * x });
-    if (mode === "quick") {
-      return {
-        content: "⚡ Quick Answer",
-        solution: {
-          method: "Power Rule",
-          steps: [
-            { label: "Rule", math: "d/dx [xⁿ] = n·xⁿ⁻¹" },
-            { label: "Apply", math: "d/dx [x²] = 2·x²⁻¹ = 2x" },
-          ],
-          finalAnswer: "f'(x) = 2x",
-          mode,
-        },
-      };
-    }
-    return {
-      content: "Let's differentiate f(x) = x² from first principles through to the final answer — understanding every step:",
-      solution: {
-        method: "Power Rule — Differentiation",
-        steps: [
-          {
-            label: "Step 1 — What is a derivative?",
-            math: "f'(x) = lim(h→0) [ f(x+h) − f(x) ] / h",
-            explanation: "The derivative measures the instantaneous rate of change of a function. Geometrically, it gives the slope of the tangent line at any point x.",
-            note: "Think of it as: 'How fast is f(x) changing at exactly this moment?' — like reading a speedometer instead of measuring distance.",
-          },
-          {
-            label: "Step 2 — Identify the function type",
-            math: "f(x) = x²   →   Power function with exponent n = 2",
-            explanation: "x² is a monomial power function. Its graph is an upward-opening parabola.",
-            subSteps: [
-              "Coefficient: 1 (the number in front of x²)",
-              "Base: x (the variable)",
-              "Exponent: 2 (the power)",
-            ],
-          },
-          {
-            label: "Step 3 — Recall the Power Rule",
-            math: "d/dx [xⁿ] = n · xⁿ⁻¹",
-            explanation: "The Power Rule states: bring the exponent down as a coefficient, then reduce the exponent by 1. This is one of the most important differentiation rules.",
-            note: "This rule works for ANY real number exponent n — whole numbers, fractions, negatives.",
-          },
-          {
-            label: "Step 4 — Apply the Power Rule to x²",
-            math: "d/dx [x²] = 2 · x²⁻¹",
-            explanation: "Substitute n = 2 into the Power Rule formula.",
-            subSteps: [
-              "Bring exponent down: coefficient becomes 2",
-              "Reduce exponent: 2 − 1 = 1",
-              "So we get: 2 · x¹",
-            ],
-          },
-          {
-            label: "Step 5 — Simplify",
-            math: "2 · x¹ = 2x",
-            explanation: "x¹ is simply x. Any variable raised to the power of 1 is itself.",
-          },
-          {
-            label: "Step 6 — Interpret the result",
-            math: "f'(x) = 2x   →   slope at x=1 is 2,  at x=3 is 6",
-            explanation: "The derivative f'(x) = 2x tells us the slope of f(x) = x² at any point. At x = 0 the function is flat (slope 0). As x grows, the slope grows proportionally.",
-            note: "The graph below shows f'(x) = 2x — a straight line through the origin. This is why parabolas get steeper as you move away from the vertex.",
-          },
-          {
-            label: "Step 7 — Verify (integrate back)",
-            math: "∫ 2x dx = x² + C  ✓",
-            explanation: "Integrating f'(x) = 2x should return our original function. Since ∫ 2x dx = x² + C, our derivative is confirmed correct.",
-          },
-        ],
-        finalAnswer: "f'(x) = 2x",
-        graphData,
-        mode,
-      },
-    };
-  }
-
-  /* ── Integral ── */
-  if (trimmed.includes("integral") || trimmed.includes("∫")) {
-    const graphData: PlotData[] = [];
-    for (let x = -3; x <= 3; x += 0.5) graphData.push({ x, y: (x * x) / 2 });
-    if (mode === "quick") {
-      return {
-        content: "⚡ Quick Answer",
-        solution: {
-          method: "Reverse Power Rule",
-          steps: [
-            { label: "Rule", math: "∫xⁿ dx = xⁿ⁺¹/(n+1) + C" },
-            { label: "Apply", math: "∫x dx = x²/2 + C" },
-          ],
-          finalAnswer: "x²/2 + C",
-          mode,
-        },
-      };
-    }
-    return {
-      content: "Let's evaluate ∫ x dx step by step — from understanding what integration means to the fully verified answer:",
-      solution: {
-        method: "Reverse Power Rule — Indefinite Integration",
-        steps: [
-          {
-            label: "Step 1 — What is an indefinite integral?",
-            math: "∫ f(x) dx = F(x) + C",
-            explanation: "An integral is the reverse of differentiation. It finds a function F(x) whose derivative equals f(x). The '+C' accounts for any constant that vanishes under differentiation.",
-            note: "∫ is called the integral sign (an elongated S, for 'Sum'). It was introduced by Leibniz in 1675. 'dx' tells us we are integrating with respect to x.",
-          },
-          {
-            label: "Step 2 — Identify the integrand",
-            math: "∫ x dx   →   integrand = x = x¹",
-            explanation: "The integrand (the function being integrated) is x, which we rewrite as x¹ to clearly see the exponent.",
-            subSteps: [
-              "Coefficient of x: 1",
-              "Exponent of x: 1  (since x = x¹)",
-              "This is a power function — the Power Rule for integration applies",
-            ],
-          },
-          {
-            label: "Step 3 — Recall the Reverse Power Rule",
-            math: "∫ xⁿ dx = xⁿ⁺¹ / (n+1) + C  ,  where n ≠ −1",
-            explanation: "To integrate a power of x: raise the exponent by 1, then divide by the new exponent. This is the exact reverse of the Power Rule for derivatives.",
-            note: "The n ≠ −1 restriction exists because dividing by (n+1) would mean dividing by zero when n = −1. That special case gives ln|x| + C.",
-          },
-          {
-            label: "Step 4 — Apply the rule with n = 1",
-            math: "∫ x¹ dx = x¹⁺¹ / (1+1) + C = x² / 2 + C",
-            explanation: "Substitute n = 1 into the formula.",
-            subSteps: [
-              "New exponent: 1 + 1 = 2",
-              "Denominator: 1 + 1 = 2",
-              "Result: x² / 2 + C",
-            ],
-          },
-          {
-            label: "Step 5 — Add the constant of integration C",
-            math: "F(x) = x²/2 + C",
-            explanation: "C represents any constant value. Every indefinite integral has infinitely many antiderivatives — they all differ by a constant. C captures this family of solutions.",
-            note: "If you were given initial conditions (e.g. F(0) = 3), you could solve for C. Without them, we leave it as C.",
-          },
-          {
-            label: "Step 6 — Verify by differentiating back",
-            math: "d/dx [x²/2 + C] = 2x/2 + 0 = x  ✓",
-            explanation: "Differentiating our answer must give us back the original integrand x. It does — so the integral is correct.",
-          },
-        ],
-        finalAnswer: "x²/2 + C",
-        graphData,
-        mode,
-      },
-    };
-  }
-
-  /* ── Quadratic ── */
-  if (
-    trimmed.includes("quadratic") ||
-    trimmed.includes("x²") ||
-    trimmed.includes("x^2")
-  ) {
-    const match = trimmed.match(/(\d*)x\^?2?\s*([+-]\s*\d+)x\s*([+-]\s*\d+)/);
-    const a = match && match[1] ? parseInt(match[1]) : 1;
-    const b = match ? parseInt(match[2].replace(/\s/g, "")) : -5;
-    const c = match ? parseInt(match[3].replace(/\s/g, "")) : 6;
-    const disc = b * b - 4 * a * c;
-    const sqrtDisc = Math.sqrt(Math.abs(disc));
-    const x1 = (-b + sqrtDisc) / (2 * a);
-    const x2 = (-b - sqrtDisc) / (2 * a);
-    const graphData: PlotData[] = [];
-    const center = -b / (2 * a);
-    for (let x = center - 5; x <= center + 5; x += 0.5)
-      graphData.push({ x, y: a * x * x + b * x + c });
-
-    if (mode === "quick") {
-      return {
-        content: `⚡ Quick Answer — ${a}x² + (${b})x + (${c}) = 0`,
-        solution: {
-          method: "Quadratic Formula",
-          steps: [
-            { label: "Formula", math: "x = (−b ± √(b²−4ac)) / 2a" },
-            { label: "Δ = b²−4ac", math: `Δ = ${disc}` },
-            {
-              label: "Roots",
-              math: `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`,
-            },
-          ],
-          finalAnswer: `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`,
-          mode,
-        },
-      };
-    }
-
-    return {
-      content: `Let's solve the quadratic equation **${a}x² + (${b})x + (${c}) = 0** completely — from identifying the structure to verifying both roots:`,
-      solution: {
-        method: "Quadratic Formula — Full Derivation",
-        steps: [
-          {
-            label: "Step 1 — What is a quadratic equation?",
-            math: "Standard form: ax² + bx + c = 0  ,  where a ≠ 0",
-            explanation: "A quadratic equation is a polynomial equation of degree 2. Its graph is always a parabola. Solving it means finding the x-values where the parabola crosses the x-axis (its roots/zeros).",
-            note: "The word 'quadratic' comes from the Latin 'quadratus' meaning square — because the highest power is x².",
-          },
-          {
-            label: "Step 2 — Write in standard form & extract coefficients",
-            math: `${a}x² + (${b})x + (${c}) = 0`,
-            explanation: "Match each term to the standard form ax² + bx + c = 0 to identify a, b, and c.",
-            subSteps: [
-              `Coefficient of x²:  a = ${a}`,
-              `Coefficient of x:   b = ${b}`,
-              `Constant term:      c = ${c}`,
-              `Leading coefficient a = ${a} ≠ 0 — confirmed quadratic`,
-            ],
-          },
-          {
-            label: "Step 3 — Calculate the Discriminant (Δ)",
-            math: `Δ = b² − 4ac = (${b})² − 4·(${a})·(${c})`,
-            explanation: "The discriminant determines HOW MANY and WHAT TYPE of roots the equation has — before you even solve it.",
-            subSteps: [
-              `b² = (${b})² = ${b * b}`,
-              `4ac = 4 × ${a} × ${c} = ${4 * a * c}`,
-              `Δ = ${b * b} − ${4 * a * c} = ${disc}`,
-            ],
-            note:
-              disc > 0
-                ? `Δ = ${disc} > 0  →  Two distinct real roots. The parabola crosses the x-axis at two points.`
-                : disc === 0
-                  ? `Δ = 0  →  Exactly one real root (repeated). The parabola just touches the x-axis at one point (vertex).`
-                  : `Δ = ${disc} < 0  →  No real roots. The parabola does not cross the x-axis (roots are complex numbers).`,
-          },
-          {
-            label: "Step 4 — Recall the Quadratic Formula",
-            math: "x = [ −b ± √(b² − 4ac) ] / (2a)",
-            explanation: "This formula is derived by completing the square on ax² + bx + c = 0. It always works regardless of whether the equation can be factored.",
-            note: "The ± (plus-or-minus) symbol is why we get TWO roots from a single formula — one with '+√Δ' and one with '−√Δ'.",
-          },
-          {
-            label: "Step 5 — Substitute values into the formula",
-            math: `x = [ −(${b}) ± √${disc} ] / (2 × ${a})`,
-            explanation: "Replace a, b, c with our actual values.",
-            subSteps: [
-              `−b = −(${b}) = ${-b}`,
-              `√Δ = √${disc} ≈ ${sqrtDisc.toFixed(4)}`,
-              `2a = 2 × ${a} = ${2 * a}`,
-            ],
-          },
-          {
-            label: "Step 6 — Compute the two roots separately",
-            math: `x₁ = (${-b} + ${sqrtDisc.toFixed(2)}) / ${2 * a} = ${x1.toFixed(2)}`,
-            explanation: "Calculate x₁ using '+' and x₂ using '−'.",
-            subSteps: [
-              `x₁ = (${-b} + ${sqrtDisc.toFixed(3)}) / ${2 * a} = ${((-b) + sqrtDisc).toFixed(3)} / ${2 * a} = ${x1.toFixed(4)} ≈ ${x1.toFixed(2)}`,
-              `x₂ = (${-b} − ${sqrtDisc.toFixed(3)}) / ${2 * a} = ${((-b) - sqrtDisc).toFixed(3)} / ${2 * a} = ${x2.toFixed(4)} ≈ ${x2.toFixed(2)}`,
-            ],
-          },
-          {
-            label: "Step 7 — Verify Root x₁ by substitution",
-            math: `f(${x1.toFixed(2)}) = ${a}(${x1.toFixed(2)})² + (${b})(${x1.toFixed(2)}) + (${c}) ≈ 0  ✓`,
-            explanation: "A root is correct only if substituting it back into the original equation gives 0. This is the verification step.",
-            note: "Tiny decimals (0.0001 etc.) are due to rounding — the exact roots satisfy the equation perfectly.",
-          },
-          {
-            label: "Step 8 — Interpret the graph",
-            math: `Parabola opens ${a > 0 ? "UPWARD (a > 0)" : "DOWNWARD (a < 0)"} · Vertex at x = ${center.toFixed(2)}`,
-            explanation: `The graph below shows the parabola y = ${a}x² + (${b})x + (${c}). The roots x₁ = ${x1.toFixed(2)} and x₂ = ${x2.toFixed(2)} are exactly where it crosses the x-axis.`,
-          },
-        ],
-        finalAnswer: `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`,
-        graphData,
-        mode,
-      },
-    };
-  }
-
-  /* ── Arithmetic fallback ── */
-  try {
-    const sanitized = input.replace(/[^0-9+\-*/().% ]/g, "");
-    if (sanitized.length > 0 && input.match(/[0-9]/)) {
-      const result = new Function(`return ${sanitized}`)();
-      if (typeof result === "number" && isFinite(result)) {
-        return {
-          content:
-            mode === "quick"
-              ? "⚡ Quick Answer"
-              : "I computed that expression for you:",
-          solution: {
-            method: "Arithmetic Evaluation",
-            steps: [
-              { label: "Expression", math: `${input.trim()} = ${result}` },
-            ],
-            finalAnswer: `${result}`,
-            mode,
-          },
-        };
-      }
-    }
-  } catch {
-    /* empty */
-  }
-
-  return {
-    content:
-      "I'm ready to solve any math problem! Here are some examples you can try:\n\n• **Quadratic:** x^2 - 5x + 6 = 0\n• **Calculus:** derivative of x²\n• **Calculus:** integral of x\n• **Arithmetic:** 125 * 4 + 18\n\nJust type your problem and I'll walk you through it step by step.",
-  };
-};
-
-/* ═══════════════════════════════════════════════════════════════
    UTILITY COMPONENTS
 ═══════════════════════════════════════════════════════════════ */
 const CopyButton = ({ text }: { text: string }) => {
@@ -1062,7 +685,7 @@ const Chat = () => {
   }, []);
 
   const sendMessage = useCallback(
-    (text: string) => {
+    async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed || isTyping) return;
 
@@ -1100,29 +723,79 @@ const Chat = () => {
       setInput("");
       setIsTyping(true);
 
-      /* Simulate faster response for quick mode */
-      const delay =
-        responseMode === "quick"
-          ? 600 + Math.random() * 300
-          : 1500 + Math.random() * 500;
+      try {
+        const payload: {
+          content: string;
+          mode: ResponseMode;
+          conversation_id?: string;
+        } = {
+          content: trimmed,
+          mode: responseMode,
+        };
+        // Only send conversation_id if the backend might recognise it (e.g. not a legacy local one)
+        if (convId && convId.length > 20) {
+          payload.conversation_id = convId;
+        }
 
-      setTimeout(() => {
-        const { content, solution } = solveMath(trimmed, responseMode);
-        const aiMsg: Message = {
+        const res = await fetch("http://localhost:8000/api/chat/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        // If backend 404s (e.g. legacy localStorage conversation not found in DB)
+        if (res.status === 404 && payload.conversation_id) {
+          delete payload.conversation_id;
+          const retryRes = await fetch("http://localhost:8000/api/chat/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!retryRes.ok) throw new Error("Backend error after retry");
+          const data = await retryRes.json();
+          setConversations((prev) =>
+            prev.map((c) =>
+              c.id === convId ? { ...c, id: data.conversation_id, messages: [...c.messages, data.message] } : c,
+            ),
+          );
+          setActiveId(data.conversation_id);
+          setIsTyping(false);
+          return;
+        }
+
+        if (!res.ok) throw new Error("Backend error");
+        
+        const data = await res.json();
+        
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === convId ? { ...c, id: data.conversation_id, messages: [...c.messages, data.message] } : c,
+          ),
+        );
+        
+        // If it was a new conversation, update activeId to the remote UUID
+        if (!convId || convId !== data.conversation_id) {
+          setActiveId(data.conversation_id);
+        }
+
+      } catch (error) {
+        console.error("Failed to fetch from backend", error);
+        // Fallback error message
+        const errMsg: Message = {
           id: Date.now() + 1,
           role: "ai",
-          content,
-          solution,
+          content: "Sorry, I am having trouble connecting to the Logicia server right now. Please make sure the backend is running on :8000.",
           timestamp: new Date(),
           mode: responseMode,
         };
         setConversations((prev) =>
           prev.map((c) =>
-            c.id === convId ? { ...c, messages: [...c.messages, aiMsg] } : c,
+            c.id === convId ? { ...c, messages: [...c.messages, errMsg] } : c,
           ),
         );
+      } finally {
         setIsTyping(false);
-      }, delay);
+      }
     },
     [activeId, isTyping, responseMode],
   );
