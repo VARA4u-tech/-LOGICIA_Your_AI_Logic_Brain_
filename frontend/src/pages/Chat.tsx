@@ -19,6 +19,8 @@ import {
   Hash,
   PanelLeftClose,
   PanelLeftOpen,
+  Zap,
+  BookOpen,
 } from "lucide-react";
 import {
   LineChart,
@@ -34,6 +36,8 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 /* ═══════════════════════════════════════════════════════════════
    TYPES
 ═══════════════════════════════════════════════════════════════ */
+type ResponseMode = "detailed" | "quick";
+
 interface Step {
   label: string;
   math: string;
@@ -48,6 +52,7 @@ interface SolutionData {
   steps: Step[];
   finalAnswer: string;
   graphData?: PlotData[];
+  mode?: ResponseMode;
 }
 interface Message {
   id: number;
@@ -55,6 +60,7 @@ interface Message {
   content: string;
   solution?: SolutionData;
   timestamp: Date;
+  mode?: ResponseMode;
 }
 interface Conversation {
   id: string;
@@ -75,17 +81,31 @@ const QUICK_PROMPTS = [
 ];
 
 const STORAGE_KEY = "logicia_conversations";
+const MODE_KEY = "logicia_response_mode";
 const MAX_CHARS = 500;
 
 /* ═══════════════════════════════════════════════════════════════
-   MATH SOLVER ENGINE
+   MATH SOLVER ENGINE  (mode-aware)
 ═══════════════════════════════════════════════════════════════ */
 const solveMath = (
   input: string,
+  mode: ResponseMode,
 ): { content: string; solution?: SolutionData } => {
   const trimmed = input.trim().toLowerCase();
 
+  /* ── 2 + 2 ── */
   if (trimmed.includes("2+2") || trimmed.match(/^2\s*\+\s*2$/)) {
+    if (mode === "quick") {
+      return {
+        content: "⚡ Quick Answer",
+        solution: {
+          method: "Arithmetic",
+          steps: [{ label: "Direct computation", math: "2 + 2 = 4" }],
+          finalAnswer: "4",
+          mode,
+        },
+      };
+    }
     return {
       content: "Here's the solution to your arithmetic problem:",
       solution: {
@@ -99,13 +119,29 @@ const solveMath = (
           { label: "Compute sum", math: "2 + 2 = 4" },
         ],
         finalAnswer: "4",
+        mode,
       },
     };
   }
 
+  /* ── Derivative ── */
   if (trimmed.includes("derivative") || trimmed.includes("d/dx")) {
     const graphData: PlotData[] = [];
     for (let x = -3; x <= 3; x += 0.5) graphData.push({ x, y: 2 * x });
+    if (mode === "quick") {
+      return {
+        content: "⚡ Quick Answer",
+        solution: {
+          method: "Power Rule",
+          steps: [
+            { label: "Rule", math: "d/dx [xⁿ] = n·xⁿ⁻¹" },
+            { label: "Apply", math: "d/dx [x²] = 2·x²⁻¹ = 2x" },
+          ],
+          finalAnswer: "f'(x) = 2x",
+          mode,
+        },
+      };
+    }
     return {
       content: "I'll apply differentiation rules step by step:",
       solution: {
@@ -121,13 +157,29 @@ const solveMath = (
         ],
         finalAnswer: "f'(x) = 2x",
         graphData,
+        mode,
       },
     };
   }
 
+  /* ── Integral ── */
   if (trimmed.includes("integral") || trimmed.includes("∫")) {
     const graphData: PlotData[] = [];
     for (let x = -3; x <= 3; x += 0.5) graphData.push({ x, y: (x * x) / 2 });
+    if (mode === "quick") {
+      return {
+        content: "⚡ Quick Answer",
+        solution: {
+          method: "Reverse Power Rule",
+          steps: [
+            { label: "Rule", math: "∫xⁿ dx = xⁿ⁺¹/(n+1) + C" },
+            { label: "Apply", math: "∫x dx = x²/2 + C" },
+          ],
+          finalAnswer: "x²/2 + C",
+          mode,
+        },
+      };
+    }
     return {
       content: "Applying integration rules:",
       solution: {
@@ -139,10 +191,12 @@ const solveMath = (
         ],
         finalAnswer: "x²/2 + C",
         graphData,
+        mode,
       },
     };
   }
 
+  /* ── Quadratic ── */
   if (
     trimmed.includes("quadratic") ||
     trimmed.includes("x²") ||
@@ -160,6 +214,26 @@ const solveMath = (
     const center = -b / (2 * a);
     for (let x = center - 5; x <= center + 5; x += 0.5)
       graphData.push({ x, y: a * x * x + b * x + c });
+
+    if (mode === "quick") {
+      return {
+        content: `⚡ Quick Answer — ${a}x² + (${b})x + (${c}) = 0`,
+        solution: {
+          method: "Quadratic Formula",
+          steps: [
+            { label: "Formula", math: "x = (−b ± √(b²−4ac)) / 2a" },
+            { label: "Δ = b²−4ac", math: `Δ = ${disc}` },
+            {
+              label: "Roots",
+              math: `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`,
+            },
+          ],
+          finalAnswer: `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`,
+          mode,
+        },
+      };
+    }
+
     return {
       content: `Let me solve the quadratic equation: **${a}x² + (${b})x + (${c}) = 0**`,
       solution: {
@@ -182,23 +256,29 @@ const solveMath = (
         ],
         finalAnswer: `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`,
         graphData,
+        mode,
       },
     };
   }
 
+  /* ── Arithmetic fallback ── */
   try {
     const sanitized = input.replace(/[^0-9+\-*/().% ]/g, "");
     if (sanitized.length > 0 && input.match(/[0-9]/)) {
       const result = new Function(`return ${sanitized}`)();
       if (typeof result === "number" && isFinite(result)) {
         return {
-          content: "I computed that expression for you:",
+          content:
+            mode === "quick"
+              ? "⚡ Quick Answer"
+              : "I computed that expression for you:",
           solution: {
             method: "Arithmetic Evaluation",
             steps: [
               { label: "Expression", math: `${input.trim()} = ${result}` },
             ],
             finalAnswer: `${result}`,
+            mode,
           },
         };
       }
@@ -238,13 +318,65 @@ const CopyButton = ({ text }: { text: string }) => {
   );
 };
 
-/* Math expression — scrollable on overflow so it never breaks layout */
 const MathBlock = ({ expr }: { expr: string }) => (
   <div className="flex items-center gap-2 my-1 min-w-0">
     <div className="font-mono text-xs sm:text-sm px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-black/40 border border-primary/20 text-primary inline-block overflow-x-auto max-w-full whitespace-nowrap">
       {expr}
     </div>
     <CopyButton text={expr} />
+  </div>
+);
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSE MODE TOGGLE  (the main new component)
+═══════════════════════════════════════════════════════════════ */
+const ModeToggle = ({
+  mode,
+  onChange,
+}: {
+  mode: ResponseMode;
+  onChange: (m: ResponseMode) => void;
+}) => (
+  <div className="flex items-center gap-2 flex-wrap">
+    <span className="text-[10px] font-display tracking-[0.2em] text-muted-foreground/50 uppercase hidden sm:inline">
+      Mode
+    </span>
+    <div className="flex items-center p-0.5 rounded-lg border border-border/50 bg-muted/10 gap-0.5">
+      {/* Detailed */}
+      <button
+        onClick={() => onChange("detailed")}
+        title="Detailed — full step-by-step explanation with graph"
+        className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-[10px] sm:text-[11px] font-display tracking-wider transition-all duration-200 min-h-[30px] ${
+          mode === "detailed"
+            ? "bg-primary/15 text-primary border border-primary/30 shadow-[0_0_8px_hsl(120_100%_54%/0.15)]"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
+        }`}
+      >
+        <BookOpen size={11} className="flex-shrink-0" />
+        <span>DETAILED</span>
+      </button>
+
+      {/* Quick */}
+      <button
+        onClick={() => onChange("quick")}
+        title="Quick — exam-style: formula + answer, no extras"
+        className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-[10px] sm:text-[11px] font-display tracking-wider transition-all duration-200 min-h-[30px] ${
+          mode === "quick"
+            ? "bg-amber-500/15 text-amber-400 border border-amber-500/30 shadow-[0_0_8px_hsl(45_100%_60%/0.15)]"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
+        }`}
+      >
+        <Zap size={11} className="flex-shrink-0" />
+        <span>QUICK</span>
+      </button>
+    </div>
+
+    {/* Active mode hint */}
+    <span className="text-[9px] text-muted-foreground/35 font-body hidden md:inline">
+      {mode === "detailed"
+        ? "Full explanation + graph"
+        : "Exam-style · key logic only"}
+    </span>
   </div>
 );
 
@@ -256,45 +388,65 @@ const SolutionPanel = ({
   finalAnswer,
   method,
   graphData,
+  mode,
 }: {
   steps: Step[];
   finalAnswer: string;
   method?: string;
   graphData?: PlotData[];
+  mode?: ResponseMode;
 }) => {
   const [expanded, setExpanded] = useState(true);
+  const isQuick = mode === "quick";
+
   return (
-    <div className="mt-4 space-y-3 border-t border-border/40 pt-4">
-      {/* Header */}
+    <div className="mt-3 sm:mt-4 space-y-3 border-t border-border/40 pt-3 sm:pt-4">
+      {/* Header row */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        {method && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
-            <Lightbulb size={13} className="text-primary flex-shrink-0" />
-            <span className="tracking-wider uppercase font-display truncate">
-              {method}
-            </span>
-          </div>
-        )}
-        <button
-          onClick={() => setExpanded((p) => !p)}
-          className="ml-auto flex items-center gap-1 text-[10px] font-display tracking-widest text-primary/70 hover:text-primary transition-colors border border-primary/20 rounded-md px-2.5 py-1 hover:border-primary/40 flex-shrink-0 min-h-[30px]"
-        >
-          {expanded ? (
-            <>
-              <span>HIDE</span>
-              <ChevronUp size={11} />
-            </>
-          ) : (
-            <>
-              <span>SHOW STEPS</span>
-              <ChevronDown size={11} />
-            </>
+        <div className="flex items-center gap-2 min-w-0">
+          {method && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
+              <Lightbulb size={12} className="text-primary flex-shrink-0" />
+              <span className="tracking-wider uppercase font-display truncate text-[10px]">
+                {method}
+              </span>
+            </div>
           )}
-        </button>
+          {/* Mode badge on the response */}
+          {isQuick ? (
+            <span className="flex items-center gap-1 text-[9px] font-display tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
+              <Zap size={8} />
+              QUICK
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 text-[9px] font-display tracking-widest text-primary/70 bg-primary/5 border border-primary/15 rounded-full px-2 py-0.5">
+              <BookOpen size={8} />
+              DETAILED
+            </span>
+          )}
+        </div>
+        {!isQuick && (
+          <button
+            onClick={() => setExpanded((p) => !p)}
+            className="ml-auto flex items-center gap-1 text-[10px] font-display tracking-widest text-primary/70 hover:text-primary transition-colors border border-primary/20 rounded-md px-2.5 py-1 hover:border-primary/40 flex-shrink-0 min-h-[30px]"
+          >
+            {expanded ? (
+              <>
+                <span>HIDE</span>
+                <ChevronUp size={11} />
+              </>
+            ) : (
+              <>
+                <span>SHOW STEPS</span>
+                <ChevronDown size={11} />
+              </>
+            )}
+          </button>
+        )}
       </div>
 
-      {/* Graph */}
-      {graphData && graphData.length > 0 && (
+      {/* Graph — only shown in detailed mode */}
+      {!isQuick && graphData && graphData.length > 0 && (
         <div className="rounded-xl overflow-hidden border border-primary/15 bg-black/30">
           <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-border/30 text-[10px] text-muted-foreground font-display tracking-widest uppercase">
             <BarChart2 size={12} className="text-primary" /> VISUALIZATION
@@ -359,27 +511,35 @@ const SolutionPanel = ({
       <div
         className="overflow-hidden transition-all duration-500"
         style={{
-          maxHeight: expanded ? `${steps.length * 200 + 200}px` : "0px",
-          opacity: expanded ? 1 : 0,
+          maxHeight:
+            isQuick || expanded ? `${steps.length * 200 + 200}px` : "0px",
+          opacity: isQuick || expanded ? 1 : 0,
         }}
       >
-        <div className="space-y-2.5 py-1">
+        <div className="space-y-2 sm:space-y-2.5 py-1">
           {steps.map((step, i) => (
             <div key={i} className="flex gap-2.5 sm:gap-3 items-start">
-              <div className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border border-primary/30 bg-primary/5 flex items-center justify-center text-[9px] sm:text-[10px] font-display text-primary mt-0.5">
+              <div
+                className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border flex items-center justify-center text-[9px] sm:text-[10px] font-display mt-0.5 ${
+                  isQuick
+                    ? "border-amber-500/30 bg-amber-500/5 text-amber-400"
+                    : "border-primary/30 bg-primary/5 text-primary"
+                }`}
+              >
                 {i + 1}
               </div>
               <div className="flex-1 min-w-0 overflow-hidden">
-                <p className="text-[10px] text-muted-foreground tracking-wide uppercase font-display mb-1">
+                <p
+                  className={`text-[10px] tracking-wide uppercase font-display mb-1 ${
+                    isQuick ? "text-amber-400/60" : "text-muted-foreground"
+                  }`}
+                >
                   {step.label}
                 </p>
                 <MathBlock expr={step.math} />
-                {step.explanation && (
+                {step.explanation && !isQuick && (
                   <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-relaxed mt-1">
-                    <ChevronRight
-                      size={9}
-                      className="inline mr-1 text-primary"
-                    />
+                    <ChevronRight size={9} className="inline mr-1 text-primary" />
                     {step.explanation}
                   </p>
                 )}
@@ -390,16 +550,35 @@ const SolutionPanel = ({
       </div>
 
       {/* Final Answer */}
-      <div className="p-3 sm:p-4 rounded-xl border border-primary/40 bg-primary/8 flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
+      <div
+        className={`p-3 sm:p-4 rounded-xl border flex items-center justify-between gap-2 sm:gap-3 flex-wrap ${
+          isQuick
+            ? "border-amber-500/30 bg-amber-500/5"
+            : "border-primary/40 bg-primary/8"
+        }`}
+      >
         <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-          <CheckCircle2 size={15} className="text-primary flex-shrink-0" />
+          <CheckCircle2
+            size={15}
+            className={`flex-shrink-0 ${isQuick ? "text-amber-400" : "text-primary"}`}
+          />
           <div className="min-w-0">
-            <p className="font-display text-[9px] tracking-[0.25em] text-primary/60 mb-0.5 uppercase">
+            <p
+              className={`font-display text-[9px] tracking-[0.25em] mb-0.5 uppercase ${
+                isQuick ? "text-amber-400/60" : "text-primary/60"
+              }`}
+            >
               Final Answer
             </p>
             <p
-              className="font-mono text-base sm:text-xl text-primary font-bold break-all"
-              style={{ textShadow: "0 0 20px hsl(120 100% 54% / 0.6)" }}
+              className={`font-mono text-base sm:text-xl font-bold break-all ${
+                isQuick ? "text-amber-300" : "text-primary"
+              }`}
+              style={{
+                textShadow: isQuick
+                  ? "0 0 20px hsl(45 100% 60% / 0.5)"
+                  : "0 0 20px hsl(120 100% 54% / 0.6)",
+              }}
             >
               {finalAnswer}
             </p>
@@ -414,7 +593,7 @@ const SolutionPanel = ({
 /* ═══════════════════════════════════════════════════════════════
    TYPING INDICATOR
 ═══════════════════════════════════════════════════════════════ */
-const TypingIndicator = () => (
+const TypingIndicator = ({ mode }: { mode: ResponseMode }) => (
   <div className="flex gap-3 sm:gap-4 items-start max-w-3xl mx-auto px-3 sm:px-6 py-3 animate-fade-in-up">
     <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
       <Bot size={14} className="text-primary" />
@@ -423,12 +602,12 @@ const TypingIndicator = () => (
       {[0, 0.15, 0.3].map((delay, i) => (
         <span
           key={i}
-          className="w-2 h-2 rounded-full bg-primary/60"
+          className={`w-2 h-2 rounded-full ${mode === "quick" ? "bg-amber-400/60" : "bg-primary/60"}`}
           style={{ animation: `pulse 1.4s ease-in-out ${delay}s infinite` }}
         />
       ))}
       <span className="text-xs text-muted-foreground ml-1 font-display tracking-wider">
-        Computing...
+        {mode === "quick" ? "Computing fast..." : "Computing..."}
       </span>
     </div>
   </div>
@@ -466,7 +645,7 @@ const MessageBubble = ({ msg }: { msg: Message }) => {
     <div
       className={`group flex gap-2.5 sm:gap-4 max-w-3xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 animate-fade-in-up ${isUser ? "flex-row-reverse" : ""}`}
     >
-      {/* Avatar — hidden on very small phones to save space */}
+      {/* Avatar */}
       <div
         className={`hidden xs:flex flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full border items-center justify-center self-start mt-1 ${
           isUser
@@ -485,9 +664,9 @@ const MessageBubble = ({ msg }: { msg: Message }) => {
       <div
         className={`flex-1 min-w-0 ${isUser ? "flex flex-col items-end" : ""}`}
       >
-        {/* Label + time */}
+        {/* Label + time + mode badge for AI */}
         <div
-          className={`flex items-center gap-2 mb-1 sm:mb-1.5 ${isUser ? "flex-row-reverse" : ""}`}
+          className={`flex items-center gap-2 mb-1 sm:mb-1.5 flex-wrap ${isUser ? "flex-row-reverse" : ""}`}
         >
           <span className="font-display text-[10px] tracking-wider text-muted-foreground">
             {isUser ? "YOU" : "LOGICIA AI"}
@@ -515,6 +694,7 @@ const MessageBubble = ({ msg }: { msg: Message }) => {
               finalAnswer={msg.solution.finalAnswer}
               method={msg.solution.method}
               graphData={msg.solution.graphData}
+              mode={msg.solution.mode}
             />
           )}
         </div>
@@ -544,7 +724,6 @@ const EmptyState = ({ onPrompt }: { onPrompt: (p: string) => void }) => (
     <p className="text-xs sm:text-sm text-muted-foreground max-w-sm sm:max-w-md mb-6 sm:mb-8 leading-relaxed px-2">
       Solve equations, derivatives, integrals, and more — step by step.
     </p>
-    {/* Quick prompt cards — 1 col on mobile, 2 on larger */}
     <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 w-full max-w-xs xs:max-w-sm sm:max-w-md">
       {QUICK_PROMPTS.map((qp) => (
         <button
@@ -600,7 +779,17 @@ const Chat = () => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-  // Sidebar: always a drawer on mobile. On desktop, it can be toggled open/closed (pushes content).
+  /* Response mode — persisted */
+  const [responseMode, setResponseMode] = useState<ResponseMode>(() => {
+    try {
+      const saved = localStorage.getItem(MODE_KEY);
+      if (saved === "quick" || saved === "detailed") return saved;
+    } catch {
+      /* ignore */
+    }
+    return "detailed";
+  });
+
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     try {
       const saved = localStorage.getItem("logicia_sidebar_open");
@@ -610,7 +799,7 @@ const Chat = () => {
     }
     return typeof window !== "undefined" ? window.innerWidth >= 768 : true;
   });
-  // Separate flag so mobile overlay can show without layout shift on desktop
+
   const isMobile = () =>
     typeof window !== "undefined" && window.innerWidth < 768;
 
@@ -622,6 +811,7 @@ const Chat = () => {
   useEffect(() => {
     saveConversations(conversations);
   }, [conversations]);
+
   useEffect(() => {
     try {
       localStorage.setItem("logicia_sidebar_open", sidebarOpen.toString());
@@ -629,6 +819,14 @@ const Chat = () => {
       /* ignore */
     }
   }, [sidebarOpen]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(MODE_KEY, responseMode);
+    } catch {
+      /* ignore */
+    }
+  }, [responseMode]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -684,6 +882,7 @@ const Chat = () => {
         role: "user",
         content: trimmed,
         timestamp: new Date(),
+        mode: responseMode,
       };
       setConversations((prev) =>
         prev.map((c) => {
@@ -699,27 +898,31 @@ const Chat = () => {
       setInput("");
       setIsTyping(true);
 
-      setTimeout(
-        () => {
-          const { content, solution } = solveMath(trimmed);
-          const aiMsg: Message = {
-            id: Date.now() + 1,
-            role: "ai",
-            content,
-            solution,
-            timestamp: new Date(),
-          };
-          setConversations((prev) =>
-            prev.map((c) =>
-              c.id === convId ? { ...c, messages: [...c.messages, aiMsg] } : c,
-            ),
-          );
-          setIsTyping(false);
-        },
-        1500 + Math.random() * 500,
-      );
+      /* Simulate faster response for quick mode */
+      const delay =
+        responseMode === "quick"
+          ? 600 + Math.random() * 300
+          : 1500 + Math.random() * 500;
+
+      setTimeout(() => {
+        const { content, solution } = solveMath(trimmed, responseMode);
+        const aiMsg: Message = {
+          id: Date.now() + 1,
+          role: "ai",
+          content,
+          solution,
+          timestamp: new Date(),
+          mode: responseMode,
+        };
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === convId ? { ...c, messages: [...c.messages, aiMsg] } : c,
+          ),
+        );
+        setIsTyping(false);
+      }, delay);
     },
-    [activeId, isTyping],
+    [activeId, isTyping, responseMode],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -738,9 +941,7 @@ const Chat = () => {
     <div className="flex h-[100dvh] overflow-hidden bg-background text-foreground">
       <AnimatedBackground />
 
-      {/* ════ SIDEBAR ════
-          Mobile: fixed overlay drawer (always above content)
-          Desktop: part of flex flow — collapses via width transition */}
+      {/* ════ SIDEBAR ════ */}
       <aside
         className={`
           flex flex-col flex-shrink-0 border-r border-border/50
@@ -750,7 +951,6 @@ const Chat = () => {
           ${sidebarOpen ? "w-64 sm:w-72 translate-x-0" : "w-0 -translate-x-full md:translate-x-0"}
         `}
       >
-        {/* Inner wrapper keeps content from reflowing during width animation */}
         <div className="flex flex-col h-full w-64 sm:w-72 min-w-[16rem] sm:min-w-[18rem]">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3.5 sm:py-4 border-b border-border/50 flex-shrink-0">
@@ -841,7 +1041,7 @@ const Chat = () => {
         </div>
       </aside>
 
-      {/* Mobile overlay backdrop */}
+      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/60 md:hidden"
@@ -851,10 +1051,10 @@ const Chat = () => {
 
       {/* ════ MAIN AREA ════ */}
       <div className="relative flex flex-col flex-1 min-w-0">
+
         {/* Top bar */}
         <header className="flex items-center justify-between px-3 sm:px-5 h-13 sm:h-14 border-b border-border/40 bg-background/70 backdrop-blur flex-shrink-0 z-10 gap-2">
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            {/* Toggle — visible always */}
             {!sidebarOpen && (
               <button
                 onClick={() => setSidebarOpen(true)}
@@ -868,8 +1068,6 @@ const Chat = () => {
               {activeConv ? activeConv.title : "New Conversation"}
             </span>
           </div>
-
-          {/* Right actions */}
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {activeConv && activeConv.messages.length > 0 && (
               <button
@@ -899,13 +1097,13 @@ const Chat = () => {
               {activeConv?.messages.map((msg) => (
                 <MessageBubble key={msg.id} msg={msg} />
               ))}
-              {isTyping && <TypingIndicator />}
+              {isTyping && <TypingIndicator mode={responseMode} />}
               <div ref={bottomRef} />
             </div>
           )}
         </main>
 
-        {/* Quick prompt chips (empty state only) */}
+        {/* Quick prompt chips */}
         {(!activeConv || activeConv.messages.length === 0) && (
           <div
             className="px-3 sm:px-6 pb-2 flex gap-2 overflow-x-auto flex-shrink-0"
@@ -927,22 +1125,33 @@ const Chat = () => {
 
         {/* ── Input area ── */}
         <div className="flex-shrink-0 border-t border-border/40 bg-background/80 backdrop-blur px-3 sm:px-6 py-3 sm:py-4">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-3xl mx-auto space-y-2">
+
+            {/* ── MODE TOGGLE (sits just above the text field) ── */}
+            <div className="flex items-center justify-between px-1">
+              <ModeToggle mode={responseMode} onChange={setResponseMode} />
+            </div>
+
+            {/* Text input row */}
             <div
               className={`flex gap-2 items-end rounded-xl sm:rounded-2xl border bg-muted/10 px-3 sm:px-4 py-2.5 sm:py-3 transition-all duration-200 ${
                 isOverLimit
                   ? "border-destructive/60"
-                  : "border-border/60 focus-within:border-primary/50 focus-within:shadow-[0_0_0_3px_hsl(120_100%_54%/0.08)]"
+                  : responseMode === "quick"
+                    ? "border-amber-500/30 focus-within:border-amber-400/60 focus-within:shadow-[0_0_0_3px_hsl(45_100%_60%/0.08)]"
+                    : "border-border/60 focus-within:border-primary/50 focus-within:shadow-[0_0_0_3px_hsl(120_100%_54%/0.08)]"
               }`}
             >
               <textarea
                 ref={inputRef}
                 value={input}
-                onChange={(e) =>
-                  setInput(e.target.value.slice(0, MAX_CHARS + 20))
-                }
+                onChange={(e) => setInput(e.target.value.slice(0, MAX_CHARS + 20))}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask a math question…"
+                placeholder={
+                  responseMode === "quick"
+                    ? "Ask for a quick answer…"
+                    : "Ask a math question…"
+                }
                 rows={1}
                 className="flex-1 bg-transparent outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground font-body leading-relaxed max-h-[120px] py-0.5"
               />
@@ -959,16 +1168,23 @@ const Chat = () => {
                   disabled={isTyping || !input.trim() || isOverLimit}
                   className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
                     input.trim() && !isTyping && !isOverLimit
-                      ? "bg-primary text-primary-foreground hover:scale-105 active:scale-95 shadow-[0_0_15px_hsl(120_100%_54%/0.4)]"
+                      ? responseMode === "quick"
+                        ? "bg-amber-500 text-black hover:scale-105 active:scale-95 shadow-[0_0_15px_hsl(45_100%_60%/0.4)]"
+                        : "bg-primary text-primary-foreground hover:scale-105 active:scale-95 shadow-[0_0_15px_hsl(120_100%_54%/0.4)]"
                       : "bg-muted/30 text-muted-foreground cursor-not-allowed"
                   }`}
                 >
-                  <Send size={13} />
+                  {responseMode === "quick" ? (
+                    <Zap size={13} />
+                  ) : (
+                    <Send size={13} />
+                  )}
                 </button>
               </div>
             </div>
-            {/* Hint — only on sm+ screens */}
-            <p className="hidden sm:block text-[10px] text-muted-foreground/25 text-center mt-2 font-body">
+
+            {/* Hint text */}
+            <p className="hidden sm:block text-[10px] text-muted-foreground/25 text-center font-body">
               Press <kbd className="font-mono">Enter</kbd> to send ·{" "}
               <kbd className="font-mono">Shift+Enter</kbd> for new line
             </p>
