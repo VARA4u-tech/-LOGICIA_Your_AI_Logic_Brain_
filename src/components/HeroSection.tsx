@@ -63,7 +63,8 @@ const HeroSection = () => {
         </div>
 
         <a
-          href="#chat"
+          href="/chat"
+          onClick={(e) => { e.preventDefault(); window.location.href = "/chat"; }}
           className="group relative inline-flex items-center justify-center mt-10 sm:mt-12 md:mt-16 px-8 sm:px-10 md:px-12 py-3.5 sm:py-4 border border-primary/50 bg-primary/5 rounded font-display text-[10px] sm:text-xs md:text-sm tracking-[0.2em] sm:tracking-[0.3em] text-primary transition-all duration-300 hover:scale-[1.03] overflow-hidden"
         >
           {/* Hover glow background */}
@@ -71,7 +72,6 @@ const HeroSection = () => {
           
           <span className="relative z-10 group-hover:neon-text transition-all duration-300 flex items-center gap-2 sm:gap-3">
             START SOLVING
-            {/* Arrow icon */}
             <svg 
               className="w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-1" 
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
@@ -80,20 +80,10 @@ const HeroSection = () => {
             </svg>
           </span>
           
-          {/* Default outer box glow on hover happens via standard CSS */}
           <div className="absolute inset-0 border border-primary/0 group-hover:border-primary/80 group-hover:neon-box rounded transition-all duration-300" />
         </a>
 
       </div>
-      
-      {/* Scroll indicator (mouse or arrow) at bottom - moved outside content div for proper vp anchoring */}
-      <a 
-        href="#features" 
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 group opacity-40 hover:opacity-100 transition-all duration-500 animate-bounce cursor-pointer"
-      >
-        <span className="font-display text-[8px] sm:text-[9px] tracking-[0.4em] text-primary group-hover:neon-text transition-all">SCROLL</span>
-        <div className="w-px h-8 sm:h-12 bg-gradient-to-b from-primary via-primary/40 to-transparent group-hover:h-16 sm:group-hover:h-20 transition-all duration-500" />
-      </a>
     </section>
   );
 };

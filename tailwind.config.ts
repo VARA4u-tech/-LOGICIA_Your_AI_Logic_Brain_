@@ -5,6 +5,15 @@ export default {
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
+    /* Custom xs breakpoint for very small phones (< 480px) */
+    screens: {
+      xs: "480px",
+      sm: "640px",
+      md: "768px",
+      lg: "1024px",
+      xl: "1280px",
+      "2xl": "1536px",
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -16,6 +25,10 @@ export default {
       fontFamily: {
         display: ["Orbitron", "sans-serif"],
         body: ["Exo 2", "sans-serif"],
+      },
+      spacing: {
+        /* h-13 = 3.25rem — handy for the top bar */
+        "13": "3.25rem",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -77,10 +90,16 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "slow-pan": {
+          "0%":   { transform: "scale(1.05) translateX(0px)" },
+          "50%":  { transform: "scale(1.08) translateX(-8px)" },
+          "100%": { transform: "scale(1.05) translateX(0px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "slow-pan": "slow-pan 20s ease-in-out infinite",
       },
     },
   },
