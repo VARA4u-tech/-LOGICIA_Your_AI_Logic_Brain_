@@ -12,8 +12,12 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "sqlite+aiosqlite:///./logicia.db"
 
-    # CORS
-    FRONTEND_ORIGIN: str = "http://localhost:5173"
+    # CORS (Stored as comma-separated string for .env compatibility)
+    _FRONTEND_ORIGINS_STR: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080"
+
+    @property
+    def FRONTEND_ORIGINS(self) -> list[str]:
+        return [o.strip() for o in self._FRONTEND_ORIGINS_STR.split(",") if o.strip()]
 
     # AI (optional)
     OPENAI_API_KEY: str = ""
