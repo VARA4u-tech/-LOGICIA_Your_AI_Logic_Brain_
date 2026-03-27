@@ -450,54 +450,171 @@ const AboutContent = () => {
 };
 
 const ContactContent = () => {
+  const [status, setStatus] = useState<"idle" | "sending" | "success">("idle");
+  const [form, setForm] = useState({ name: "", email: "", inquiry: "General Support", message: "" });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("sending");
+    setTimeout(() => setStatus("success"), 1500);
+  };
+
+  if (status === "success") {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-20 space-y-6 animate-fade-in-up">
+        <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_hsl(120_100%_54%/0.15)]">
+          <CheckCircle size={32} className="text-primary" />
+        </div>
+        <h2 className="font-display text-2xl font-bold text-foreground tracking-tight">MESSAGE DISPATCHED</h2>
+        <p className="text-muted-foreground font-body text-sm max-w-sm mx-auto leading-relaxed">
+          Your transmission has been received by our mathematical advisory team. We typically synchronize within 24 standard business hours.
+        </p>
+        <button 
+          onClick={() => setStatus("idle")}
+          className="mt-8 px-8 py-3 rounded-xl border border-primary/30 text-[10px] font-display tracking-widest text-primary hover:bg-primary/5 transition-colors"
+        >
+          SEND ANOTHER TRANSMISSION
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-12">
-      <SectionHeader title="Support" subtitle="Inquiries regarding API access or pedagogical partnerships." />
-      <div className="grid md:grid-cols-2 gap-12">
-        <div className="space-y-8">
-          <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-4">
-             <h4 className="font-display text-xs tracking-widest text-primary uppercase">Institutional Access</h4>
-             <p className="text-xs text-muted-foreground leading-relaxed">We provide custom enterprise integrations for educational institutions and research facilities looking to leverage our symbolic engine.</p>
-             <Link to="#" className="inline-flex items-center gap-2 text-[10px] font-display tracking-widest text-primary hover:gap-3 transition-all">
-               LEARN MORE <ChevronRight size={12} />
-             </Link>
-          </div>
+    <div className="space-y-16 animate-fade-in-up">
+      <SectionHeader 
+        title="Connect & Support" 
+        subtitle="Access specialized support channels for technical inquiries, pedagogical integration, or institutional partnerships." 
+      />
+
+      <div className="grid lg:grid-cols-12 gap-12 items-start">
+        {/* Left Column: Info & Shortcuts */}
+        <div className="lg:col-span-5 space-y-10">
+          
           <div className="space-y-6">
-             {[
-               { icon: Mail, label: "COMMUNICATIONS", val: "solutions@logicia.ai" },
-               { icon: MapPin, label: "HEADQUARTERS", val: "San Francisco, CA" },
-             ].map((item, i) => (
-                <div key={i} className="flex items-center gap-4 group">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center group-hover:border-primary/40 transition-colors">
+            <h3 className="font-display text-[10px] tracking-[0.3em] text-muted-foreground/50 uppercase">Knowledge Base Shortcuts</h3>
+            <div className="grid grid-cols-1 gap-3">
+              {[
+                { label: "API Rate-Limiting Docs", icon: Zap },
+                { label: "Pedagogical Theory Whitepaper", icon: BookOpen },
+                { label: "Security & Data Governance", icon: Cpu }
+              ].map((faq) => (
+                <button key={faq.label} className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/5 hover:border-primary/40 hover:bg-primary/[0.02] transition-all group text-left">
+                  <div className="p-2 rounded-lg bg-white/5 border border-white/10 group-hover:border-primary/20 transition-colors">
+                    <faq.icon size={14} className="text-primary/60 group-hover:text-primary transition-colors" />
+                  </div>
+                  <span className="text-xs font-body text-foreground/80 group-hover:text-foreground transition-colors">{faq.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-6 pt-4">
+            <h3 className="font-display text-[10px] tracking-[0.3em] text-muted-foreground/50 uppercase">Global Communication</h3>
+            <div className="space-y-6">
+              {[
+                { label: "Press & Media", val: "media@logicia.ai", icon: Mail },
+                { label: "Institutional Relations", val: "partners@logicia.ai", icon: Globe },
+                { label: "Research Lab", val: "Palo Alto, California", icon: MapPin }
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-4 group">
+                  <div className="w-10 h-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center group-hover:neon-box group-hover:bg-primary/10 transition-all duration-300">
                     <item.icon size={16} className="text-primary/70" />
                   </div>
                   <div>
-                    <span className="block text-[8px] font-display tracking-[0.3em] text-muted-foreground/50 mb-0.5">{item.label}</span>
-                    <span className="text-xs font-body text-foreground/80">{item.val}</span>
+                    <span className="block text-[8px] font-display tracking-[0.3em] text-muted-foreground/40 mb-0.5 uppercase">{item.label}</span>
+                    <span className="text-xs font-body text-foreground/90">{item.val}</span>
                   </div>
                 </div>
-             ))}
+              ))}
+            </div>
           </div>
         </div>
-        
-        <div className="glass-strong rounded-2xl p-8 border border-white/10">
-           <div className="space-y-5">
+
+        {/* Right Column: Refined Contact Form */}
+        <div className="lg:col-span-7">
+          <form onSubmit={handleSubmit} className="glass-strong rounded-2xl p-8 border border-white/5 space-y-6 relative overflow-hidden group">
+            {/* Subtle corner accent */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-primary/10 transition-colors" />
+            
+            <div className="grid sm:grid-cols-2 gap-6 relative">
               <div className="space-y-2">
-                <label className="text-[10px] font-display tracking-widest text-muted-foreground uppercase">Identity</label>
-                <input type="text" placeholder="Full Name" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
+                <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">Identity</label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" size={14} />
+                  <input 
+                    required
+                    type="text" 
+                    placeholder="Full Name" 
+                    value={form.name}
+                    onChange={(e) => setForm({...form, name: e.target.value})}
+                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all" 
+                  />
+                </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-display tracking-widest text-muted-foreground uppercase">Email Address</label>
-                <input type="email" placeholder="email@address.com" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
+                <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">Electronic Mail</label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" size={14} />
+                  <input 
+                    required
+                    type="email" 
+                    placeholder="name@organization.com" 
+                    value={form.email}
+                    onChange={(e) => setForm({...form, email: e.target.value})}
+                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all" 
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-display tracking-widest text-muted-foreground uppercase">Message</label>
-                <textarea rows={4} placeholder="Describe your inquiry..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors resize-none" />
-              </div>
-              <button className="w-full py-4 bg-primary text-primary-foreground font-display text-[10px] tracking-[0.3em] rounded-xl hover:scale-[0.99] active:scale-95 transition-all shadow-lg shadow-primary/20">
-                INITIATE CONTACT
-              </button>
-           </div>
+            </div>
+
+            <div className="space-y-2 relative">
+              <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">Inquiry Vector</label>
+              <select 
+                value={form.inquiry}
+                onChange={(e) => setForm({...form, inquiry: e.target.value})}
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all appearance-none cursor-pointer"
+              >
+                <option value="General Support" className="bg-background">General Support Desk</option>
+                <option value="API Integration" className="bg-background">API Integration Support</option>
+                <option value="Institutional" className="bg-background">Institutional Partnerships</option>
+                <option value="Security" className="bg-background">Security & Vulnerability</option>
+              </select>
+              <ChevronRight className="absolute right-4 bottom-4 rotate-90 text-muted-foreground/40 pointer-events-none" size={14} />
+            </div>
+
+            <div className="space-y-2 relative">
+              <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">Message Breakdown</label>
+              <textarea 
+                required
+                rows={5} 
+                placeholder="Details of your inquiry..." 
+                value={form.message}
+                onChange={(e) => setForm({...form, message: e.target.value})}
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-5 py-4 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all resize-none" 
+              />
+            </div>
+
+            <button 
+              type="submit"
+              disabled={status === "sending"}
+              className={`w-full py-4 bg-primary text-primary-foreground font-display text-[10px] tracking-[0.3em] rounded-xl hover:scale-[0.99] active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3 disabled:opacity-50`}
+            >
+              {status === "sending" ? (
+                <>
+                  <Loader2 className="animate-spin" size={14} />
+                  SYNCHRONIZING...
+                </>
+              ) : (
+                <>
+                  <Send size={14} />
+                  INITIATE CONTACT
+                </>
+              )}
+            </button>
+            <p className="text-[9px] text-muted-foreground/40 text-center uppercase tracking-widest">
+              By initiating, you agree to our data governance protocols.
+            </p>
+          </form>
         </div>
       </div>
     </div>
