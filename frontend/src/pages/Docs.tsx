@@ -33,127 +33,127 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 
 /* ═══════════════════════════════════════════════════════════════
    DATA
-═══════════════════════════════════════════════════════════════ */
+   ═════════════════════════ */
 
 const features = [
   {
     icon: Triangle,
-    title: "ALGEBRA",
+    title: "Algebraic Intelligence",
     description:
-      "Solve equations, simplify expressions, factor polynomials, and work with inequalities instantly.",
-    highlights: ["Linear & Quadratic", "Polynomials", "Systems of Equations"],
+      "Advanced symbolic manipulation for solving linear, quadratic, and higher-order equations with literal precision.",
+    highlights: ["Polynomial Analysis", "Systems of Equations", "Inequality Solving"],
   },
   {
     icon: TrendingUp,
-    title: "CALCULUS",
+    title: "Calculus & Analysis",
     description:
-      "Derivatives, integrals, limits, and series — all computed with full step-by-step breakdowns.",
-    highlights: ["Derivatives", "Integrals", "Limits & Series"],
+      "Compute derivatives, definite and indefinite integrals, and limits with full step-by-step derivational logic.",
+    highlights: ["Partial Derivatives", "Integration by Parts", "Taylor Series"],
   },
   {
     icon: BarChart3,
-    title: "STATISTICS",
+    title: "Statistical Modeling",
     description:
-      "Probability, distributions, hypothesis testing, and regression analysis made simple.",
-    highlights: ["Probability", "Distributions", "Regression"],
+      "Evaluate probability distributions, perform hypothesis testing, and compute multidimensional regressions.",
+    highlights: ["Normal Distribution", "ANOVA", "Pearson Correlation"],
   },
   {
     icon: Hexagon,
-    title: "GEOMETRY",
+    title: "Projective Geometry",
     description:
-      "Areas, volumes, transformations, and proofs — visualized and solved with precision.",
-    highlights: ["2D & 3D Shapes", "Transformations", "Trigonometry"],
+      "Precise computation of spatial properties, transformations, and trigonometric relationships in N-dimensions.",
+    highlights: ["Vector Calculus", "Spherical Trig", "Matrix Transforms"],
+  },
+];
+
+const mathReference = [
+  {
+    category: "Arithmetic & Core",
+    items: [
+      { op: "Addition / Sub.", syntax: "x + y, x - y", example: "125 + 75" },
+      { op: "Multiplication", syntax: "x * y or x y", example: "12x" },
+      { op: "Division", syntax: "x / y or x \u00F7 y", example: "100 / 4" },
+      { op: "Exponentiation", syntax: "x^y or x**y", example: "x^2" },
+    ],
+  },
+  {
+    category: "Calculus",
+    items: [
+      { op: "Derivative", syntax: "diff(f, x) or d/dx", example: "derivative of x^2" },
+      { op: "Integral", syntax: "integrate(f, x) or \u222B", example: "integrate x dx" },
+      { op: "Limits", syntax: "limit(f, x, a)", example: "limit of 1/x as x -> 0" },
+    ],
+  },
+  {
+    category: "Linear Algebra",
+    items: [
+      { op: "Matrix Mul", syntax: "Matrix([[..]]) * ..", example: "Matrix multiplication" },
+      { op: "Determinant", syntax: "det(A)", example: "det of [[1,2],[3,4]]" },
+    ],
   },
 ];
 
 const stats = [
-  { icon: Zap, value: 1, suffix: "s", label: "Response Time", prefix: "<" },
-  { icon: Brain, value: 99.9, suffix: "%", label: "Accuracy Rate" },
-  { icon: Clock, value: 24, suffix: "/7", label: "Availability" },
-  { icon: Globe, value: 50, suffix: "+", label: "Math Topics" },
+  { icon: Zap, value: 0.8, suffix: "s", label: "Latency", prefix: "<" },
+  { icon: Brain, value: 99.9, suffix: "%", label: "Symbolic Accuracy" },
+  { icon: Globe, value: 120, suffix: "+", label: "Mathematical Functions" },
+  { icon: Cpu, value: 1.2, suffix: "B", label: "Parameters" },
 ];
 
 const steps = [
   {
     icon: MessageSquare,
     step: "01",
-    title: "INPUT",
+    title: "Problem Ingestion",
     description:
-      "You type any math problem — from basic arithmetic to advanced calculus — in natural language or math notation.",
-    example: '"Solve x² − 5x + 6 = 0"',
+      "Submit queries via natural language or LaTeX notation. The system handles ambiguous phrasing with intent-matching.",
+    example: '"Differentiate cos(x^2)"',
   },
   {
     icon: Cpu,
     step: "02",
-    title: "CLASSIFY",
+    title: "Semantic Analysis",
     description:
-      "The AI engine instantly identifies the problem type — Algebra, Calculus, Statistics, or Geometry — and routes it correctly.",
-    example: "→ Quadratic Algebra",
+      "The query is parsed into a syntax tree, classifying the mathematical domain and identifying constants vs variables.",
+    example: "Class: Calculus | Var: x",
   },
   {
     icon: FlaskConical,
     step: "03",
-    title: "SOLVE",
+    title: "Symbolic Execution",
     description:
-      "A symbolic math engine computes the accurate result. No AI guessing — pure mathematical precision guaranteed.",
-    example: "x₁ = 3, x₂ = 2",
+      "Our proprietary engine solves the problem using symbolic logic, avoiding numerical rounding errors of LLMs.",
+    example: "Ans: -2x sin(x^2)",
   },
   {
     icon: BookOpen,
     step: "04",
-    title: "EXPLAIN",
+    title: "Pedagogical Refactoring",
     description:
-      "AI converts the raw solution into step-by-step human-readable explanations, just like a real math tutor would.",
-    example: '"Apply the quadratic formula..."',
+      "The raw solution is transformed into a structured pedagogical breakdown, identifying key theorems applied.",
+    example: '"Apply the Chain Rule..."',
   },
   {
     icon: BarChart2,
     step: "05",
-    title: "VISUALIZE",
+    title: "Visual Synthesis",
     description:
-      "Where applicable, graphs and visual aids are generated to help you truly understand the problem intuitively.",
-    example: "Graph of f(x) = x² − 5x + 6",
+      "Mathematical functions are sampled and rendered into interactive time-series or coordinate graphs for intuition.",
+    example: "Interactive Plot Generation",
   },
   {
     icon: Send,
     step: "06",
-    title: "DELIVER",
+    title: "Response Delivery",
     description:
-      "The complete solution — steps, explanation, and visuals — is delivered back instantly in the chat interface.",
-    example: "< 1 second response",
+      "The final payload is delivered via a low-latency websocket or REST interface with full LaTeX support.",
+    example: "JSON/LaTeX Payload",
   },
-];
-
-const highlights = [
-  {
-    icon: Cpu,
-    title: "AI-POWERED ENGINE",
-    desc: "Advanced neural architecture processes complex equations in milliseconds with near-perfect accuracy.",
-  },
-  {
-    icon: Zap,
-    title: "INSTANT SOLUTIONS",
-    desc: "Get complete step-by-step breakdowns the moment you submit your problem. No waiting.",
-  },
-  {
-    icon: BookOpen,
-    title: "LEARN AS YOU SOLVE",
-    desc: "Every solution includes explanations so you understand the method, not just the answer.",
-  },
-];
-
-const tags = [
-  "Neural Networks",
-  "Real-Time Processing",
-  "LaTeX Rendering",
-  "Step-by-Step",
-  "Open Source",
-  "Mobile-First",
 ];
 
 /* ═══════════════════════════════════════════════════════════════
    HOOKS
-═══════════════════════════════════════════════════════════════ */
+   ═════════════════════════ */
 
 const useCountUp = (target: number, duration = 1600, active = false) => {
   const [count, setCount] = useState(0);
@@ -174,7 +174,7 @@ const useCountUp = (target: number, duration = 1600, active = false) => {
 
 /* ═══════════════════════════════════════════════════════════════
    SUB-COMPONENTS
-═══════════════════════════════════════════════════════════════ */
+   ═════════════════════════ */
 
 const StatCard = ({
   icon: Icon,
@@ -197,16 +197,18 @@ const StatCard = ({
   const display = value % 1 === 0 ? Math.round(animated) : animated.toFixed(1);
   return (
     <div
-      className={`text-center transition-all duration-500 ${active ? "animate-fade-in-up" : "opacity-0"}`}
+      className={`text-center transition-all duration-700 ${active ? "animate-fade-in-up opacity-100" : "opacity-0"}`}
       style={{ animationDelay: `${delay}s`, animationFillMode: "forwards" }}
     >
-      <Icon size={18} className="text-primary mx-auto mb-2" />
-      <div className="font-display text-2xl sm:text-3xl font-bold text-primary neon-text tabular-nums">
-        {prefix}
-        {display}
-        {suffix}
+      <div className="flex justify-center mb-3">
+        <div className="p-2 rounded-lg bg-primary/5 border border-primary/20">
+          <Icon size={16} className="text-primary" />
+        </div>
       </div>
-      <div className="text-[10px] sm:text-xs text-muted-foreground tracking-wider font-body mt-1">
+      <div className="font-display text-xl sm:text-2xl font-bold text-primary tabular-nums tracking-tight">
+        {prefix}{display}{suffix}
+      </div>
+      <div className="text-[10px] sm:text-[11px] text-muted-foreground/60 tracking-[0.1em] font-display mt-1 uppercase">
         {label}
       </div>
     </div>
@@ -215,7 +217,7 @@ const StatCard = ({
 
 /* ═══════════════════════════════════════════════════════════════
    SECTION RENDERERS
-═══════════════════════════════════════════════════════════════ */
+   ═════════════════════════ */
 
 const FeaturesContent = () => {
   const [visible, setVisible] = useState(false);
@@ -224,58 +226,47 @@ const FeaturesContent = () => {
   const statsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.05 },
-    );
+    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.1 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
 
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) setStatsVisible(true);
-      },
-      { threshold: 0.3 },
-    );
+    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setStatsVisible(true), { threshold: 0.2 });
     if (statsRef.current) obs.observe(statsRef.current);
     return () => obs.disconnect();
   }, []);
 
   return (
-    <div ref={ref}>
-      <SectionHeader
-        title="CAPABILITIES"
-        subtitle="Powered by advanced AI to solve any mathematical challenge"
+    <div ref={ref} className="space-y-16">
+      <SectionHeader 
+        title="Technical Capabilities" 
+        subtitle="A high-performance mathematical engine designed for accuracy and pedagogical clarity." 
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-12">
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {features.map((feat, i) => (
           <div
             key={feat.title}
-            className={`group glass-strong rounded-xl p-5 sm:p-6 transition-all duration-500 hover:border-primary/40 hover:neon-box ${visible ? "animate-fade-in-up opacity-100" : "opacity-0"}`}
-            style={{
-              animationDelay: `${i * 0.12}s`,
-              animationFillMode: "forwards",
-            }}
+            className={`group glass-strong rounded-2xl p-6 transition-all duration-500 hover:border-primary/40 hover:bg-primary/[0.02] ${visible ? "animate-fade-in-up opacity-100" : "opacity-0"}`}
+            style={{ animationDelay: `${i * 0.1}s`, animationFillMode: "forwards" }}
           >
-            <div className="w-10 h-10 rounded-lg border border-primary/30 flex items-center justify-center mb-4 group-hover:neon-box group-hover:bg-primary/10 transition-all duration-300">
-              <feat.icon size={18} className="text-primary" />
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-12 h-12 rounded-xl border border-primary/20 bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                <feat.icon size={20} className="text-primary" />
+              </div>
+              <div>
+                <h3 className="font-display text-sm tracking-widest text-primary mb-1 uppercase">
+                  {feat.title}
+                </h3>
+                <p className="text-[11px] text-muted-foreground font-body leading-relaxed">
+                  {feat.description}
+                </p>
+              </div>
             </div>
-            <h3 className="font-display text-xs tracking-[0.2em] text-primary mb-2">
-              {feat.title}
-            </h3>
-            <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed font-body mb-3">
-              {feat.description}
-            </p>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2 mt-4">
               {feat.highlights.map((h) => (
-                <span
-                  key={h}
-                  className="text-[9px] sm:text-[10px] font-display tracking-wider px-2 py-1 rounded border border-primary/20 text-primary/70"
-                >
+                <span key={h} className="text-[9px] font-display tracking-widest px-2.5 py-1.5 rounded-lg bg-black/40 border border-primary/10 text-primary/60 uppercase">
                   {h}
                 </span>
               ))}
@@ -283,18 +274,59 @@ const FeaturesContent = () => {
           </div>
         ))}
       </div>
-      <div
-        ref={statsRef}
-        className="glass rounded-xl p-5 sm:p-6 grid grid-cols-2 sm:grid-cols-4 gap-5"
-      >
+
+      <div ref={statsRef} className="glass rounded-2xl p-8 grid grid-cols-2 lg:grid-cols-4 gap-8 border border-white/5">
         {stats.map((s, i) => (
-          <StatCard
-            key={s.label}
-            {...s}
-            active={statsVisible}
-            delay={i * 0.12}
-          />
+          <StatCard key={s.label} {...s} active={statsVisible} delay={i * 0.1} />
         ))}
+      </div>
+    </div>
+  );
+};
+
+const ReferenceContent = () => {
+  return (
+    <div className="space-y-12 animate-fade-in-up">
+      <SectionHeader 
+        title="Mathematical Reference" 
+        subtitle="Syntax guide for operations, functions, and solvers supported by the engine." 
+      />
+      
+      <div className="space-y-8">
+        {mathReference.map((cat) => (
+          <div key={cat.category} className="space-y-4">
+            <h3 className="font-display text-xs tracking-[0.2em] text-primary/60 uppercase pl-1 border-l-2 border-primary/30">
+              {cat.category}
+            </h3>
+            <div className="overflow-hidden rounded-xl border border-white/5 bg-black/20">
+              <table className="w-full text-left text-[11px] font-body transition-colors">
+                <thead className="bg-white/5 text-muted-foreground font-display tracking-widest text-[9px] uppercase">
+                  <tr>
+                    <th className="px-4 py-3">Operation</th>
+                    <th className="px-4 py-3">Syntax</th>
+                    <th className="px-4 py-3">Example</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {cat.items.map((item) => (
+                    <tr key={item.op} className="hover:bg-white/[0.02] transition-colors group">
+                      <td className="px-4 py-3 text-foreground/80 group-hover:text-primary transition-colors">{item.op}</td>
+                      <td className="px-4 py-3 font-mono text-primary/70">{item.syntax}</td>
+                      <td className="px-4 py-3 italic text-muted-foreground">{item.example}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 text-amber-200/60 text-[10px] leading-relaxed flex gap-3">
+        <Zap size={14} className="text-amber-500 flex-shrink-0 mt-0.5" />
+        <p>
+          <strong className="text-amber-400">Pro Tip:</strong> You can often type in plain natural English like "solve for x in x plus five equals ten" and the system will auto-canonicalize the query.
+        </p>
       </div>
     </div>
   );
@@ -304,49 +336,58 @@ const HowItWorksContent = () => {
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.05 },
-    );
+    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.1 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
+
   return (
-    <div ref={ref}>
-      <SectionHeader
-        title="HOW IT WORKS"
-        subtitle="A six-stage intelligent pipeline — from your input to the perfect answer"
+    <div ref={ref} className="space-y-16">
+      <SectionHeader 
+        title="Processing Pipeline" 
+        subtitle="An intelligent multi-stage architecture delivering precision-grade mathematical results." 
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {steps.map((s, i) => (
-          <div
-            key={s.step}
-            className={`group relative glass-strong rounded-xl p-5 sm:p-6 transition-all duration-500 hover:border-primary/40 hover:neon-box ${visible ? "animate-fade-in-up opacity-100" : "opacity-0"}`}
-            style={{
-              animationDelay: `${i * 0.1}s`,
-              animationFillMode: "forwards",
-            }}
-          >
-            <span className="absolute top-4 right-4 font-display text-4xl font-black text-primary/5 select-none group-hover:text-primary/10 transition-colors">
-              {s.step}
-            </span>
-            <div className="w-10 h-10 rounded-lg border border-primary/30 flex items-center justify-center mb-4 group-hover:neon-box group-hover:bg-primary/10 transition-all duration-300">
-              <s.icon size={16} className="text-primary" />
-            </div>
-            <h3 className="font-display text-xs tracking-[0.25em] text-primary mb-2">
-              {s.title}
-            </h3>
-            <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed font-body mb-3">
-              {s.description}
-            </p>
-            <div className="inline-flex items-center gap-1.5 font-mono text-[9px] sm:text-[10px] px-2.5 py-1 rounded-md bg-primary/5 border border-primary/20 text-primary/70">
-              <span className="w-1 h-1 rounded-full bg-primary/60 flex-shrink-0" />
-              {s.example}
-            </div>
-          </div>
-        ))}
+      
+      <div className="relative">
+        {/* Connection line for desktop */}
+        <div className="absolute left-[50%] top-0 bottom-0 w-px bg-gradient-to-b from-primary/30 via-primary/5 to-transparent hidden lg:block" />
+        
+        <div className="space-y-12">
+          {steps.map((s, i) => {
+            const isEven = i % 2 === 0;
+            return (
+              <div 
+                key={s.step} 
+                className={`flex flex-col lg:flex-row items-center gap-8 ${isEven ? "" : "lg:flex-row-reverse"} ${visible ? "animate-fade-in-up opacity-100" : "opacity-0"}`}
+                style={{ animationDelay: `${i * 0.12}s`, animationFillMode: "forwards" }}
+              >
+                <div className="flex-1 w-full">
+                  <div className={`glass-strong rounded-2xl p-6 transition-all duration-500 hover:border-primary/40 group relative overflow-hidden`}>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/5 border border-primary/20 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                        <s.icon size={18} className="text-primary" />
+                      </div>
+                      <h4 className="font-display text-xs tracking-widest text-primary uppercase">
+                        {s.title}
+                      </h4>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed font-body mb-4">
+                      {s.description}
+                    </p>
+                    <div className="font-mono text-[9px] px-3 py-2 rounded-lg bg-black/40 border border-white/5 text-primary/60 flex items-center gap-2">
+                       <span className="w-1 h-1 rounded-full bg-primary/40 animate-pulse" />
+                       {s.example}
+                    </div>
+                  </div>
+                </div>
+                <div className="hidden lg:flex w-12 h-12 rounded-full border border-primary/30 bg-background z-10 items-center justify-center font-display text-xs text-primary shadow-lg shadow-primary/20">
+                  {s.step}
+                </div>
+                <div className="flex-1 hidden lg:block" />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -356,87 +397,52 @@ const AboutContent = () => {
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.05 },
-    );
+    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.1 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
+
   return (
-    <div ref={ref}>
-      <SectionHeader
-        title="ABOUT"
-        subtitle="The future of mathematical problem solving"
-      />
-      <div
-        className={`grid md:grid-cols-2 gap-8 sm:gap-10 items-start ${visible ? "animate-fade-in-up" : "opacity-0"}`}
-      >
-        <div className="space-y-5">
-          <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-body">
-            LOGICIA is a next-generation intelligent math solver built to handle
-            everything from basic arithmetic to advanced calculus. Powered by a
-            hybrid AI + symbolic engine, it delivers instant, accurate solutions
-            with detailed step-by-step explanations.
-          </p>
-          <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-body">
-            Whether you're a student preparing for exams, a professional
-            engineer, or simply curious — our AI breaks down complex problems
-            into clear, understandable steps. No more guessing. No more
-            struggling. Just answers.
-          </p>
-          <div className="flex flex-wrap gap-2 pt-1">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-[9px] sm:text-[10px] font-display tracking-[0.15em] px-2.5 py-1 rounded-sm border border-primary/25 text-primary/80 hover:border-primary/50 hover:text-primary transition-colors duration-200"
-              >
-                {tag.toUpperCase()}
-              </span>
-            ))}
+    <div ref={ref} className="space-y-12 max-w-3xl">
+      <SectionHeader title="Origins" subtitle="The mission behind Logicia." />
+      <div className={`space-y-6 text-foreground/70 leading-relaxed font-body text-sm ${visible ? "animate-fade-in-up" : "opacity-0"}`}>
+        <p>
+          LOGICIA was conceived at the intersection of symbolic logic and neural language processing. Traditional AI models often struggle with "mathematical hallucination"—where the output appears correct but lacks structural validity. 
+        </p>
+        <p>
+          Our mission is to bridge this gap by using Large Language Models exclusively for pedagogical explanation, while delegating the actual computation to a deterministic symbolic math engine. This ensures that every step provided to the user is not just "likely," but mathematically proven.
+        </p>
+        
+        <div className="pt-6 grid grid-cols-2 gap-4">
+          <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5">
+            <h5 className="font-display text-[10px] tracking-widest text-primary mb-2 uppercase">Our Vision</h5>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">To democratize high-level mathematical expertise for students and researchers globally.</p>
           </div>
-          <div className="flex items-center gap-3 pt-2">
-            {[
-              { icon: Github, label: "GitHub" },
-              { icon: Twitter, label: "Twitter" },
-              { icon: Linkedin, label: "LinkedIn" },
-            ].map(({ icon: Icon, label }) => (
-              <a
-                key={label}
-                href="#"
-                aria-label={label}
-                className="w-9 h-9 rounded border border-primary/25 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 hover:neon-box transition-all duration-300"
-              >
-                <Icon size={15} />
-              </a>
-            ))}
+          <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5">
+            <h5 className="font-display text-[10px] tracking-widest text-primary mb-2 uppercase">Integrity</h5>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">Commitment to open standards, data privacy, and mathematical rigor.</p>
           </div>
         </div>
-        <div className="space-y-4">
-          {highlights.map((item, i) => (
-            <div
-              key={item.title}
-              className={`glass-strong rounded-xl p-4 sm:p-5 flex gap-3 sm:gap-4 items-start transition-all duration-500 hover:border-primary/40 hover:neon-box ${visible ? "animate-fade-in-up" : "opacity-0"}`}
-              style={{
-                animationDelay: `${(i + 1) * 0.15}s`,
-                animationFillMode: "forwards",
-              }}
-            >
-              <div className="w-9 h-9 rounded border border-primary/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <item.icon size={16} className="text-primary" />
-              </div>
-              <div>
-                <h4 className="font-display text-[10px] tracking-[0.2em] text-primary mb-1">
-                  {item.title}
-                </h4>
-                <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed font-body">
-                  {item.desc}
-                </p>
-              </div>
-            </div>
-          ))}
+
+        <div className="pt-8 flex items-center gap-6">
+          <div className="flex flex-col items-center gap-2">
+             <div className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center">
+                <Github size={18} className="text-primary/70" />
+             </div>
+             <span className="text-[9px] font-display tracking-widest text-muted-foreground">REPOS</span>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+             <div className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center">
+                <Linkedin size={18} className="text-primary/70" />
+             </div>
+             <span className="text-[9px] font-display tracking-widest text-muted-foreground">UPDATES</span>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+             <div className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center">
+                <Twitter size={18} className="text-primary/70" />
+             </div>
+             <span className="text-[9px] font-display tracking-widest text-muted-foreground">SOCIAL</span>
+          </div>
         </div>
       </div>
     </div>
@@ -444,147 +450,63 @@ const AboutContent = () => {
 };
 
 const ContactContent = () => {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState<"idle" | "submitting" | "success">(
-    "idle",
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (status !== "idle") return;
-    setStatus("submitting");
-    setTimeout(() => {
-      setStatus("success");
-      setForm({ name: "", email: "", message: "" });
-      setTimeout(() => setStatus("idle"), 3000);
-    }, 1200);
-  };
-
-  const btnContent =
-    status === "submitting" ? (
-      <>
-        <Loader2 size={14} className="animate-spin" /> SENDING...
-      </>
-    ) : status === "success" ? (
-      <>
-        <CheckCircle size={14} /> MESSAGE SENT
-      </>
-    ) : (
-      <>
-        SEND MESSAGE{" "}
-        <Send
-          size={14}
-          className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
-        />
-      </>
-    );
-
   return (
-    <div>
-      <SectionHeader title="CONTACT" subtitle="Get in touch with the team" />
-      <div className="grid md:grid-cols-2 gap-10 md:gap-14 items-start">
-        <div className="space-y-8 order-2 md:order-1">
-          <p className="text-xs sm:text-sm text-foreground/80 leading-loose font-body bg-primary/5 p-5 rounded-xl border border-primary/10">
-            Have questions, feedback, or partnership inquiries? We'd love to
-            hear from you. Fill out the form or reach out directly, and our team
-            will respond within 24 hours.
-          </p>
-          <div className="space-y-5">
-            {[
-              { icon: Mail, label: "EMAIL", value: "hello@logicia.ai" },
-              { icon: Phone, label: "PHONE", value: "+1 (555) 000-1234" },
-              { icon: MapPin, label: "LOCATION", value: "San Francisco, CA" },
-            ].map((item, i) => (
-              <div
-                key={item.label}
-                className="flex items-center gap-4 group animate-fade-in-up"
-                style={{
-                  animationDelay: `${i * 0.1}s`,
-                  animationFillMode: "both",
-                }}
-              >
-                <div className="w-10 h-10 rounded-xl border border-primary/30 bg-primary/5 flex items-center justify-center flex-shrink-0 group-hover:neon-box group-hover:bg-primary/20 transition-all duration-300">
-                  <item.icon size={16} className="text-primary" />
+    <div className="space-y-12">
+      <SectionHeader title="Support" subtitle="Inquiries regarding API access or pedagogical partnerships." />
+      <div className="grid md:grid-cols-2 gap-12">
+        <div className="space-y-8">
+          <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-4">
+             <h4 className="font-display text-xs tracking-widest text-primary uppercase">Institutional Access</h4>
+             <p className="text-xs text-muted-foreground leading-relaxed">We provide custom enterprise integrations for educational institutions and research facilities looking to leverage our symbolic engine.</p>
+             <Link to="#" className="inline-flex items-center gap-2 text-[10px] font-display tracking-widest text-primary hover:gap-3 transition-all">
+               LEARN MORE <ChevronRight size={12} />
+             </Link>
+          </div>
+          <div className="space-y-6">
+             {[
+               { icon: Mail, label: "COMMUNICATIONS", val: "solutions@logicia.ai" },
+               { icon: MapPin, label: "HEADQUARTERS", val: "San Francisco, CA" },
+             ].map((item, i) => (
+                <div key={i} className="flex items-center gap-4 group">
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center group-hover:border-primary/40 transition-colors">
+                    <item.icon size={16} className="text-primary/70" />
+                  </div>
+                  <div>
+                    <span className="block text-[8px] font-display tracking-[0.3em] text-muted-foreground/50 mb-0.5">{item.label}</span>
+                    <span className="text-xs font-body text-foreground/80">{item.val}</span>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-display text-[9px] tracking-[0.25em] text-primary/70 mb-1">
-                    {item.label}
-                  </p>
-                  <p className="text-xs sm:text-sm text-foreground/90 font-body group-hover:text-primary transition-colors">
-                    {item.value}
-                  </p>
-                </div>
-              </div>
-            ))}
+             ))}
           </div>
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className="glass-strong rounded-2xl p-6 sm:p-8 space-y-5 order-1 md:order-2 border border-primary/20 hover:border-primary/40 transition-colors duration-500"
-        >
-          {[
-            {
-              icon: User,
-              type: "text",
-              name: "name",
-              placeholder: "Your Name",
-            },
-            {
-              icon: Mail,
-              type: "email",
-              name: "email",
-              placeholder: "Email Address",
-            },
-          ].map(({ icon: Icon, type, name, placeholder }) => (
-            <div key={name} className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
-                <Icon size={15} />
+        
+        <div className="glass-strong rounded-2xl p-8 border border-white/10">
+           <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-display tracking-widest text-muted-foreground uppercase">Identity</label>
+                <input type="text" placeholder="Full Name" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
               </div>
-              <input
-                type={type}
-                required
-                placeholder={placeholder}
-                value={form[name as "name" | "email"]}
-                onChange={(e) => setForm({ ...form, [name]: e.target.value })}
-                className="w-full bg-muted/30 border border-border rounded-xl pl-11 pr-4 py-3 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:neon-box focus:bg-primary/5 transition-all duration-300 font-body"
-              />
-            </div>
-          ))}
-          <div className="relative group">
-            <div className="absolute top-3.5 left-0 pl-4 pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
-              <MessageSquare size={15} />
-            </div>
-            <textarea
-              required
-              placeholder="How can we help you?"
-              rows={5}
-              value={form.message}
-              onChange={(e) => setForm({ ...form, message: e.target.value })}
-              className="w-full bg-muted/30 border border-border rounded-xl pl-11 pr-4 py-3 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:neon-box focus:bg-primary/5 transition-all duration-300 font-body resize-none"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={status !== "idle"}
-            className={`w-full py-4 border rounded-xl font-display text-[10px] sm:text-xs tracking-[0.3em] transition-all duration-300 flex items-center justify-center gap-2.5 group relative overflow-hidden ${
-              status === "success"
-                ? "bg-primary text-primary-foreground border-primary neon-box cursor-default"
-                : status === "submitting"
-                  ? "bg-primary/20 text-primary border-primary cursor-wait"
-                  : "bg-transparent text-primary border-primary/50 hover:bg-primary/10 hover:border-primary hover:neon-box hover:scale-[1.02]"
-            }`}
-          >
-            {btnContent}
-          </button>
-        </form>
+              <div className="space-y-2">
+                <label className="text-[10px] font-display tracking-widest text-muted-foreground uppercase">Email Address</label>
+                <input type="email" placeholder="email@address.com" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-display tracking-widest text-muted-foreground uppercase">Message</label>
+                <textarea rows={4} placeholder="Describe your inquiry..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors resize-none" />
+              </div>
+              <button className="w-full py-4 bg-primary text-primary-foreground font-display text-[10px] tracking-[0.3em] rounded-xl hover:scale-[0.99] active:scale-95 transition-all shadow-lg shadow-primary/20">
+                INITIATE CONTACT
+              </button>
+           </div>
+        </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 /* ═══════════════════════════════════════════════════════════════
    SHARED SECTION HEADER
-═══════════════════════════════════════════════════════════════ */
+   ═════════════════════════ */
 const SectionHeader = ({
   title,
   subtitle,
@@ -592,23 +514,26 @@ const SectionHeader = ({
   title: string;
   subtitle: string;
 }) => (
-  <div className="mb-10 sm:mb-14">
-    <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-primary neon-text mb-3">
-      {title}
-    </h2>
-    <p className="text-muted-foreground text-xs sm:text-sm font-body tracking-wider">
+  <div className="relative">
+    <div className="flex items-center gap-4 mb-3">
+      <div className="w-1 h-8 bg-primary rounded-full shadow-[0_0_10px_hsl(120_100%_54%)]" />
+      <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+        {title.toUpperCase()}
+      </h2>
+    </div>
+    <p className="text-muted-foreground/80 text-xs sm:text-sm font-body max-w-2xl leading-relaxed">
       {subtitle}
     </p>
-    <div className="mt-4 h-px bg-gradient-to-r from-primary/40 via-primary/10 to-transparent" />
   </div>
 );
 
 /* ═══════════════════════════════════════════════════════════════
    SIDEBAR NAV CONFIG
-═══════════════════════════════════════════════════════════════ */
+   ═════════════════════════ */
 const sections = [
-  { id: "features", label: "Features", icon: Zap },
-  { id: "how-it-works", label: "How It Works", icon: Cpu },
+  { id: "features", label: "Capabilities", icon: Zap },
+  { id: "reference", label: "Math Reference", icon: BookOpen },
+  { id: "how-it-works", label: "Architecture", icon: Cpu },
   { id: "about", label: "About", icon: Brain },
   { id: "contact", label: "Contact", icon: MessageSquare },
 ] as const;
@@ -617,142 +542,114 @@ type SectionId = (typeof sections)[number]["id"];
 
 /* ═══════════════════════════════════════════════════════════════
    MAIN PAGE
-═══════════════════════════════════════════════════════════════ */
+   ═════════════════════════ */
 const Docs = () => {
   const [active, setActive] = useState<SectionId>("features");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const renderContent = () => {
     switch (active) {
-      case "features":
-        return <FeaturesContent />;
-      case "how-it-works":
-        return <HowItWorksContent />;
-      case "about":
-        return <AboutContent />;
-      case "contact":
-        return <ContactContent />;
+      case "features": return <FeaturesContent />;
+      case "reference": return <ReferenceContent />;
+      case "how-it-works": return <HowItWorksContent />;
+      case "about": return <AboutContent />;
+      case "contact": return <ContactContent />;
     }
   };
 
   const activeSection = sections.find((s) => s.id === active)!;
 
   return (
-    <div className="relative min-h-screen font-body">
+    <div className="relative min-h-screen bg-background font-body text-foreground">
       <AnimatedBackground />
 
       {/* ── Top bar ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass-strong border-b border-border/50 h-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
-          {/* Left: back + brand */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <Link
-              to="/"
-              className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors group"
-              aria-label="Back to home"
-            >
-              <ArrowLeft
-                size={15}
-                className="group-hover:-translate-x-0.5 transition-transform"
-              />
-              <span className="font-display text-[10px] tracking-[0.2em] hidden sm:inline">
-                HOME
-              </span>
+      <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 h-16">
+        <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <img src="/logo.png" alt="Logicia" className="w-6 h-6" />
+              <span className="font-display text-sm font-bold tracking-[0.2em] text-primary">LOGICIA</span>
             </Link>
-            <span className="text-border">|</span>
-            <span className="font-display text-xs sm:text-sm tracking-wider text-primary neon-text">
-              LOGICIA DOCS
-            </span>
+            <div className="h-4 w-px bg-white/10 hidden sm:block" />
+            <span className="text-[10px] font-display tracking-widest text-muted-foreground hidden sm:block">DOCUMENTATION V1.0.4</span>
           </div>
 
-          {/* Right: breadcrumb + mobile menu toggle */}
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:flex items-center gap-1.5 text-muted-foreground text-[10px] font-display tracking-wider">
-              <ChevronRight size={12} className="text-primary/40" />
-              {activeSection.label.toUpperCase()}
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              <span className="text-[9px] font-display tracking-widest text-primary/80 uppercase">{activeSection.label}</span>
+            </div>
             <button
               onClick={() => setSidebarOpen((p) => !p)}
-              className="md:hidden p-2 text-primary border border-primary/20 rounded-lg hover:bg-primary/10 hover:border-primary/40 transition-all"
-              aria-label="Toggle sidebar"
+              className="md:hidden p-2 text-primary border border-primary/20 rounded-lg hover:bg-primary/10 transition-all"
             >
-              {sidebarOpen ? <X size={16} /> : <Menu size={16} />}
+              {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
         </div>
       </header>
 
       {/* ── Layout ── */}
-      <div className="flex pt-14 min-h-screen">
+      <div className="flex pt-16 min-h-screen">
         {/* ── Sidebar ── */}
         <aside
-          className={`fixed md:sticky md:top-14 left-0 top-14 z-40 h-[calc(100vh-3.5rem)] w-64 glass-strong border-r border-border/50 transform transition-transform duration-300 flex-shrink-0
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+          className={`fixed md:sticky md:top-16 left-0 z-40 h-[calc(100vh-4rem)] w-64 glass border-r border-white/5 transform transition-transform duration-500 ease-in-out md:translate-x-0
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
-          <nav className="p-5 space-y-1 h-full overflow-y-auto">
-            <p className="font-display text-[9px] tracking-[0.3em] text-muted-foreground/50 px-3 pb-3 pt-1">
-              DOCUMENTATION
-            </p>
-            {sections.map(({ id, label, icon: Icon }) => {
-              const isActive = active === id;
-              return (
-                <button
-                  key={id}
-                  onClick={() => {
-                    setActive(id);
-                    setSidebarOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 group ${
-                    isActive
-                      ? "bg-primary/10 text-primary border border-primary/30 neon-box"
-                      : "text-muted-foreground hover:text-primary hover:bg-primary/5 border border-transparent"
-                  }`}
-                >
-                  <Icon
-                    size={15}
-                    className={
+          <nav className="p-6 flex flex-col h-full">
+            <div className="space-y-1 flex-1">
+              <div className="px-3 mb-6">
+                 <span className="text-[9px] font-display tracking-[0.3em] text-muted-foreground/40 uppercase">Resources</span>
+              </div>
+              {sections.map(({ id, label, icon: Icon }) => {
+                const isActive = active === id;
+                return (
+                  <button
+                    key={id}
+                    onClick={() => { setActive(id); setSidebarOpen(false); }}
+                    className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all duration-300 group ${
                       isActive
-                        ? "text-primary"
-                        : "text-muted-foreground group-hover:text-primary transition-colors"
-                    }
-                  />
-                  <span className="font-display text-[11px] tracking-[0.15em]">
-                    {label.toUpperCase()}
-                  </span>
-                  {isActive && (
-                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  )}
-                </button>
-              );
-            })}
+                        ? "bg-primary/5 text-primary border border-primary/20 shadow-[0_0_20px_hsl(120_100%_54%/0.05)]"
+                        : "text-muted-foreground hover:text-foreground border border-transparent"
+                    }`}
+                  >
+                    <Icon size={14} className={isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary transition-colors"} />
+                    <span className="font-display text-[10px] tracking-widest uppercase">{label}</span>
+                    {isActive && <ChevronRight size={10} className="ml-auto animate-pulse" />}
+                  </button>
+                );
+              })}
+            </div>
 
-            {/* Sidebar footer */}
-            <div className="absolute bottom-5 left-5 right-5">
-              <div className="h-px bg-border/50 mb-4" />
-              <Link
-                to="/"
-                className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors group"
-              >
-                <img src="/logo.png" alt="Logicia" className="w-5 h-5" />
-                <span className="font-display text-[9px] tracking-[0.2em]">
-                  BACK TO APP
-                </span>
-              </Link>
+            <div className="pt-6 border-t border-white/5">
+               <a href="#" className="flex items-center gap-3 px-3 py-3 rounded-xl text-muted-foreground hover:text-primary transition-colors">
+                  <Github size={14} />
+                  <span className="font-display text-[9px] tracking-widest uppercase">Community</span>
+               </a>
             </div>
           </nav>
         </aside>
 
         {/* Sidebar overlay on mobile */}
         {sidebarOpen && (
-          <div
-            className="fixed inset-0 z-30 bg-black/50 md:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
+          <div className="fixed inset-0 z-30 bg-black/80 backdrop-blur-sm md:hidden" onClick={() => setSidebarOpen(false)} />
         )}
 
         {/* ── Main content ── */}
-        <main className="flex-1 min-w-0 px-5 sm:px-8 md:px-12 py-10 sm:py-14 max-w-4xl">
-          {renderContent()}
+        <main className="flex-1 px-6 sm:px-12 py-12 md:py-16 max-w-5xl mx-auto w-full overflow-hidden">
+          <div className="max-w-4xl mx-auto">
+            {renderContent()}
+          </div>
+          
+          <footer className="mt-24 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-muted-foreground/40 text-[9px] font-display tracking-widest uppercase">
+            <span>© 2026 LOGICIA SYSTEMS</span>
+            <div className="flex gap-6">
+               <Link to="#" className="hover:text-primary transition-colors">Documentation</Link>
+               <Link to="#" className="hover:text-primary transition-colors">Release Notes</Link>
+               <Link to="#" className="hover:text-primary transition-colors">Privacy</Link>
+            </div>
+          </footer>
         </main>
       </div>
     </div>
