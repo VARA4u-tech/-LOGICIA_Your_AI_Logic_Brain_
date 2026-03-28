@@ -61,14 +61,8 @@ async def chat_interaction(
         context = ai_response_dict.get("solution")
         llm_response = await llm_service.generate_response(req.content, context, req.language)
         ai_response_dict["content"] = llm_response["content"]
-        # If SymPy failed but LLM succeeded, we might still want a basic 'solution' structure
-        if ai_response_dict["solution"] is None:
-             ai_response_dict["solution"] = {
-                 "method": "AI Interpretation",
-                 "steps": [{"label": "Direct Answer", "math": "Evaluated via Logicia LLM Core"}],
-                 "finalAnswer": "See detailed explanation above.",
-                 "mode": req.mode
-             }
+        # If SymPy failed, don't create a dummy solution panel —
+        # the LLM's rich explanation in content is sufficient.
     
     # 4. Save AI message
     ai_json_solution = None
