@@ -205,16 +205,105 @@ const ChatInterface = () => {
     inputRef.current?.focus();
   };
 
-  const renderContent = (content: string) =>
-    content.split("**").map((part, j) =>
-      j % 2 === 1 ? (
-        <strong key={j} className="text-primary font-semibold">
-          {part}
-        </strong>
-      ) : (
-        <span key={j}>{part}</span>
-      ),
+  /* ── Rich content renderer ── */
+  const InlineRenderer = ({ text }: { text: string }) => {
+    const tokens: { type: "text" | "bold" | "math"; value: string }[] = [];
+    let remaining = text;
+    while (remaining.length > 0) {
+      const boldMatch = remaining.match(/^(.*?)\*\*(.+?)\*\*(.*)/s);
+      const mathMatch = remaining.match(/^(.*?)\$(.+?)\$(.*)/s);
+      const boldIdx = boldMatch ? boldMatch[1].length : Infinity;
+      const mathIdx = mathMatch ? mathMatch[1].length : Infinity;
+      if (boldIdx === Infinity && mathIdx === Infinity) {
+        if (remaining) tokens.push({ type: "text", value: remaining });
+        break;
+      }
+      if (boldIdx <= mathIdx && boldMatch) {
+        if (boldMatch[1]) tokens.push({ type: "text", value: boldMatch[1] });
+        tokens.push({ type: "bold", value: boldMatch[2] });
+        remaining = boldMatch[3];
+      } else if (mathMatch) {
+        if (mathMatch[1]) tokens.push({ type: "text", value: mathMatch[1] });
+        tokens.push({ type: "math", value: mathMatch[2] });
+        remaining = mathMatch[3];
+      }
+    }
+    return (
+      <>
+        {tokens.map((token, i) => {
+          if (token.type === "bold") return <strong key={i} className="text-primary font-semibold">{token.value}</strong>;
+          if (token.type === "math") return <code key={i} className="font-mono text-primary bg-black/30 px-1.5 py-0.5 rounded text-[11px] sm:text-xs border border-primary/15">{token.value}</code>;
+          return (
+            <span key={i}>
+              {token.value.split(/(⇒|∴)/).map((seg, j) => {
+                if (seg === "⇒") return <span key={j} className="text-primary font-bold mx-1">⇒</span>;
+                if (seg === "∴") return <span key={j} className="text-emerald-400 font-bold mr-1">∴</span>;
+                return <span key={j}>{seg}</span>;
+              })}
+            </span>
+          );
+        })}
+      </>
     );
+  };
+
+  const RichContent = ({ content }: { content: string }) => {
+    const paragraphs = content.split(/\n{2,}/);
+    return (
+      <div className="space-y-3">
+        {paragraphs.map((para, pIdx) => {
+          const trimmedPara = para.trim();
+          if (!trimmedPara) return null;
+
+          const headerMatch = trimmedPara.match(/^\*\*(.+?)\*\*\s*$/);
+          if (headerMatch && trimmedPara.split("\n").length === 1) {
+            const hText = headerMatch[1];
+            const isConcl = /∴|conclusion|నిర్ణయం/i.test(hText);
+            const isShort = /💡|shortcut|షార్ట్/i.test(hText);
+            const isGiven = /given|ఇవ్వబడింది/i.test(hText);
+            let cls = "text-primary border-primary/30 bg-primary/5";
+            if (isConcl) cls = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5";
+            if (isShort) cls = "text-amber-400 border-amber-500/30 bg-amber-500/5";
+            if (isGiven) cls = "text-sky-400 border-sky-500/30 bg-sky-500/5";
+            return <div key={pIdx} className={`font-display text-[11px] sm:text-xs tracking-wider uppercase px-3 py-2 rounded-lg border ${cls} mt-2`}>{hText}</div>;
+          }
+
+          const lines = trimmedPara.split("\n");
+          return (
+            <div key={pIdx} className="space-y-1.5">
+              {lines.map((line, lIdx) => {
+                const tl = line.trim();
+                if (!tl) return null;
+
+                const ilh = tl.match(/^\*\*(.+?)\*\*:?\s*$/);
+                if (ilh && (tl === `**${ilh[1]}**` || tl === `**${ilh[1]}**:`)) {
+                  const hText = ilh[1];
+                  const isConcl = /∴|conclusion|నిర్ణయం/i.test(hText);
+                  const isShort = /💡|shortcut|షార్ట్/i.test(hText);
+                  const isGiven = /given|ఇవ్వబడింది/i.test(hText);
+                  let cls = "text-primary border-primary/30 bg-primary/5";
+                  if (isConcl) cls = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5";
+                  if (isShort) cls = "text-amber-400 border-amber-500/30 bg-amber-500/5";
+                  if (isGiven) cls = "text-sky-400 border-sky-500/30 bg-sky-500/5";
+                  return <div key={lIdx} className={`font-display text-[11px] sm:text-xs tracking-wider uppercase px-3 py-2 rounded-lg border ${cls} mt-2`}>{hText}</div>;
+                }
+                if (/^[-•]\s/.test(tl)) {
+                  return <div key={lIdx} className="flex gap-2 items-start pl-1"><span className="text-primary mt-1 flex-shrink-0">▸</span><span className="flex-1"><InlineRenderer text={tl.replace(/^[-•]\s*/, "")} /></span></div>;
+                }
+                if (/^\\\[/.test(tl) || /\\\]$/.test(tl)) {
+                  const mc = tl.replace(/^\\\[\s*/, "").replace(/\s*\\\]$/, "").trim();
+                  return mc ? <div key={lIdx} className="font-mono text-xs sm:text-sm px-3 py-2 rounded-lg bg-black/40 border border-primary/20 text-primary my-1 overflow-x-auto">{mc}</div> : null;
+                }
+                if (/⇒/.test(tl)) return <div key={lIdx} className="flex gap-2 items-baseline pl-2"><span className="font-mono text-xs sm:text-sm text-foreground leading-relaxed"><InlineRenderer text={tl} /></span></div>;
+                if (/^∴/.test(tl)) return <div key={lIdx} className="px-3 py-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-300 font-semibold text-xs sm:text-sm leading-relaxed mt-1"><InlineRenderer text={tl} /></div>;
+                return <p key={lIdx} className="text-xs sm:text-sm leading-relaxed"><InlineRenderer text={tl} /></p>;
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   const charsLeft = MAX_CHARS - input.length;
   const isOverLimit = charsLeft < 0;
@@ -274,13 +363,17 @@ const ChatInterface = () => {
                 style={{ animationDelay: `${Math.min(i * 0.05, 0.4)}s` }}
               >
                 <div
-                  className={`max-w-[95%] sm:max-w-[85%] px-4 sm:px-5 py-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
+                  className={`max-w-[95%] sm:max-w-[85%] px-4 sm:px-5 py-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-primary/10 border border-primary/30 text-primary neon-box"
+                      ? "bg-primary/10 border border-primary/30 text-primary neon-box whitespace-pre-wrap"
                       : "glass border-border text-foreground shadow-lg"
                   }`}
                 >
-                  {renderContent(msg.content)}
+                  {msg.role === "user" ? (
+                    <span>{msg.content}</span>
+                  ) : (
+                    <RichContent content={msg.content} />
+                  )}
                   {msg.solution && (
                     <SolutionPanel
                       steps={msg.solution.steps}

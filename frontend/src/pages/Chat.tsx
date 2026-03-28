@@ -556,22 +556,212 @@ const TypingIndicator = ({ mode, t }: { mode: ResponseMode; t: Record<string, st
 );
 
 /* ═══════════════════════════════════════════════════════════════
-   RENDER MARKDOWN-LIKE BOLD
+   RICH CONTENT RENDERER
+   Handles: **bold**, section headers, bullet lists, math blocks,
+   ⇒/∴ symbols, paragraphs, and inline code
 ═══════════════════════════════════════════════════════════════ */
 const RenderContent = ({ content }: { content: string }) => {
-  const parts = content.split("**");
+  // Split content into paragraphs by double newlines
+  const paragraphs = content.split(/\n{2,}/);
+
   return (
-    <span>
-      {parts.map((part, i) =>
-        i % 2 === 1 ? (
-          <strong key={i} className="text-primary font-semibold">
-            {part}
-          </strong>
-        ) : (
-          <span key={i}>{part}</span>
-        ),
-      )}
-    </span>
+    <div className="space-y-3">
+      {paragraphs.map((para, pIdx) => {
+        const trimmedPara = para.trim();
+        if (!trimmedPara) return null;
+
+        // --- SECTION HEADER: lines like "**Given:**" or "**∴ Conclusion:**" or "**💡 Shortcut Trick**"
+        const headerMatch = trimmedPara.match(
+          /^\*\*(.+?)\*\*\s*$/
+        );
+        if (headerMatch && trimmedPara.split("\n").length === 1) {
+          const headerText = headerMatch[1];
+          const isConclusion = /∴|conclusion|నిర్ణయం/i.test(headerText);
+          const isShortcut = /💡|shortcut|షార్ట్/i.test(headerText);
+          const isGiven = /given|ఇవ్వబడింది/i.test(headerText);
+          const isCalc = /calculation|గణన/i.test(headerText);
+
+          let headerClass = "text-primary border-primary/30 bg-primary/5";
+          if (isConclusion) headerClass = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5";
+          if (isShortcut) headerClass = "text-amber-400 border-amber-500/30 bg-amber-500/5";
+          if (isGiven) headerClass = "text-sky-400 border-sky-500/30 bg-sky-500/5";
+          if (isCalc) headerClass = "text-primary border-primary/30 bg-primary/5";
+
+          return (
+            <div
+              key={pIdx}
+              className={`font-display text-[11px] sm:text-xs tracking-wider uppercase px-3 py-2 rounded-lg border ${headerClass} mt-2`}
+            >
+              {headerText}
+            </div>
+          );
+        }
+
+        // --- MULTI-LINE PARAGRAPH: render line by line
+        const lines = trimmedPara.split("\n");
+        return (
+          <div key={pIdx} className="space-y-1.5">
+            {lines.map((line, lIdx) => {
+              const trimmedLine = line.trim();
+              if (!trimmedLine) return null;
+
+              // Bold header line within a paragraph (e.g. "**Given:**\n...")
+              const inlineHeaderMatch = trimmedLine.match(/^\*\*(.+?)\*\*:?\s*$/);
+              if (inlineHeaderMatch && trimmedLine === `**${inlineHeaderMatch[1]}**` || inlineHeaderMatch && trimmedLine === `**${inlineHeaderMatch[1]}**:`) {
+                const headerText = inlineHeaderMatch[1];
+                const isConclusion = /∴|conclusion|నిర్ణయం/i.test(headerText);
+                const isShortcut = /💡|shortcut|షార్ట్/i.test(headerText);
+                const isGiven = /given|ఇవ్వబడింది/i.test(headerText);
+
+                let headerClass = "text-primary border-primary/30 bg-primary/5";
+                if (isConclusion) headerClass = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5";
+                if (isShortcut) headerClass = "text-amber-400 border-amber-500/30 bg-amber-500/5";
+                if (isGiven) headerClass = "text-sky-400 border-sky-500/30 bg-sky-500/5";
+
+                return (
+                  <div
+                    key={lIdx}
+                    className={`font-display text-[11px] sm:text-xs tracking-wider uppercase px-3 py-2 rounded-lg border ${headerClass} mt-2`}
+                  >
+                    {headerText}
+                  </div>
+                );
+              }
+
+              // Bullet / list item: "- Step 1 — ..."
+              if (/^[-•]\s/.test(trimmedLine)) {
+                const bulletContent = trimmedLine.replace(/^[-•]\s*/, "");
+                return (
+                  <div key={lIdx} className="flex gap-2 items-start pl-1">
+                    <span className="text-primary mt-1 flex-shrink-0">▸</span>
+                    <span className="flex-1">
+                      <InlineRenderer text={bulletContent} />
+                    </span>
+                  </div>
+                );
+              }
+
+              // Math display block: \[...\] or lines that are purely math
+              if (/^\\\[/.test(trimmedLine) || /\\\]$/.test(trimmedLine)) {
+                const mathContent = trimmedLine
+                  .replace(/^\\\[\s*/, "")
+                  .replace(/\s*\\\]$/, "")
+                  .trim();
+                if (mathContent) {
+                  return (
+                    <div
+                      key={lIdx}
+                      className="font-mono text-xs sm:text-sm px-3 py-2 rounded-lg bg-black/40 border border-primary/20 text-primary my-1 overflow-x-auto"
+                    >
+                      {mathContent}
+                    </div>
+                  );
+                }
+                return null;
+              }
+
+              // Lines that look like math results (contain ⇒ or start with =)
+              if (/⇒/.test(trimmedLine)) {
+                return (
+                  <div key={lIdx} className="flex gap-2 items-baseline pl-2">
+                    <span className="font-mono text-xs sm:text-sm text-foreground leading-relaxed">
+                      <InlineRenderer text={trimmedLine} />
+                    </span>
+                  </div>
+                );
+              }
+
+              // Conclusion line with ∴
+              if (/^∴/.test(trimmedLine)) {
+                return (
+                  <div
+                    key={lIdx}
+                    className="px-3 py-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-300 font-semibold text-xs sm:text-sm leading-relaxed mt-1"
+                  >
+                    <InlineRenderer text={trimmedLine} />
+                  </div>
+                );
+              }
+
+              // Regular line
+              return (
+                <p key={lIdx} className="text-xs sm:text-sm leading-relaxed">
+                  <InlineRenderer text={trimmedLine} />
+                </p>
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+/* Inline renderer for bold, inline math ($...$), and ⇒/∴ symbols */
+const InlineRenderer = ({ text }: { text: string }) => {
+  // Split by **bold** and $inline math$ patterns
+  const tokens: { type: "text" | "bold" | "math" | "arrow" | "therefore"; value: string }[] = [];
+  let remaining = text;
+
+  while (remaining.length > 0) {
+    // Bold: **...**
+    const boldMatch = remaining.match(/^(.*?)\*\*(.+?)\*\*(.*)/s);
+    // Inline math: $...$
+    const mathMatch = remaining.match(/^(.*?)\$(.+?)\$(.*)/s);
+
+    // Pick the earliest match
+    const boldIdx = boldMatch ? boldMatch[1].length : Infinity;
+    const mathIdx = mathMatch ? mathMatch[1].length : Infinity;
+
+    if (boldIdx === Infinity && mathIdx === Infinity) {
+      // No more patterns — push rest and break
+      if (remaining) tokens.push({ type: "text", value: remaining });
+      break;
+    }
+
+    if (boldIdx <= mathIdx && boldMatch) {
+      if (boldMatch[1]) tokens.push({ type: "text", value: boldMatch[1] });
+      tokens.push({ type: "bold", value: boldMatch[2] });
+      remaining = boldMatch[3];
+    } else if (mathMatch) {
+      if (mathMatch[1]) tokens.push({ type: "text", value: mathMatch[1] });
+      tokens.push({ type: "math", value: mathMatch[2] });
+      remaining = mathMatch[3];
+    }
+  }
+
+  return (
+    <>
+      {tokens.map((token, i) => {
+        if (token.type === "bold") {
+          return (
+            <strong key={i} className="text-primary font-semibold">
+              {token.value}
+            </strong>
+          );
+        }
+        if (token.type === "math") {
+          return (
+            <code
+              key={i}
+              className="font-mono text-primary bg-black/30 px-1.5 py-0.5 rounded text-[11px] sm:text-xs border border-primary/15"
+            >
+              {token.value}
+            </code>
+          );
+        }
+        // For regular text, highlight ⇒ and ∴ symbols
+        return (
+          <span key={i}>
+            {token.value.split(/(⇒|∴)/).map((seg, j) => {
+              if (seg === "⇒") return <span key={j} className="text-primary font-bold mx-1">⇒</span>;
+              if (seg === "∴") return <span key={j} className="text-emerald-400 font-bold mr-1">∴</span>;
+              return <span key={j}>{seg}</span>;
+            })}
+          </span>
+        );
+      })}
+    </>
   );
 };
 
@@ -623,13 +813,17 @@ const MessageBubble = ({ msg, t }: { msg: Message; t: Record<string, string> }) 
 
         {/* Bubble */}
         <div
-          className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap overflow-hidden ${
+          className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm leading-relaxed overflow-hidden ${
             isUser
-              ? "bg-primary/10 border border-primary/25 text-foreground rounded-tr-sm max-w-[90%] sm:max-w-[85%]"
+              ? "bg-primary/10 border border-primary/25 text-foreground rounded-tr-sm max-w-[90%] sm:max-w-[85%] whitespace-pre-wrap"
               : "bg-muted/20 border border-border/50 text-foreground rounded-tl-sm w-full"
           }`}
         >
-          <RenderContent content={msg.content} />
+          {isUser ? (
+            <span>{msg.content}</span>
+          ) : (
+            <RenderContent content={msg.content} />
+          )}
           {msg.solution && (
             <SolutionPanel
               steps={msg.solution.steps}
