@@ -19,9 +19,13 @@ class Settings(BaseSettings):
     def FRONTEND_ORIGINS(self) -> list[str]:
         return [o.strip() for o in self._FRONTEND_ORIGINS_STR.split(",") if o.strip()]
 
-    # AI (optional)
+    # AI Providers
     OPENAI_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_MODEL: str = "nvidia/nemotron-3-super-120b-a12b:free"
+    SITE_URL: str = "https://logicia.ai"
+    SITE_NAME: str = "Logicia AI Math Tutor"
 
 
 settings = Settings()

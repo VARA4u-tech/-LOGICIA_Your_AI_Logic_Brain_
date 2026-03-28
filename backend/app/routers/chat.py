@@ -10,6 +10,7 @@ from app.models.conversation import Conversation, Message
 from app.schemas.schemas import ChatRequest, ChatResponse, MessageSchema, SolutionData
 from app.services.auth import get_current_user
 from app.services.math_engine import solve_math
+from app.services.llm_service import llm_service
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -48,7 +49,26 @@ async def chat_interaction(
     await db.flush()
 
     # 3. Generate AI response (call math engine)
+    # Perform symbolic solve first
     ai_response_dict = solve_math(req.content, req.mode)
+    
+    # 3b. Determine if we need an LLM response (either pedagogical mode OR fallback)
+    use_llm = (req.mode == "pedagogical") or (ai_response_dict["solution"] is None)
+    
+    # 3c. If LLM is needed, get enhanced explanation or fallback answer
+    if use_llm:
+        # Grounding context from symbolic engine if available
+        context = ai_response_dict.get("solution")
+        llm_response = await llm_service.generate_response(req.content, context)
+        ai_response_dict["content"] = llm_response["content"]
+        # If SymPy failed but LLM succeeded, we might still want a basic 'solution' structure
+        if ai_response_dict["solution"] is None:
+             ai_response_dict["solution"] = {
+                 "method": "AI Interpretation",
+                 "steps": [{"label": "Direct Answer", "math": "Evaluated via Logicia LLM Core"}],
+                 "finalAnswer": "See detailed explanation above.",
+                 "mode": req.mode
+             }
     
     # 4. Save AI message
     ai_json_solution = None

@@ -130,8 +130,8 @@ const steps = [
     step: "04",
     title: "Pedagogical Refactoring",
     description:
-      "The raw solution is transformed into a structured pedagogical breakdown, identifying key theorems applied.",
-    example: '"Apply the Chain Rule..."',
+      "The raw symbolic result is processed through OpenRouter-orchestrated LLMs to generate a structured pedagogical breakdown, contextualized with relevant undergraduate-level theorems.",
+    example: '"Apply the Chain Rule via Gemini-2.0..."',
   },
   {
     icon: BarChart2,
@@ -410,7 +410,7 @@ const AboutContent = () => {
           LOGICIA was conceived at the intersection of symbolic logic and neural language processing. Traditional AI models often struggle with "mathematical hallucination"—where the output appears correct but lacks structural validity. 
         </p>
         <p>
-          Our mission is to bridge this gap by using Large Language Models exclusively for pedagogical explanation, while delegating the actual computation to a deterministic symbolic math engine. This ensures that every step provided to the user is not just "likely," but mathematically proven.
+          Our mission is to bridge this gap by leveraging the power of <strong>OpenRouter-orchestrated AI models</strong> exclusively for pedagogical explanation, while delegating the actual computation to a deterministic symbolic math engine. This ensures that every step provided to the user is not just "likely," but mathematically proven.
         </p>
         
         <div className="pt-6 grid grid-cols-2 gap-4">
