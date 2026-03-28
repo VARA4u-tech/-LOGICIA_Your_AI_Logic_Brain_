@@ -40,6 +40,7 @@ const QUICK_PROMPTS = [
 
 const MAX_CHARS = 300;
 const STORAGE_KEY = "logicia_chat_history";
+const LANG_KEY = "logicia_language";
 
 /* ─── UI Translations ────────────────────────────────────────────────────── */
 const UI_STRINGS = {
@@ -85,15 +86,24 @@ const loadHistory = (lang: "en" | "te"): Message[] => {
 };
 
 const ChatInterface = () => {
-  const [language, setLanguage] = useState<"en" | "te">("en");
-  const [messages, setMessages] = useState<Message[]>([]);
-  
-  // Initialize messages on first load or when language changes if empty content
-  useEffect(() => {
-    if (messages.length === 0) {
-      setMessages(loadHistory(language));
-    }
-  }, [language]);
+  const [language, setLanguage] = useState<"en" | "te">(
+    () => (localStorage.getItem(LANG_KEY) as "en" | "te") ?? "en"
+  );
+  const [messages, setMessages] = useState<Message[]>(() => loadHistory(
+    (localStorage.getItem(LANG_KEY) as "en" | "te") ?? "en"
+  ));
+
+  // Persist language and reset welcome message on language switch
+  const handleLanguageChange = (lang: "en" | "te") => {
+    if (lang === language) return;
+    localStorage.setItem(LANG_KEY, lang);
+    setLanguage(lang);
+    // Update the first (welcome) message to the new language
+    setMessages(prev => {
+      const rest = prev.filter(m => m.id !== 0);
+      return [getInitialMessage(lang), ...rest];
+    });
+  };
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const isFirstRender = useRef(true);
@@ -233,13 +243,13 @@ const ChatInterface = () => {
             <div className="flex items-center gap-3">
               <div className="flex bg-black/40 p-1 rounded-lg border border-border">
                 <button
-                  onClick={() => setLanguage("en")}
+                  onClick={() => handleLanguageChange("en")}
                   className={`px-3 py-1 rounded-md text-[10px] font-display transition-all ${language === "en" ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   EN
                 </button>
                 <button
-                  onClick={() => setLanguage("te")}
+                  onClick={() => handleLanguageChange("te")}
                   className={`px-3 py-1 rounded-md text-[10px] font-display transition-all ${language === "te" ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   తెలుగు

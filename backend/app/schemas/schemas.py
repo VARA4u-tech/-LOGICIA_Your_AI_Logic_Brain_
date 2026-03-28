@@ -57,7 +57,7 @@ class MessageSchema(BaseModel):
     role: Literal["user", "ai"]
     content: str
     solution: Optional[SolutionData] = None
-    mode: Literal["detailed", "quick"]
+    mode: Literal["detailed", "quick", "pedagogical"]
     timestamp: datetime
 
     model_config = ConfigDict(from_attributes=True)

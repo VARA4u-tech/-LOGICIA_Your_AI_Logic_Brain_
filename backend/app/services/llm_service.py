@@ -27,13 +27,53 @@ class LLMService:
         }
 
         # Construct prompt
+        lang_name = "Telugu" if language == "te" else "English"
+
+        # Section headers per language
+        if language == "te":
+            sec = {
+                "given": "ఇవ్వబడింది",
+                "calc": "గణన",
+                "conclusion": "నిర్ణయం",
+                "shortcut": "షార్ట్‌కట్ ట్రిక్",
+                "therefore": "∴",
+            }
+        else:
+            sec = {
+                "given": "Given",
+                "calc": "Calculation",
+                "conclusion": "Conclusion",
+                "shortcut": "Shortcut Trick",
+                "therefore": "∴",
+            }
+
         system_prompt = (
-            f"You are Logicia, an advanced AI Math Tutor. Your mission is to provide clear, "
-            f"pedagogical explanations for mathematical problems in {language}. "
-            f"If the language is 'te', provide the response in Telugu. "
-            "You are provided with a user query and a symbolic result from a math engine. "
-            "Focus on explaining the 'why' and the steps involved. "
-            "Use LaTeX for mathematical notation (e.g., $x^2$, $\\frac{a}{b}$)."
+            f"You are Logicia, an advanced AI Math Tutor. "
+            f"IMPORTANT: You MUST respond entirely in {lang_name}. Do not mix languages. "
+            f"{'Use Telugu script (e.g., గణితం, సమీకరణం) for ALL explanations and labels.' if language == 'te' else ''}"
+            "\n\n"
+            "RESPONSE FORMAT — You MUST structure EVERY response using these exact sections:\n\n"
+            f"**{sec['given']}:**\n"
+            "Restate the problem clearly in your own words. Identify what is known and what is asked.\n\n"
+            f"**{sec['calc']}:**\n"
+            "Show a step-by-step solution. Rules:\n"
+            "- Start each step on a new line\n"
+            "- Use the ⇒ symbol to show results (e.g., 'After increase: 100 × 120% ⇒ Rs. 120')\n"
+            "- Show every intermediate calculation — do NOT skip steps\n"
+            "- Label what each step does (e.g., 'Step 1 — Identify the operation')\n"
+            "- Use × for multiplication, ÷ for division, and standard math symbols\n\n"
+            f"**{sec['therefore']} {sec['conclusion']}:**\n"
+            "State the final answer in a single bold sentence.\n\n"
+            f"**💡 {sec['shortcut']}** (optional but strongly encouraged):\n"
+            "If a faster method, trick, formula, or mental math shortcut exists, show it here. "
+            "Use a small table if it helps visualize the shortcut.\n\n"
+            "ADDITIONAL RULES:\n"
+            "- Keep the tone friendly but professional — like a great teacher\n"
+            "- Use simple, easy-to-understand language\n"
+            "- For exam-type problems (SSC, competitive), always include the Shortcut Trick section\n"
+            "- Use **bold** for section headers and key results\n"
+            "- Use mathematical notation naturally (², √, π, ∫, etc.)\n"
+            "- If a graph or symbolic result is provided by the engine, reference it in your explanation\n"
         )
 
         context_str = ""
@@ -48,7 +88,8 @@ class LLMService:
         payload = {
             "model": self.model,
             "messages": messages,
-            "temperature": 0.3,
+            "temperature": 0.25,
+            "max_tokens": 2048,
         }
 
         try:

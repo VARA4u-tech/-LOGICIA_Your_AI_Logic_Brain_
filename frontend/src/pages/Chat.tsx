@@ -21,6 +21,7 @@ import {
   PanelLeftOpen,
   Zap,
   BookOpen,
+  Globe,
 } from "lucide-react";
 import {
   LineChart,
@@ -74,19 +75,96 @@ interface Conversation {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   QUICK PROMPTS
+   QUICK PROMPTS — moved to QUICK_PROMPTS_I18N below
 ═══════════════════════════════════════════════════════════════ */
-const QUICK_PROMPTS = [
-  { label: "Solve x² − 5x + 6", prompt: "solve quadratic x^2 - 5x + 6" },
-  { label: "Derivative of x²", prompt: "derivative of x²" },
-  { label: "Integral of x", prompt: "integral of x" },
-  { label: "Compute 125 × 4", prompt: "125 * 4" },
-  { label: "What is 2 + 2?", prompt: "2 + 2" },
-];
 
 const STORAGE_KEY = "logicia_conversations";
 const MODE_KEY = "logicia_response_mode";
+const LANG_KEY = "logicia_language";
 const MAX_CHARS = 500;
+
+type Language = "en" | "te";
+
+/* ═══════════════════════════════════════════════════════════════
+   UI TRANSLATIONS
+═══════════════════════════════════════════════════════════════ */
+const UI_STRINGS: Record<Language, Record<string, string>> = {
+  en: {
+    new_conversation: "NEW CONVERSATION",
+    no_conversations: "No conversations yet. Start one!",
+    history: "HISTORY",
+    back_to_home: "Back to Home",
+    clear: "CLEAR",
+    ask_anything: "Ask me anything math",
+    ask_subtitle: "Solve equations, derivatives, integrals, and more — step by step.",
+    placeholder_detailed: "Ask a math question…",
+    placeholder_quick: "Ask for a quick answer…",
+    enter_to_send: "Press",
+    to_send: "to send ·",
+    new_line: "for new line",
+    computing: "Computing...",
+    computing_fast: "Computing fast...",
+    error_backend: "Sorry, I am having trouble connecting to the Logicia server right now. Please make sure the backend is running on :8000.",
+    logicia_ai: "LOGICIA AI",
+    you: "YOU",
+    final_answer: "Final Answer",
+    hide: "HIDE",
+    show_steps: "SHOW STEPS",
+    visualization: "VISUALIZATION",
+    mode: "Mode",
+    detailed: "DETAILED",
+    quick: "QUICK",
+    detailed_hint: "Full explanation + graph",
+    quick_hint: "Exam-style · key logic only",
+    new_conv_title: "New Conversation",
+  },
+  te: {
+    new_conversation: "కొత్త సంభాషణ",
+    no_conversations: "ఇంకా సంభాషణలు లేవు. ఒకటి ప్రారంభించండి!",
+    history: "చరిత్ర",
+    back_to_home: "హోమ్‌కి తిరిగి వెళ్ళు",
+    clear: "క్లియర్",
+    ask_anything: "ఏదైనా గణితం అడగండి",
+    ask_subtitle: "సమీకరణాలు, డెరివేటివ్‌లు, ఇంటిగ్రల్‌లు మరియు మరిన్నింటిని దశలవారీగా పరిష్కరించండి.",
+    placeholder_detailed: "ఒక గణిత ప్రశ్న అడగండి…",
+    placeholder_quick: "శీఘ్ర సమాధానం కోసం అడగండి…",
+    enter_to_send: "పంపడానికి",
+    to_send: "నొక్కండి ·",
+    new_line: "కొత్త పంక్తి కోసం",
+    computing: "గణన జరుగుతోంది...",
+    computing_fast: "వేగంగా గణన...",
+    error_backend: "క్షమించండి, లాజిషియా సర్వర్‌కు కనెక్ట్ అవడంలో సమస్య ఉంది. దయచేసి బ్యాకెండ్ :8000 పోర్ట్‌లో నడుస్తుందో లేదో తనిఖీ చేయండి.",
+    logicia_ai: "లాజిషియా AI",
+    you: "మీరు",
+    final_answer: "తుది సమాధానం",
+    hide: "దాచు",
+    show_steps: "దశలు చూపించు",
+    visualization: "విజువలైజేషన్",
+    mode: "మోడ్",
+    detailed: "వివరంగా",
+    quick: "శీఘ్రం",
+    detailed_hint: "పూర్తి వివరణ + గ్రాఫ్",
+    quick_hint: "పరీక్ష-శైలి · కీలక తర్కం మాత్రమే",
+    new_conv_title: "కొత్త సంభాషణ",
+  },
+};
+
+const QUICK_PROMPTS_I18N: Record<Language, { label: string; prompt: string }[]> = {
+  en: [
+    { label: "Solve x² − 5x + 6", prompt: "solve quadratic x^2 - 5x + 6" },
+    { label: "Derivative of x²", prompt: "derivative of x²" },
+    { label: "Integral of x", prompt: "integral of x" },
+    { label: "Compute 125 × 4", prompt: "125 * 4" },
+    { label: "What is 2 + 2?", prompt: "2 + 2" },
+  ],
+  te: [
+    { label: "x² − 5x + 6 సాధించండి", prompt: "solve quadratic x^2 - 5x + 6" },
+    { label: "x² డెరివేటివ్", prompt: "derivative of x²" },
+    { label: "x ఇంటిగ్రల్", prompt: "integral of x" },
+    { label: "125 × 4 గణించండి", prompt: "125 * 4" },
+    { label: "2 + 2 ఎంత?", prompt: "2 + 2" },
+  ],
+};
 
 /* ═══════════════════════════════════════════════════════════════
    UTILITY COMPONENTS
@@ -123,18 +201,20 @@ const MathBlock = ({ expr }: { expr: string }) => (
 );
 
 /* ═══════════════════════════════════════════════════════════════
-   RESPONSE MODE TOGGLE  (the main new component)
+   RESPONSE MODE TOGGLE
 ═══════════════════════════════════════════════════════════════ */
 const ModeToggle = ({
   mode,
   onChange,
+  t,
 }: {
   mode: ResponseMode;
   onChange: (m: ResponseMode) => void;
+  t: Record<string, string>;
 }) => (
   <div className="flex items-center gap-2 flex-wrap">
     <span className="text-[10px] font-display tracking-[0.2em] text-muted-foreground/50 uppercase hidden sm:inline">
-      Mode
+      {t.mode}
     </span>
     <div className="flex items-center p-0.5 rounded-lg border border-border/50 bg-muted/10 gap-0.5">
       {/* Detailed */}
@@ -148,7 +228,7 @@ const ModeToggle = ({
         }`}
       >
         <BookOpen size={11} className="flex-shrink-0" />
-        <span>DETAILED</span>
+        <span>{t.detailed}</span>
       </button>
 
       {/* Quick */}
@@ -162,16 +242,51 @@ const ModeToggle = ({
         }`}
       >
         <Zap size={11} className="flex-shrink-0" />
-        <span>QUICK</span>
+        <span>{t.quick}</span>
       </button>
     </div>
 
     {/* Active mode hint */}
     <span className="text-[9px] text-muted-foreground/35 font-body hidden md:inline">
-      {mode === "detailed"
-        ? "Full explanation + graph"
-        : "Exam-style · key logic only"}
+      {mode === "detailed" ? t.detailed_hint : t.quick_hint}
     </span>
+  </div>
+);
+
+/* ═══════════════════════════════════════════════════════════════
+   LANGUAGE TOGGLE
+═══════════════════════════════════════════════════════════════ */
+const LanguageToggle = ({
+  language,
+  onChange,
+}: {
+  language: Language;
+  onChange: (l: Language) => void;
+}) => (
+  <div className="flex items-center gap-1.5">
+    <Globe size={11} className="text-muted-foreground/50 flex-shrink-0" />
+    <div className="flex items-center p-0.5 rounded-lg border border-border/50 bg-muted/10 gap-0.5">
+      <button
+        onClick={() => onChange("en")}
+        className={`px-2.5 py-1.5 rounded-md text-[10px] sm:text-[11px] font-display tracking-wider transition-all duration-200 min-h-[30px] ${
+          language === "en"
+            ? "bg-primary/15 text-primary border border-primary/30 shadow-[0_0_8px_hsl(120_100%_54%/0.15)]"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
+        }`}
+      >
+        EN
+      </button>
+      <button
+        onClick={() => onChange("te")}
+        className={`px-2.5 py-1.5 rounded-md text-[10px] sm:text-[11px] font-display tracking-wider transition-all duration-200 min-h-[30px] ${
+          language === "te"
+            ? "bg-primary/15 text-primary border border-primary/30 shadow-[0_0_8px_hsl(120_100%_54%/0.15)]"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
+        }`}
+      >
+        తెలుగు
+      </button>
+    </div>
   </div>
 );
 
@@ -184,12 +299,14 @@ const SolutionPanel = ({
   method,
   graphData,
   mode,
+  t,
 }: {
   steps: Step[];
   finalAnswer: string;
   method?: string;
   graphData?: PlotData[];
   mode?: ResponseMode;
+  t: Record<string, string>;
 }) => {
   const [expanded, setExpanded] = useState(true);
   const isQuick = mode === "quick";
@@ -211,12 +328,12 @@ const SolutionPanel = ({
           {isQuick ? (
             <span className="flex items-center gap-1 text-[9px] font-display tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
               <Zap size={8} />
-              QUICK
+              {t.quick}
             </span>
           ) : (
             <span className="flex items-center gap-1 text-[9px] font-display tracking-widest text-primary/70 bg-primary/5 border border-primary/15 rounded-full px-2 py-0.5">
               <BookOpen size={8} />
-              DETAILED
+              {t.detailed}
             </span>
           )}
         </div>
@@ -227,12 +344,12 @@ const SolutionPanel = ({
           >
             {expanded ? (
               <>
-                <span>HIDE</span>
+                <span>{t.hide}</span>
                 <ChevronUp size={11} />
               </>
             ) : (
               <>
-                <span>SHOW STEPS</span>
+                <span>{t.show_steps}</span>
                 <ChevronDown size={11} />
               </>
             )}
@@ -244,7 +361,7 @@ const SolutionPanel = ({
       {!isQuick && graphData && graphData.length > 0 && (
         <div className="rounded-xl overflow-hidden border border-primary/15 bg-black/30">
           <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-border/30 text-[10px] text-muted-foreground font-display tracking-widest uppercase">
-            <BarChart2 size={12} className="text-primary" /> VISUALIZATION
+            <BarChart2 size={12} className="text-primary" /> {t.visualization}
           </div>
           <div className="h-[160px] sm:h-[200px] p-2 sm:p-3">
             <ResponsiveContainer width="100%" height="100%">
@@ -393,7 +510,7 @@ const SolutionPanel = ({
                 isQuick ? "text-amber-400/60" : "text-primary/60"
               }`}
             >
-              Final Answer
+              {t.final_answer}
             </p>
             <p
               className={`font-mono text-base sm:text-xl font-bold break-all ${
@@ -418,7 +535,7 @@ const SolutionPanel = ({
 /* ═══════════════════════════════════════════════════════════════
    TYPING INDICATOR
 ═══════════════════════════════════════════════════════════════ */
-const TypingIndicator = ({ mode }: { mode: ResponseMode }) => (
+const TypingIndicator = ({ mode, t }: { mode: ResponseMode; t: Record<string, string> }) => (
   <div className="flex gap-3 sm:gap-4 items-start max-w-3xl mx-auto px-3 sm:px-6 py-3 animate-fade-in-up">
     <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
       <Bot size={14} className="text-primary" />
@@ -432,7 +549,7 @@ const TypingIndicator = ({ mode }: { mode: ResponseMode }) => (
         />
       ))}
       <span className="text-xs text-muted-foreground ml-1 font-display tracking-wider">
-        {mode === "quick" ? "Computing fast..." : "Computing..."}
+        {mode === "quick" ? t.computing_fast : t.computing}
       </span>
     </div>
   </div>
@@ -461,7 +578,7 @@ const RenderContent = ({ content }: { content: string }) => {
 /* ═══════════════════════════════════════════════════════════════
    MESSAGE BUBBLE
 ═══════════════════════════════════════════════════════════════ */
-const MessageBubble = ({ msg }: { msg: Message }) => {
+const MessageBubble = ({ msg, t }: { msg: Message; t: Record<string, string> }) => {
   const isUser = msg.role === "user";
   const time =
     msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp);
@@ -494,7 +611,7 @@ const MessageBubble = ({ msg }: { msg: Message }) => {
           className={`flex items-center gap-2 mb-1 sm:mb-1.5 flex-wrap ${isUser ? "flex-row-reverse" : ""}`}
         >
           <span className="font-display text-[10px] tracking-wider text-muted-foreground">
-            {isUser ? "YOU" : "LOGICIA AI"}
+            {isUser ? t.you : t.logicia_ai}
           </span>
           <span className="text-[9px] text-muted-foreground/40 hidden sm:inline">
             {time.toLocaleTimeString([], {
@@ -520,6 +637,7 @@ const MessageBubble = ({ msg }: { msg: Message }) => {
               method={msg.solution.method}
               graphData={msg.solution.graphData}
               mode={msg.solution.mode}
+              t={t}
             />
           )}
         </div>
@@ -531,7 +649,7 @@ const MessageBubble = ({ msg }: { msg: Message }) => {
 /* ═══════════════════════════════════════════════════════════════
    EMPTY STATE
 ═══════════════════════════════════════════════════════════════ */
-const EmptyState = ({ onPrompt }: { onPrompt: (p: string) => void }) => (
+const EmptyState = ({ onPrompt, t, prompts }: { onPrompt: (p: string) => void; t: Record<string, string>; prompts: { label: string; prompt: string }[] }) => (
   <div className="flex flex-col items-center justify-center h-full px-4 py-10 sm:py-16 text-center">
     <div
       className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border border-primary/30 bg-primary/5 flex items-center justify-center mb-4 sm:mb-5"
@@ -544,13 +662,13 @@ const EmptyState = ({ onPrompt }: { onPrompt: (p: string) => void }) => (
       className="font-display text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 tracking-wider leading-tight"
       style={{ textShadow: "0 0 20px hsl(120 100% 54% / 0.5)" }}
     >
-      Ask me anything math
+      {t.ask_anything}
     </h2>
     <p className="text-xs sm:text-sm text-muted-foreground max-w-sm sm:max-w-md mb-6 sm:mb-8 leading-relaxed px-2">
-      Solve equations, derivatives, integrals, and more — step by step.
+      {t.ask_subtitle}
     </p>
     <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 w-full max-w-xs xs:max-w-sm sm:max-w-md">
-      {QUICK_PROMPTS.map((qp) => (
+      {prompts.map((qp) => (
         <button
           key={qp.prompt}
           onClick={() => onPrompt(qp.prompt)}
@@ -603,6 +721,27 @@ const Chat = () => {
   );
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+
+  /* Language — persisted */
+  const [language, setLanguage] = useState<Language>(() => {
+    try {
+      const saved = localStorage.getItem(LANG_KEY);
+      if (saved === "en" || saved === "te") return saved;
+    } catch {
+      /* ignore */
+    }
+    return "en";
+  });
+
+  const handleLanguageChange = useCallback((lang: Language) => {
+    setLanguage(lang);
+    try {
+      localStorage.setItem(LANG_KEY, lang);
+    } catch { /* ignore */ }
+  }, []);
+
+  const t = UI_STRINGS[language];
+  const quickPrompts = QUICK_PROMPTS_I18N[language];
 
   /* Response mode — persisted */
   const [responseMode, setResponseMode] = useState<ResponseMode>(() => {
@@ -668,7 +807,7 @@ const Chat = () => {
   const newConversation = useCallback(() => {
     const conv: Conversation = {
       id: makeId(),
-      title: "New Conversation",
+      title: t.new_conv_title,
       messages: [],
       createdAt: new Date(),
     };
@@ -676,7 +815,7 @@ const Chat = () => {
     setActiveId(conv.id);
     if (isMobile()) setSidebarOpen(false);
     setTimeout(() => inputRef.current?.focus(), 100);
-  }, []);
+  }, [t.new_conv_title]);
 
   const deleteConversation = useCallback((id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -727,10 +866,12 @@ const Chat = () => {
         const payload: {
           content: string;
           mode: ResponseMode;
+          language: Language;
           conversation_id?: string;
         } = {
           content: trimmed,
           mode: responseMode,
+          language: language,
         };
         // Only send conversation_id if the backend might recognise it (e.g. not a legacy local one)
         if (convId && convId.length > 20) {
@@ -784,7 +925,7 @@ const Chat = () => {
         const errMsg: Message = {
           id: Date.now() + 1,
           role: "ai",
-          content: "Sorry, I am having trouble connecting to the Logicia server right now. Please make sure the backend is running on :8000.",
+          content: t.error_backend,
           timestamp: new Date(),
           mode: responseMode,
         };
@@ -797,7 +938,7 @@ const Chat = () => {
         setIsTyping(false);
       }
     },
-    [activeId, isTyping, responseMode],
+    [activeId, isTyping, responseMode, language, t.error_backend],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -857,7 +998,7 @@ const Chat = () => {
                 size={15}
                 className="group-hover:rotate-90 transition-transform duration-300 flex-shrink-0"
               />
-              NEW CONVERSATION
+              {t.new_conversation}
             </button>
           </div>
 
@@ -865,12 +1006,12 @@ const Chat = () => {
           <div className="flex-1 overflow-y-auto px-2 pb-4">
             {conversations.length === 0 ? (
               <p className="text-center text-xs text-muted-foreground/50 mt-8 px-4">
-                No conversations yet. Start one!
+                {t.no_conversations}
               </p>
             ) : (
               <>
                 <p className="font-display text-[9px] tracking-[0.25em] text-muted-foreground/40 px-3 py-2">
-                  HISTORY
+                  {t.history}
                 </p>
                 {conversations.map((conv) => (
                   <div
@@ -910,7 +1051,7 @@ const Chat = () => {
                 size={13}
                 className="group-hover:-translate-x-0.5 transition-transform flex-shrink-0"
               />
-              Back to Home
+              {t.back_to_home}
             </Link>
           </div>
         </div>
@@ -940,7 +1081,7 @@ const Chat = () => {
               </button>
             )}
             <span className="font-display text-[11px] sm:text-sm tracking-wider text-foreground/70 truncate">
-              {activeConv ? activeConv.title : "New Conversation"}
+              {activeConv ? activeConv.title : t.new_conv_title}
             </span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
@@ -957,7 +1098,7 @@ const Chat = () => {
                 className="flex items-center gap-1.5 text-[10px] font-display tracking-wider text-muted-foreground hover:text-destructive border border-border/50 hover:border-destructive/40 rounded-lg px-2.5 sm:px-3 py-1.5 transition-all min-h-[34px]"
               >
                 <Trash2 size={11} />
-                <span className="hidden sm:inline">CLEAR</span>
+                <span className="hidden sm:inline">{t.clear}</span>
               </button>
             )}
           </div>
@@ -966,13 +1107,13 @@ const Chat = () => {
         {/* Messages area */}
         <main className="flex-1 overflow-y-auto overscroll-contain">
           {(!activeConv || activeConv.messages.length === 0) && !isTyping ? (
-            <EmptyState onPrompt={sendMessage} />
+            <EmptyState onPrompt={sendMessage} t={t} prompts={quickPrompts} />
           ) : (
             <div className="py-4 sm:py-6 pb-2">
               {activeConv?.messages.map((msg) => (
-                <MessageBubble key={msg.id} msg={msg} />
+                <MessageBubble key={msg.id} msg={msg} t={t} />
               ))}
-              {isTyping && <TypingIndicator mode={responseMode} />}
+              {isTyping && <TypingIndicator mode={responseMode} t={t} />}
               <div ref={bottomRef} />
             </div>
           )}
@@ -984,7 +1125,7 @@ const Chat = () => {
             className="px-3 sm:px-6 pb-2 flex gap-2 overflow-x-auto flex-shrink-0"
             style={{ scrollbarWidth: "none" }}
           >
-            {QUICK_PROMPTS.slice(0, 3).map((qp) => (
+            {quickPrompts.slice(0, 3).map((qp) => (
               <button
                 key={qp.prompt}
                 onClick={() => sendMessage(qp.prompt)}
@@ -1002,9 +1143,10 @@ const Chat = () => {
         <div className="flex-shrink-0 border-t border-border/40 bg-background/80 backdrop-blur px-3 sm:px-6 py-3 sm:py-4">
           <div className="max-w-3xl mx-auto space-y-2">
 
-            {/* ── MODE TOGGLE (sits just above the text field) ── */}
-            <div className="flex items-center justify-between px-1">
-              <ModeToggle mode={responseMode} onChange={setResponseMode} />
+            {/* ── MODE + LANGUAGE TOGGLES (sits just above the text field) ── */}
+            <div className="flex items-center justify-between px-1 gap-2 flex-wrap">
+              <ModeToggle mode={responseMode} onChange={setResponseMode} t={t} />
+              <LanguageToggle language={language} onChange={handleLanguageChange} />
             </div>
 
             {/* Text input row */}
@@ -1024,8 +1166,8 @@ const Chat = () => {
                 onKeyDown={handleKeyDown}
                 placeholder={
                   responseMode === "quick"
-                    ? "Ask for a quick answer…"
-                    : "Ask a math question…"
+                    ? t.placeholder_quick
+                    : t.placeholder_detailed
                 }
                 rows={1}
                 className="flex-1 bg-transparent outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground font-body leading-relaxed max-h-[120px] py-0.5"
@@ -1060,8 +1202,8 @@ const Chat = () => {
 
             {/* Hint text */}
             <p className="hidden sm:block text-[10px] text-muted-foreground/25 text-center font-body">
-              Press <kbd className="font-mono">Enter</kbd> to send ·{" "}
-              <kbd className="font-mono">Shift+Enter</kbd> for new line
+              {t.enter_to_send} <kbd className="font-mono">Enter</kbd> {t.to_send}{" "}
+              <kbd className="font-mono">Shift+Enter</kbd> {t.new_line}
             </p>
           </div>
         </div>
