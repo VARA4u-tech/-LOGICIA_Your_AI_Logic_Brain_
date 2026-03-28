@@ -208,6 +208,7 @@ const loadHistory = (): Message[] => {
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>(loadHistory);
+  const [language, setLanguage] = useState<"en" | "te">("en");
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const isFirstRender = useRef(true);
@@ -231,9 +232,10 @@ const ChatInterface = () => {
   }, [messages, isTyping]);
 
   const sendMessage = useCallback(
-    (text: string) => {
+    async (text: string) => {
       const trimmedText = text.trim();
       if (!trimmedText || isTyping) return;
+
       const userMsg: Message = {
         id: Date.now(),
         role: "user",
@@ -243,19 +245,48 @@ const ChatInterface = () => {
       setInput("");
       setIsTyping(true);
 
-      setTimeout(() => {
-        const { content, solution } = solveMath(trimmedText);
+      try {
+        const response = await fetch("http://localhost:8000/chat/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("logicia_token") || ""}`,
+          },
+          body: JSON.stringify({
+            content: trimmedText,
+            mode: "pedagogical",
+            language: language,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to connect to Logicia brain.");
+        }
+
+        const data = await response.json();
+        
         const aiMsg: Message = {
-          id: Date.now() + 1,
+          id: data.message.id,
           role: "ai",
-          content,
-          solution,
+          content: data.message.content,
+          solution: data.message.solution,
         };
+        
         setMessages((prev) => [...prev, aiMsg]);
+      } catch (err: any) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            role: "ai",
+            content: `⚠️ Error: ${err.message}. Please ensure the backend is running.`,
+          },
+        ]);
+      } finally {
         setIsTyping(false);
-      }, 2000);
+      }
     },
-    [isTyping],
+    [isTyping, language],
   );
 
   const handleSend = () => sendMessage(input);
@@ -311,13 +342,29 @@ const ChatInterface = () => {
                 LOGICIA SOLVER v1.0
               </span>
             </div>
-            <button
-              onClick={handleClearChat}
-              className="flex items-center gap-1.5 text-[10px] sm:text-xs font-display tracking-wider text-muted-foreground hover:text-destructive transition-colors duration-200 border border-border hover:border-destructive/50 rounded-lg px-3 py-1.5"
-            >
-              <Trash2 size={12} />
-              <span className="hidden sm:inline">CLEAR SESSION</span>
-            </button>
+            <div className="flex items-center gap-3">
+              <div className="flex bg-black/40 p-1 rounded-lg border border-border">
+                <button
+                  onClick={() => setLanguage("en")}
+                  className={`px-3 py-1 rounded-md text-[10px] font-display transition-all ${language === "en" ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  EN
+                </button>
+                <button
+                  onClick={() => setLanguage("te")}
+                  className={`px-3 py-1 rounded-md text-[10px] font-display transition-all ${language === "te" ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  తెలుగు
+                </button>
+              </div>
+              <button
+                onClick={handleClearChat}
+                className="flex items-center gap-1.5 text-[10px] sm:text-xs font-display tracking-wider text-muted-foreground hover:text-destructive transition-colors duration-200 border border-border hover:border-destructive/50 rounded-lg px-3 py-1.5"
+              >
+                <Trash2 size={12} />
+                <span className="hidden sm:inline">CLEAR SESSION</span>
+              </button>
+            </div>
           </div>
 
           {/* Messages */}

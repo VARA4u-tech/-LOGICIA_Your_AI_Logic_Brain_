@@ -48,7 +48,8 @@ class SolutionData(BaseModel):
 
 class ChatRequest(BaseModel):
     content: str
-    mode: Literal["detailed", "quick"] = "detailed"
+    mode: Literal["detailed", "quick", "pedagogical"] = "detailed"
+    language: str = "en"
     conversation_id: Optional[str] = None
 
 class MessageSchema(BaseModel):

@@ -8,7 +8,7 @@ class LLMService:
         self.base_url = "https://openrouter.ai/api/v1"
         self.model = settings.OPENROUTER_MODEL or "google/gemini-2.0-flash-001"
 
-    async def generate_response(self, user_query: str, math_context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    async def generate_response(self, user_query: str, math_context: Optional[Dict[str, Any]] = None, language: str = "en") -> Dict[str, Any]:
         """
         Generates a pedagogical explanation using OpenRouter.
         If math_context is provided (from SymPy), it uses it to ground the explanation.
@@ -28,8 +28,9 @@ class LLMService:
 
         # Construct prompt
         system_prompt = (
-            "You are Logicia, an advanced AI Math Tutor. Your role is to provide clear, "
-            "pedagogical explanations for mathematical problems. "
+            f"You are Logicia, an advanced AI Math Tutor. Your mission is to provide clear, "
+            f"pedagogical explanations for mathematical problems in {language}. "
+            f"If the language is 'te', provide the response in Telugu. "
             "You are provided with a user query and a symbolic result from a math engine. "
             "Focus on explaining the 'why' and the steps involved. "
             "Use LaTeX for mathematical notation (e.g., $x^2$, $\\frac{a}{b}$)."

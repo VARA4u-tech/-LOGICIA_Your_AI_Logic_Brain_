@@ -59,7 +59,7 @@ async def chat_interaction(
     if use_llm:
         # Grounding context from symbolic engine if available
         context = ai_response_dict.get("solution")
-        llm_response = await llm_service.generate_response(req.content, context)
+        llm_response = await llm_service.generate_response(req.content, context, req.language)
         ai_response_dict["content"] = llm_response["content"]
         # If SymPy failed but LLM succeeded, we might still want a basic 'solution' structure
         if ai_response_dict["solution"] is None:
