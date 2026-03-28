@@ -23,11 +23,87 @@ def generate_graph_data(expr: sp.Expr, variable: sp.Symbol = sp.Symbol('x'), x_r
                 pass
     return data
 
-def solve_math(input_text: str, mode: str) -> Dict[str, Any]:
+def solve_math(input_text: str, mode: str, language: str = "en") -> Dict[str, Any]:
     trimmed = input_text.strip().lower()
 
+    # Translation map
+    T = {
+        "en": {
+            "no_understand": "I couldn't quite understand that math problem. Could you try rephrasing it?\n\nExamples:\n• derivative of x^2\n• integrate x^2\n• solve x^2 - 4 = 0\n• 125 * 4",
+            "quick_ans": "⚡ Quick Answer",
+            "diff_method": "Differentiation",
+            "diff_content": "Let's differentiate {expr} with respect to x:",
+            "diff_step1": "Step 1 — Identify function",
+            "diff_step1_expl": "This is the function we want to differentiate.",
+            "diff_step2": "Step 2 — Compute Derivative",
+            "diff_step2_expl": "Applying SymPy's differentiation rules.",
+            "int_method": "Integration",
+            "int_indef": "Indefinite Integration",
+            "int_content": "Let's integrate {expr} with respect to x:",
+            "int_step1": "Step 1 — Identify integrand",
+            "int_step1_expl": "We want to find the antiderivative.",
+            "int_step2": "Step 2 — Compute Integral",
+            "int_step2_expl": "Applying SymPy's integration rules.",
+            "int_step3": "Step 3 — Add Constant",
+            "int_step3_expl": "Every indefinite integral requires an arbitrary constant C.",
+            "solve_method": "Equation Solving",
+            "solve_content": "Let's solve the equation: {eq}",
+            "solve_step1": "Step 1 — Set up equation",
+            "solve_step1_expl": "This is the equation we need to solve for x.",
+            "solve_step2": "Step 2 — Find roots",
+            "solve_step2_expl": "Using SymPy's algebraic solver to find the exact values of x.",
+            "eval_method": "Mathematical Evaluation",
+            "eval_content": "Let's evaluate the expression:",
+            "eval_step1": "Expression",
+            "eval_step1_expl": "The original mathematical expression.",
+            "eval_step2": "Simplified / Evaluated",
+            "eval_step2_expl": "The simplified exact value or evaluated result.",
+            "roots": "Roots",
+            "integral": "Integral",
+            "derivative": "Derivative",
+            "result": "Result"
+        },
+        "te": {
+            "no_understand": "నేను ఆ గణిత సమస్యను పూర్తిగా అర్థం చేసుకోలేకపోయాను. దయచేసి మళ్ళీ వివరించడానికి ప్రయత్నించండి?\n\nఉదాహరణలు:\n• x^2 యొక్క డెరివేటివ్\n• x^2 ని ఇంటిగ్రేట్ చేయండి\n• x^2 - 4 = 0ని సాధించండి\n• 125 * 4",
+            "quick_ans": "⚡ శీఘ్ర సమాధానం",
+            "diff_method": "అవకలనం (Differentiation)",
+            "diff_content": "మనం x పరంగా {expr}ని అవకలనం చేద్దాం:",
+            "diff_step1": "దశ 1 — ప్రమేయాన్ని గుర్తించండి",
+            "diff_step1_expl": "ఇది మనం అవకలనం చేయాలనుకుంటున్న ప్రమేయం.",
+            "diff_step2": "దశ 2 — డెరివేటివ్‌ని గణించండి",
+            "diff_step2_expl": "సింపీ (SymPy) అవకలన నియమాలను వర్తింపజేయడం.",
+            "int_method": "సమాకలనం (Integration)",
+            "int_indef": "అనిశ్చిత సమాకలనం (Indefinite Integration)",
+            "int_content": "మనం x పరంగా {expr}ని సమాకలనం చేద్దాం:",
+            "int_step1": "దశ 1 — సమాకలనీయాన్ని గుర్తించండి",
+            "int_step1_expl": "మనం దీని యొక్క యాంటీ-డెరివేటివ్‌ను కనుగొనాలనుకుంటున్నాము.",
+            "int_step2": "దశ 2 — ఇంటిగ్రల్‌ని గణించండి",
+            "int_step2_expl": "సింపీ (SymPy) సమాకలన నియమాలను వర్తింపజేయడం.",
+            "int_step3": "దశ 3 — స్థిరాంకాన్ని జోడించండి",
+            "int_step3_expl": "ప్రతి అనిశ్చిత సమాకలనానికి ఒక అనిశ్చిత స్థిరాంకం C అవసరం.",
+            "solve_method": "సమీకరణ సాధన (Equation Solving)",
+            "solve_content": "సమీకరణాన్ని సాధిద్దాం: {eq}",
+            "solve_step1": "దశ 1 — సమీకరణాన్ని సెట్ చేయండి",
+            "solve_step1_expl": "x కోసం మనం సాధించాల్సిన సమీకరణం ఇది.",
+            "solve_step2": "దశ 2 — మూలాలను కనుగొనండి",
+            "solve_step2_expl": "x యొక్క ఖచ్చితమైన విలువలను కనుగొనడానికి సింపీ అల్జీబ్రా పరిష్కారిని ఉపయోగిస్తున్నాము.",
+            "eval_method": "గణిత మూల్యాంకనం (Mathematical Evaluation)",
+            "eval_content": "సమాసాన్ని మూల్యాంకనం చేద్దాం:",
+            "eval_step1": "సమాసం (Expression)",
+            "eval_step1_expl": "అసలు గణిత సమాసం.",
+            "eval_step2": "సరళీకృత / మూల్యాంకనం చేయబడిన",
+            "eval_step2_expl": "సరళీకృత ఖచ్చితమైన విలువ లేదా మూల్యాంకనం చేయబడిన ఫలితం.",
+            "roots": "మూలాలు (Roots)",
+            "integral": "ఇంటిగ్రల్ (Integral)",
+            "derivative": "డెరివేటివ్ (Derivative)",
+            "result": "ఫలితం (Result)"
+        }
+    }
+
+    t = T.get(language, T["en"])
+
     response_data: Dict[str, Any] = {
-        "content": "I couldn't quite understand that math problem. Could you try rephrasing it?\n\nExamples:\n• derivative of x^2\n• integrate x^2\n• solve x^2 - 4 = 0\n• 125 * 4",
+        "content": t["no_understand"],
         "solution": None
     }
 
@@ -46,29 +122,29 @@ def solve_math(input_text: str, mode: str) -> Dict[str, Any]:
             
             if mode == "quick":
                 response_data = {
-                    "content": f"⚡ Quick Answer",
+                    "content": t["quick_ans"],
                     "solution": {
-                        "method": "Differentiation",
-                        "steps": [{"label": "Derivative", "math": f"d/dx [{str_expr}] = {str_res}"}],
+                        "method": t["diff_method"],
+                        "steps": [{"label": t["derivative"], "math": f"d/dx [{str_expr}] = {str_res}"}],
                         "finalAnswer": str_res,
                         "mode": mode,
                     }
                 }
             else:
                 response_data = {
-                    "content": f"Let's differentiate {str_expr} with respect to x:",
+                    "content": t["diff_content"].format(expr=str_expr),
                     "solution": {
-                        "method": "Differentiation",
+                        "method": t["diff_method"],
                         "steps": [
                             {
-                                "label": "Step 1 — Identify function",
+                                "label": t["diff_step1"],
                                 "math": f"f(x) = {str_expr}",
-                                "explanation": "This is the function we want to differentiate."
+                                "explanation": t["diff_step1_expl"]
                             },
                             {
-                                "label": "Step 2 — Compute Derivative",
+                                "label": t["diff_step2"],
                                 "math": f"f'(x) = d/dx [{str_expr}] = {str_res}",
-                                "explanation": "Applying SymPy's differentiation rules."
+                                "explanation": t["diff_step2_expl"]
                             }
                         ],
                         "finalAnswer": f"f'(x) = {str_res}",
@@ -92,34 +168,34 @@ def solve_math(input_text: str, mode: str) -> Dict[str, Any]:
             
             if mode == "quick":
                 response_data = {
-                    "content": f"⚡ Quick Answer",
+                    "content": t["quick_ans"],
                     "solution": {
-                        "method": "Integration",
-                        "steps": [{"label": "Integral", "math": f"∫ {str_expr} dx = {str_res} + C"}],
+                        "method": t["int_method"],
+                        "steps": [{"label": t["integral"], "math": f"∫ {str_expr} dx = {str_res} + C"}],
                         "finalAnswer": f"{str_res} + C",
                         "mode": mode,
                     }
                 }
             else:
                 response_data = {
-                    "content": f"Let's integrate {str_expr} with respect to x:",
+                    "content": t["int_content"].format(expr=str_expr),
                     "solution": {
-                        "method": "Indefinite Integration",
+                        "method": t["int_indef"],
                         "steps": [
                             {
-                                "label": "Step 1 — Identify integrand",
+                                "label": t["int_step1"],
                                 "math": f"∫ {str_expr} dx",
-                                "explanation": "We want to find the antiderivative."
+                                "explanation": t["int_step1_expl"]
                             },
                             {
-                                "label": "Step 2 — Compute Integral",
+                                "label": t["int_step2"],
                                 "math": f"∫ {str_expr} dx = {str_res}",
-                                "explanation": "Applying SymPy's integration rules."
+                                "explanation": t["int_step2_expl"]
                             },
                             {
-                                "label": "Step 3 — Add Constant",
+                                "label": t["int_step3"],
                                 "math": f"{str_res} + C",
-                                "explanation": "Every indefinite integral requires an arbitrary constant C."
+                                "explanation": t["int_step3_expl"]
                             }
                         ],
                         "finalAnswer": f"{str_res} + C",
@@ -134,7 +210,8 @@ def solve_math(input_text: str, mode: str) -> Dict[str, Any]:
             # simple parsing for equations like solve x^2 - 4 = 0
             expr_str = re.sub(r'solve', '', trimmed).strip()
             if "=" in expr_str:
-                left, right = expr_str.split("=", 1)
+                parts = expr_str.split("=", 1)
+                left, right = parts[0], parts[1]
                 eq = sp.Eq(parse_math(left), parse_math(right))
                 expr_to_plot = parse_math(left) - parse_math(right)
             else:
@@ -152,29 +229,29 @@ def solve_math(input_text: str, mode: str) -> Dict[str, Any]:
             
             if mode == "quick":
                 response_data = {
-                    "content": f"⚡ Quick Answer for {str_eq}",
+                    "content": t["quick_ans"] + " — " + str_eq,
                     "solution": {
-                        "method": "Equation Solving",
-                        "steps": [{"label": "Roots", "math": final_ans_str}],
+                        "method": t["solve_method"],
+                        "steps": [{"label": t["roots"], "math": final_ans_str}],
                         "finalAnswer": final_ans_str,
                         "mode": mode,
                     }
                 }
             else:
                 response_data = {
-                    "content": f"Let's solve the equation: {str_eq}",
+                    "content": t["solve_content"].format(eq=str_eq),
                     "solution": {
-                        "method": "Equation Solving",
+                        "method": t["solve_method"],
                         "steps": [
                             {
-                                "label": "Step 1 — Set up equation",
+                                "label": t["solve_step1"],
                                 "math": str_eq,
-                                "explanation": "This is the equation we need to solve for x."
+                                "explanation": t["solve_step1_expl"]
                             },
                             {
-                                "label": "Step 2 — Find roots",
+                                "label": t["solve_step2"],
                                 "math": final_ans_str,
-                                "explanation": "Using SymPy's algebraic solver to find the exact values of x."
+                                "explanation": t["solve_step2_expl"]
                             }
                         ],
                         "finalAnswer": final_ans_str,
@@ -193,29 +270,29 @@ def solve_math(input_text: str, mode: str) -> Dict[str, Any]:
         
         if mode == "quick":
              response_data = {
-                "content": f"⚡ Quick Answer",
+                "content": t["quick_ans"],
                 "solution": {
-                    "method": "Evaluation",
-                    "steps": [{"label": "Result", "math": f"{str_expr} = {str_res}"}],
+                    "method": t["eval_method"],
+                    "steps": [{"label": t["result"], "math": f"{str_expr} = {str_res}"}],
                     "finalAnswer": str_res,
                     "mode": mode,
                 }
             }
         else:
              response_data = {
-                "content": "Let's evaluate the expression:",
+                "content": t["eval_content"],
                 "solution": {
-                    "method": "Mathematical Evaluation",
+                    "method": t["eval_method"],
                     "steps": [
                         {
-                            "label": "Expression",
+                            "label": t["eval_step1"],
                             "math": str_expr,
-                            "explanation": "The original mathematical expression."
+                            "explanation": t["eval_step1_expl"]
                         },
                         {
-                            "label": "Simplified / Evaluated",
+                            "label": t["eval_step2"],
                             "math": f"{str_expr} = {str_res}",
-                            "explanation": "The simplified exact value or evaluated result."
+                            "explanation": t["eval_step2_expl"]
                         }
                     ],
                     "finalAnswer": str_res,

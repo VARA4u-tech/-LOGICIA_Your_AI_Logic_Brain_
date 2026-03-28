@@ -50,7 +50,7 @@ async def chat_interaction(
 
     # 3. Generate AI response (call math engine)
     # Perform symbolic solve first
-    ai_response_dict = solve_math(req.content, req.mode)
+    ai_response_dict = solve_math(req.content, req.mode, req.language)
     
     # 3b. Determine if we need an LLM response (either pedagogical mode OR fallback)
     use_llm = (req.mode == "pedagogical") or (ai_response_dict["solution"] is None)

@@ -41,174 +41,59 @@ const QUICK_PROMPTS = [
 const MAX_CHARS = 300;
 const STORAGE_KEY = "logicia_chat_history";
 
-/* ─── Math Solver ────────────────────────────────────────────────────────── */
-const solveMath = (
-  input: string,
-): { content: string; solution?: SolutionData } => {
-  const trimmed = input.trim().toLowerCase();
-
-  // Basic Arithmetic
-  if (trimmed.includes("2+2") || trimmed.match(/^2\s*\+\s*2$/)) {
-    return {
-      content: "Here's the solution:",
-      solution: {
-        method: "Basic Arithmetic",
-        steps: [
-          {
-            label: "Identify operation",
-            math: "2 + 2",
-            explanation: "Simple addition of two integers",
-          },
-          { label: "Compute sum", math: "2 + 2 = 4" },
-        ],
-        finalAnswer: "4",
-      },
-    };
+/* ─── UI Translations ────────────────────────────────────────────────────── */
+const UI_STRINGS = {
+  en: {
+    welcome: "Welcome! I'm your **AI Math Assistant**. Enter any math problem and I'll solve it step by step with interactive visualizations. 🧮",
+    chat_interface: "CHAT INTERFACE",
+    tagline: "Step-by-step solutions with interactive visualizations",
+    solver_version: "LOGICIA SOLVER v1.0",
+    clear_session: "CLEAR SESSION",
+    neural_comp: "NEURAL COMPUTATION IN PROGRESS...",
+    tutor_suggestions: "TUTOR SUGGESTIONS",
+    placeholder: "Ask a question (e.g., solve x² + 2x + 1)...",
+    error_backend: "⚠️ Error: {msg}. Please ensure the backend is running.",
+  },
+  te: {
+    welcome: "స్వాగతం! నేను మీ **AI గణిత సహాయకుడిని**. ఏదైనా గణిత సమస్యను నమోదు చేయండి మరియు నేను దానిని ఇంటరాక్టివ్ విజువలైజేషన్‌లతో దశలవారీగా పరిష్కరిస్తాను. 🧮",
+    chat_interface: "చాట్ ఇంటర్ఫేస్",
+    tagline: "ఇంటరాక్టివ్ విజువలైజేషన్లతో దశలవారీ పరిష్కారాలు",
+    solver_version: "లాజిషియా సాల్వర్ v1.0",
+    clear_session: "సెషన్‌ను క్లియర్ చేయి",
+    neural_comp: "న్యూరల్ కంప్యూటేషన్ పురోగతిలో ఉంది...",
+    tutor_suggestions: "ట్యూటర్ సూచనలు",
+    placeholder: "ఒక ప్రశ్న అడగండి (ఉదా., x² + 2x + 1 సాధించండి)...",
+    error_backend: "⚠️ లోపం: {msg}. దయచేసి బ్యాకెండ్ నడుస్తుందో లేదో తనిఖీ చేయండి.",
   }
-
-  // Differentiation
-  if (trimmed.includes("derivative") || trimmed.includes("d/dx")) {
-    const graphData: PlotData[] = [];
-    for (let x = -3; x <= 3; x += 0.5) {
-      graphData.push({ x, y: 2 * x }); // derivative of x^2 is 2x
-    }
-    return {
-      content: "Applying differentiation rules:",
-      solution: {
-        method: "Power Rule — Differentiation",
-        steps: [
-          {
-            label: "Identify the function",
-            math: "f(x) = x²",
-            explanation: "A polynomial of degree 2",
-          },
-          { label: "Apply the power rule", math: "d/dx [xⁿ] = n · xⁿ⁻¹" },
-          { label: "Final result", math: "d/dx [x²] = 2x" },
-        ],
-        finalAnswer: "f'(x) = 2x",
-        graphData,
-      },
-    };
-  }
-
-  // Integration
-  if (trimmed.includes("integral") || trimmed.includes("∫")) {
-    const graphData: PlotData[] = [];
-    for (let x = -3; x <= 3; x += 0.5) {
-      graphData.push({ x, y: (x * x) / 2 });
-    }
-    return {
-      content: "Applying integration rules:",
-      solution: {
-        method: "Power Rule — Integration",
-        steps: [
-          { label: "Identify the integrand", math: "∫ x dx" },
-          { label: "Apply the power rule", math: "∫ xⁿ dx = (xⁿ⁺¹)/(n+1) + C" },
-          { label: "Evaluate", math: "∫ x¹ dx = x²/2 + C" },
-        ],
-        finalAnswer: "x²/2 + C",
-        graphData,
-      },
-    };
-  }
-
-  // Quadratic Solver with GRAPH
-  if (
-    trimmed.includes("quadratic") ||
-    trimmed.includes("x²") ||
-    trimmed.includes("x^2")
-  ) {
-    const match = trimmed.match(/(\d*)x\^?2?\s*([+-]\s*\d+)x\s*([+-]\s*\d+)/);
-    const a = match && match[1] ? parseInt(match[1]) : 1;
-    const b = match ? parseInt(match[2].replace(/\s/g, "")) : -5;
-    const c = match ? parseInt(match[3].replace(/\s/g, "")) : 6;
-    const disc = b * b - 4 * a * c;
-    const sqrtDisc = Math.sqrt(Math.abs(disc));
-    const x1 = (-b + sqrtDisc) / (2 * a);
-    const x2 = (-b - sqrtDisc) / (2 * a);
-
-    // Generate parabola data points
-    const graphData: PlotData[] = [];
-    const center = -b / (2 * a);
-    for (let x = center - 5; x <= center + 5; x += 0.5) {
-      graphData.push({ x, y: a * x * x + b * x + c });
-    }
-
-    return {
-      content: `Solving the quadratic equation: ${a}x² + (${b})x + (${c}) = 0`,
-      solution: {
-        method: "Quadratic Formula",
-        steps: [
-          { label: "Coefficients", math: `a = ${a}, b = ${b}, c = ${c}` },
-          {
-            label: "Discriminant",
-            math: `Δ = b² − 4ac = ${disc}`,
-            explanation:
-              disc >= 0
-                ? "Positive/Zero → Real Roots"
-                : "Negative → Complex Roots",
-          },
-          { label: "Evaluate roots", math: `x = (−b ± √Δ) / 2a` },
-          {
-            label: "Final roots",
-            math: `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`,
-          },
-        ],
-        finalAnswer: `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`,
-        graphData,
-      },
-    };
-  }
-
-  // Fallback / Arithmetic
-  try {
-    const sanitized = input.replace(/[^0-9+\-*/().% ]/g, "");
-    if (sanitized.length > 0 && input.match(/[0-9]/)) {
-      const result = new Function(`return ${sanitized}`)();
-      if (typeof result === "number" && isFinite(result)) {
-        return {
-          content: "Computing expression:",
-          solution: {
-            method: "Arithmetic Evaluation",
-            steps: [
-              { label: "Evaluation", math: `${input.trim()} = ${result}` },
-            ],
-            finalAnswer: `${result}`,
-          },
-        };
-      }
-    }
-  } catch {
-    /* empty */
-  }
-
-  return {
-    content:
-      "I'm ready to solve! Try entering a problem like:\n\n• **x^2 - 5x + 6** (Quadratic + Graph)\n• **derivative of x^2** (Calculus + Graph)\n• **integral of x** (Calculus + Graph)\n• **125 * 4** (Arithmetic)",
-  };
 };
 
 /* ─── Component ──────────────────────────────────────────────────────────── */
-const INITIAL_MESSAGE: Message = {
+const getInitialMessage = (lang: "en" | "te"): Message => ({
   id: 0,
   role: "ai",
-  content:
-    "Welcome! I'm your **AI Math Assistant**. Enter any math problem and I'll solve it step by step with interactive visualizations. 🧮",
-};
+  content: UI_STRINGS[lang].welcome,
+});
 
-const loadHistory = (): Message[] => {
+const loadHistory = (lang: "en" | "te"): Message[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw) as Message[];
   } catch {
     /* ignore */
   }
-  return [INITIAL_MESSAGE];
+  return [getInitialMessage(lang)];
 };
 
 const ChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>(loadHistory);
   const [language, setLanguage] = useState<"en" | "te">("en");
+  const [messages, setMessages] = useState<Message[]>([]);
+  
+  // Initialize messages on first load or when language changes if empty content
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMessages(loadHistory(language));
+    }
+  }, [language]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const isFirstRender = useRef(true);
@@ -273,13 +158,14 @@ const ChatInterface = () => {
         };
         
         setMessages((prev) => [...prev, aiMsg]);
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
         setMessages((prev) => [
           ...prev,
           {
             id: Date.now() + 1,
             role: "ai",
-            content: `⚠️ Error: ${err.message}. Please ensure the backend is running.`,
+            content: UI_STRINGS[language].error_backend.replace("{msg}", errorMessage),
           },
         ]);
       } finally {
@@ -303,7 +189,8 @@ const ChatInterface = () => {
   };
 
   const handleClearChat = () => {
-    setMessages([INITIAL_MESSAGE]);
+    const initMsg = getInitialMessage(language);
+    setMessages([initMsg]);
     localStorage.removeItem(STORAGE_KEY);
     inputRef.current?.focus();
   };
@@ -322,15 +209,16 @@ const ChatInterface = () => {
   const charsLeft = MAX_CHARS - input.length;
   const isOverLimit = charsLeft < 0;
   const showCounter = input.length > MAX_CHARS * 0.7;
+  const ui = UI_STRINGS[language];
 
   return (
     <section id="chat" className="relative z-10 py-16 sm:py-20 px-4">
       <div className="max-w-3xl mx-auto">
         <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-center font-bold text-primary neon-text mb-3">
-          CHAT INTERFACE
+          {ui.chat_interface}
         </h2>
         <p className="text-center text-muted-foreground text-xs sm:text-sm font-body tracking-wider mb-8 sm:mb-12">
-          Step-by-step solutions with interactive visualizations
+          {ui.tagline}
         </p>
 
         <div className="glass-strong rounded-xl overflow-hidden flex flex-col hover:border-primary/40 transition-all duration-500 shadow-2xl shadow-black/50">
@@ -339,7 +227,7 @@ const ChatInterface = () => {
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               <span className="font-display text-[10px] sm:text-xs tracking-[0.2em] text-primary/80">
-                LOGICIA SOLVER v1.0
+                {ui.solver_version}
               </span>
             </div>
             <div className="flex items-center gap-3">
@@ -362,7 +250,7 @@ const ChatInterface = () => {
                 className="flex items-center gap-1.5 text-[10px] sm:text-xs font-display tracking-wider text-muted-foreground hover:text-destructive transition-colors duration-200 border border-border hover:border-destructive/50 rounded-lg px-3 py-1.5"
               >
                 <Trash2 size={12} />
-                <span className="hidden sm:inline">CLEAR SESSION</span>
+                <span className="hidden sm:inline">{ui.clear_session}</span>
               </button>
             </div>
           </div>
@@ -416,7 +304,7 @@ const ChatInterface = () => {
                   <div className="pt-2 border-t border-border/50 flex items-center justify-between">
                     <span className="font-body text-[9px] sm:text-[10px] text-muted-foreground tracking-[0.2em] flex items-center gap-2">
                       <span className="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                      NEURAL COMPUTATION IN PROGRESS...
+                      {ui.neural_comp}
                     </span>
                   </div>
                 </div>
@@ -430,7 +318,7 @@ const ChatInterface = () => {
             <div className="flex items-center gap-2 mb-3">
               <Sparkles size={11} className="text-primary/70 animate-pulse" />
               <span className="font-display text-[9px] sm:text-[10px] tracking-[0.2em] text-primary/60">
-                TUTOR SUGGESTIONS
+                {ui.tutor_suggestions}
               </span>
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -459,7 +347,7 @@ const ChatInterface = () => {
                     setInput(e.target.value.slice(0, MAX_CHARS + 20))
                   }
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask a question (e.g., solve x² + 2x + 1)..."
+                  placeholder={ui.placeholder}
                   maxLength={MAX_CHARS + 20}
                   className={`w-full bg-muted/20 border rounded-2xl px-5 py-3.5 sm:py-4 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-all duration-300 font-body pr-16 shadow-inner ${
                     isOverLimit
