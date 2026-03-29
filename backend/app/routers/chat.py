@@ -17,24 +17,29 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 @router.post("/", response_model=ChatResponse)
 async def chat_interaction(
     req: ChatRequest,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: AsyncSession = Depends(get_db)
 ):
+    # For now, allow guest users without login
+    GUEST_USER_ID = "global-guest-id"
     # 1. Fetch or create conversation
     if req.conversation_id:
         stmt = select(Conversation).where(
-            Conversation.id == req.conversation_id, Conversation.user_id == current_user.id
+            Conversation.id == req.conversation_id
         )
         result = await db.execute(stmt)
         conversation = result.scalars().first()
         if not conversation:
-            raise HTTPException(status_code=404, detail="Conversation not found")
+             # Fallback: Create new if ID not found (sometimes happens with local storage)
+             title = req.content[:30] + "..." if len(req.content) > 30 else req.content
+             conversation = Conversation(user_id=GUEST_USER_ID, title=title)
+             db.add(conversation)
+             await db.flush()
         # Update updated_at
         conversation.updated_at = datetime.now(timezone.utc)
     else:
         # Auto-generate title using first few chars of input
         title = req.content[:30] + "..." if len(req.content) > 30 else req.content
-        conversation = Conversation(user_id=current_user.id, title=title)
+        conversation = Conversation(user_id=GUEST_USER_ID, title=title)
         db.add(conversation)
         await db.flush() # flush to generate ID
 

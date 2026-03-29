@@ -884,7 +884,7 @@ const MessageBubble = ({
 
   return (
     <div
-      className={`group flex gap-2.5 sm:gap-4 max-w-3xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 animate-fade-in-up ${isUser ? "flex-row-reverse" : ""}`}
+      className={`group flex gap-2.5 sm:gap-4 max-w-4xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 animate-fade-in-up ${isUser ? "flex-row-reverse" : ""}`}
     >
       {/* Avatar */}
       <div
@@ -1422,7 +1422,7 @@ const Chat = () => {
           {(!activeConv || activeConv.messages.length === 0) && !isTyping ? (
             <EmptyState onPrompt={sendMessage} t={t} prompts={quickPrompts} />
           ) : (
-            <div className="py-4 sm:py-6 pb-2">
+            <div className="max-w-4xl mx-auto py-4 sm:py-6 px-3 sm:px-6 pb-2">
               {activeConv?.messages.map((msg) => (
                 <MessageBubble key={msg.id} msg={msg} t={t} />
               ))}
@@ -1454,7 +1454,7 @@ const Chat = () => {
 
         {/* ── Input area ── */}
         <div className="flex-shrink-0 border-t border-border/40 bg-background/80 backdrop-blur px-3 sm:px-6 py-3 sm:py-4">
-          <div className="max-w-3xl mx-auto space-y-2">
+          <div className="max-w-4xl mx-auto space-y-2">
             <div className="flex items-center justify-end px-1 gap-2 flex-wrap">
               <LanguageToggle
                 language={language}
@@ -1508,9 +1508,9 @@ const Chat = () => {
             </div>
 
             {/* Hint text */}
-            <p className="hidden sm:block text-[10px] text-muted-foreground/25 text-center font-body">
-              {t.enter_to_send} <kbd className="font-mono">Enter</kbd>{" "}
-              {t.to_send} <kbd className="font-mono">Shift+Enter</kbd>{" "}
+            <p className="hidden sm:block text-[10px] text-muted-foreground/60 text-center font-body">
+              {t.enter_to_send} <kbd className="font-mono opacity-80">Enter</kbd>{" "}
+              {t.to_send} <kbd className="font-mono opacity-80">Shift+Enter</kbd>{" "}
               {t.new_line}
             </p>
           </div>
