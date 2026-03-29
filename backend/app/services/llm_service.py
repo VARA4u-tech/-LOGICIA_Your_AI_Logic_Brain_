@@ -102,7 +102,15 @@ class LLMService:
                 response.raise_for_status()
                 data = response.json()
                 
-                content = data["choices"][0]["message"]["content"]
+                # Safe choice access
+                choices = data.get("choices", [])
+                if not choices:
+                    raise ValueError("No choices returned from AI model.")
+                
+                content = choices[0].get("message", {}).get("content")
+                if content is None:
+                    raise ValueError("AI model returned empty/null content.")
+
                 return {
                     "content": content,
                     "llm_used": True,

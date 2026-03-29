@@ -39,7 +39,6 @@ import { Share } from "lucide-react";
 /* ═══════════════════════════════════════════════════════════════
    TYPES
 ═══════════════════════════════════════════════════════════════ */
-type ResponseMode = "detailed" | "quick";
 
 interface Step {
   label: string;
@@ -59,7 +58,6 @@ interface SolutionData {
   steps: Step[];
   finalAnswer: string;
   graphData?: PlotData[];
-  mode?: ResponseMode;
 }
 interface Message {
   id: number;
@@ -67,7 +65,6 @@ interface Message {
   content: string;
   solution?: SolutionData;
   timestamp: Date;
-  mode?: ResponseMode;
 }
 interface Conversation {
   id: string;
@@ -81,7 +78,6 @@ interface Conversation {
 ═══════════════════════════════════════════════════════════════ */
 
 const STORAGE_KEY = "logicia_conversations";
-const MODE_KEY = "logicia_response_mode";
 const LANG_KEY = "logicia_language";
 const MAX_CHARS = 500;
 
@@ -106,7 +102,6 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     to_send: "to send ·",
     new_line: "for new line",
     computing: "Computing...",
-    computing_fast: "Computing fast...",
     error_backend:
       "Sorry, I am having trouble connecting to the Logicia server right now. Please make sure the backend is running on :8000.",
     logicia_ai: "LOGICIA AI",
@@ -115,11 +110,6 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     hide: "HIDE",
     show_steps: "SHOW STEPS",
     visualization: "VISUALIZATION",
-    mode: "Mode",
-    detailed: "DETAILED",
-    quick: "QUICK",
-    detailed_hint: "Full explanation + graph",
-    quick_hint: "Exam-style · key logic only",
     new_conv_title: "New Conversation",
   },
   te: {
@@ -137,7 +127,6 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     to_send: "నొక్కండి ·",
     new_line: "కొత్త పంక్తి కోసం",
     computing: "గణన జరుగుతోంది...",
-    computing_fast: "వేగంగా గణన...",
     error_backend:
       "క్షమించండి, లాజిషియా సర్వర్‌కు కనెక్ట్ అవడంలో సమస్య ఉంది. దయచేసి బ్యాకెండ్ :8000 పోర్ట్‌లో నడుస్తుందో లేదో తనిఖీ చేయండి.",
     logicia_ai: "లాజిషియా AI",
@@ -146,11 +135,6 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     hide: "దాచు",
     show_steps: "దశలు చూపించు",
     visualization: "విజువలైజేషన్",
-    mode: "మోడ్",
-    detailed: "వివరంగా",
-    quick: "శీఘ్రం",
-    detailed_hint: "పూర్తి వివరణ + గ్రాఫ్",
-    quick_hint: "పరీక్ష-శైలి · కీలక తర్కం మాత్రమే",
     new_conv_title: "కొత్త సంభాషణ",
   },
 };
@@ -209,58 +193,39 @@ const MathBlock = ({ expr }: { expr: string }) => (
   </div>
 );
 
-/* ═══════════════════════════════════════════════════════════════
-   RESPONSE MODE TOGGLE
-═══════════════════════════════════════════════════════════════ */
-const ModeToggle = ({
-  mode,
-  onChange,
-  t,
-}: {
-  mode: ResponseMode;
-  onChange: (m: ResponseMode) => void;
-  t: Record<string, string>;
-}) => (
-  <div className="flex items-center gap-2 flex-wrap">
-    <span className="text-[10px] font-display tracking-[0.2em] text-muted-foreground/50 uppercase hidden sm:inline">
-      {t.mode}
-    </span>
-    <div className="flex items-center p-0.5 rounded-lg border border-border/50 bg-muted/10 gap-0.5">
-      {/* Detailed */}
-      <button
-        onClick={() => onChange("detailed")}
-        title="Detailed — full step-by-step explanation with graph"
-        className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-[10px] sm:text-[11px] font-display tracking-wider transition-all duration-200 min-h-[30px] ${
-          mode === "detailed"
-            ? "bg-primary/15 text-primary border border-primary/30 shadow-[0_0_8px_hsl(120_100%_54%/0.15)]"
-            : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
-        }`}
-      >
-        <BookOpen size={11} className="flex-shrink-0" />
-        <span>{t.detailed}</span>
-      </button>
+const SectionHeader = ({ text }: { text: string }) => {
+  const isGiven = /given|ఇవ్వబడింది/i.test(text);
+  const isCalculation = /calculation|గణన/i.test(text);
+  const isConclusion = /∴|conclusion|నిర్ణయం/i.test(text);
+  const isShortcut = /💡|shortcut|షార్ట్/i.test(text);
 
-      {/* Quick */}
-      <button
-        onClick={() => onChange("quick")}
-        title="Quick — exam-style: formula + answer, no extras"
-        className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-[10px] sm:text-[11px] font-display tracking-wider transition-all duration-200 min-h-[30px] ${
-          mode === "quick"
-            ? "bg-amber-500/15 text-amber-400 border border-amber-500/30 shadow-[0_0_8px_hsl(45_100%_60%/0.15)]"
-            : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
-        }`}
-      >
-        <Zap size={11} className="flex-shrink-0" />
-        <span>{t.quick}</span>
-      </button>
+  let icon = <Hash size={12} />;
+  let styles = "text-primary border-primary/30 bg-primary/5";
+  
+  if (isGiven) {
+    icon = <BookOpen size={12} />;
+    styles = "text-sky-400 border-sky-500/30 bg-sky-500/5 shadow-[0_0_15px_rgba(14,165,233,0.1)]";
+  } else if (isCalculation) {
+    icon = <Zap size={12} />;
+    styles = "text-primary border-primary/30 bg-primary/5";
+  } else if (isConclusion) {
+    icon = <CheckCircle2 size={12} />;
+    styles = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]";
+  } else if (isShortcut) {
+    icon = <Sparkles size={12} />;
+    styles = "text-amber-400 border-amber-500/30 bg-amber-500/5 shadow-[0_0_15px_rgba(245,158,11,0.1)]";
+  }
+
+  const cleanText = text.replace(/\*\*/g, "").replace(/:$/, "").trim();
+
+  return (
+    <div className={`flex items-center gap-2 font-display text-[10px] sm:text-[11px] tracking-[0.2em] uppercase px-3 py-2 rounded-lg border ${styles} mt-4 mb-2 transition-all group w-fit`}>
+      <span className="group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">{icon}</span>
+      <span>{cleanText}</span>
     </div>
+  );
+};
 
-    {/* Active mode hint */}
-    <span className="text-[9px] text-muted-foreground/35 font-body hidden md:inline">
-      {mode === "detailed" ? t.detailed_hint : t.quick_hint}
-    </span>
-  </div>
-);
 
 /* ═══════════════════════════════════════════════════════════════
    LANGUAGE TOGGLE
@@ -307,7 +272,6 @@ const SolutionPanel = ({
   finalAnswer,
   method,
   graphData,
-  mode,
   t,
   content,
 }: {
@@ -315,12 +279,10 @@ const SolutionPanel = ({
   finalAnswer: string;
   method?: string;
   graphData?: PlotData[];
-  mode?: ResponseMode;
   t: Record<string, string>;
   content?: string;
 }) => {
   const [expanded, setExpanded] = useState(true);
-  const isQuick = mode === "quick";
   const panelRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -380,18 +342,6 @@ const SolutionPanel = ({
               </span>
             </div>
           )}
-          {/* Mode badge on the response */}
-          {isQuick ? (
-            <span className="flex items-center gap-1 text-[9px] font-display tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
-              <Zap size={8} />
-              {t.quick}
-            </span>
-          ) : (
-            <span className="flex items-center gap-1 text-[9px] font-display tracking-widest text-primary/70 bg-primary/5 border border-primary/15 rounded-full px-2 py-0.5">
-              <BookOpen size={8} />
-              {t.detailed}
-            </span>
-          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -407,7 +357,7 @@ const SolutionPanel = ({
             </button>
           )}
 
-          {!isQuick && !isExporting && (
+          {!isExporting && (
             <button
               onClick={() => setExpanded((p) => !p)}
               className="ml-auto flex items-center gap-1 text-[10px] font-display tracking-widest text-primary/70 hover:text-primary transition-colors border border-primary/20 rounded-md px-2.5 py-1 hover:border-primary/40 flex-shrink-0 min-h-[30px]"
@@ -435,8 +385,8 @@ const SolutionPanel = ({
         </div>
       )}
 
-      {/* Graph — only shown in detailed mode */}
-      {!isQuick && graphData && graphData.length > 0 && (
+      {/* Graph */}
+      {graphData && graphData.length > 0 && (
         <div className="rounded-xl overflow-hidden border border-primary/15 bg-black/30">
           <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-border/30 text-[10px] text-muted-foreground font-display tracking-widest uppercase">
             <BarChart2 size={12} className="text-primary" /> {t.visualization}
@@ -501,51 +451,39 @@ const SolutionPanel = ({
       <div
         className="overflow-hidden transition-all duration-500"
         style={{
-          maxHeight:
-            isQuick || expanded ? `${steps.length * 300 + 400}px` : "0px",
-          opacity: isQuick || expanded ? 1 : 0,
+          maxHeight: expanded ? `${steps.length * 300 + 400}px` : "0px",
+          opacity: expanded ? 1 : 0,
         }}
       >
         <div className="space-y-3 sm:space-y-4 py-1">
           {steps.map((step, i) => (
             <div key={i} className="flex gap-2.5 sm:gap-3 items-start">
               {/* Step number bubble */}
-              <div
-                className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border flex items-center justify-center text-[9px] sm:text-[10px] font-display mt-0.5 ${
-                  isQuick
-                    ? "border-amber-500/30 bg-amber-500/5 text-amber-400"
-                    : "border-primary/30 bg-primary/5 text-primary"
-                }`}
-              >
+              <div className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border border-primary/30 bg-primary/5 text-primary flex items-center justify-center text-[9px] sm:text-[10px] font-display mt-0.5">
                 {i + 1}
               </div>
 
               <div className="flex-1 min-w-0 overflow-hidden space-y-1.5">
                 {/* Step label */}
-                <p
-                  className={`text-[10px] tracking-wide uppercase font-display ${
-                    isQuick ? "text-amber-400/60" : "text-muted-foreground"
-                  }`}
-                >
+                <p className="text-[10px] tracking-wide uppercase font-display text-muted-foreground">
                   {step.label}
                 </p>
 
                 {/* Math expression */}
                 <MathBlock expr={step.math} />
 
-                {/* Explanation — shown in both modes */}
+                {/* Explanation */}
                 {step.explanation && (
                   <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-relaxed">
                     <ChevronRight
                       size={9}
-                      className={`inline mr-1 ${isQuick ? "text-amber-400/60" : "text-primary"}`}
+                      className="inline mr-1 text-primary"
                     />
                     {step.explanation}
                   </p>
                 )}
 
-                {/* Sub-steps (only in detailed mode) */}
-                {!isQuick && step.subSteps && step.subSteps.length > 0 && (
+                {step.subSteps && step.subSteps.length > 0 && (
                   <div className="mt-1.5 ml-1 pl-3 border-l border-primary/20 space-y-1">
                     {step.subSteps.map((sub, j) => (
                       <p
@@ -561,8 +499,7 @@ const SolutionPanel = ({
                   </div>
                 )}
 
-                {/* Note callout (only in detailed mode) */}
-                {!isQuick && step.note && (
+                {step.note && (
                   <div className="mt-2 flex gap-2 items-start px-3 py-2 rounded-lg border border-amber-500/20 bg-amber-500/5">
                     <Lightbulb
                       size={11}
@@ -580,34 +517,20 @@ const SolutionPanel = ({
       </div>
 
       {/* Final Answer */}
-      <div
-        className={`p-3 sm:p-4 rounded-xl border flex items-center justify-between gap-2 sm:gap-3 flex-wrap ${
-          isQuick
-            ? "border-amber-500/30 bg-amber-500/5"
-            : "border-primary/40 bg-primary/8"
-        }`}
-      >
+      <div className="p-3 sm:p-4 rounded-xl border border-primary/40 bg-primary/8 flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
         <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
           <CheckCircle2
             size={15}
-            className={`flex-shrink-0 ${isQuick ? "text-amber-400" : "text-primary"}`}
+            className="flex-shrink-0 text-primary"
           />
           <div className="min-w-0">
-            <p
-              className={`font-display text-[9px] tracking-[0.25em] mb-0.5 uppercase ${
-                isQuick ? "text-amber-400/60" : "text-primary/60"
-              }`}
-            >
+            <p className="font-display text-[9px] tracking-[0.25em] mb-0.5 uppercase text-primary/60">
               {t.final_answer}
             </p>
             <p
-              className={`font-mono text-base sm:text-xl font-bold break-all ${
-                isQuick ? "text-amber-300" : "text-primary"
-              }`}
+              className="font-mono text-base sm:text-xl font-bold break-all text-primary"
               style={{
-                textShadow: isQuick
-                  ? "0 0 20px hsl(45 100% 60% / 0.5)"
-                  : "0 0 20px hsl(120 100% 54% / 0.6)",
+                textShadow: "0 0 20px hsl(120 100% 54% / 0.6)",
               }}
             >
               {finalAnswer}
@@ -624,10 +547,8 @@ const SolutionPanel = ({
    TYPING INDICATOR
 ═══════════════════════════════════════════════════════════════ */
 const TypingIndicator = ({
-  mode,
   t,
 }: {
-  mode: ResponseMode;
   t: Record<string, string>;
 }) => (
   <div className="flex gap-3 sm:gap-4 items-start max-w-3xl mx-auto px-3 sm:px-6 py-3 animate-fade-in-up">
@@ -638,12 +559,12 @@ const TypingIndicator = ({
       {[0, 0.15, 0.3].map((delay, i) => (
         <span
           key={i}
-          className={`w-2 h-2 rounded-full ${mode === "quick" ? "bg-amber-400/60" : "bg-primary/60"}`}
+          className="w-2 h-2 rounded-full bg-primary/60"
           style={{ animation: `pulse 1.4s ease-in-out ${delay}s infinite` }}
         />
       ))}
       <span className="text-xs text-muted-foreground ml-1 font-display tracking-wider">
-        {mode === "quick" ? t.computing_fast : t.computing}
+        {t.computing}
       </span>
     </div>
   </div>
@@ -700,164 +621,104 @@ const TableRenderer = ({ markdown }: { markdown: string }) => {
 };
 
 const RenderContent = ({ content }: { content: string }) => {
-  // Normalize newline formatting for tables and lists
+  // Normalize newline formatting for tables and lists, and cleanup LaTeX environments
   const normalizedContent = content
-    .replace(/\\\( /g, "\\(")
-    .replace(/ \\\)/g, "\\)")
-    .replace(/\\\[ /g, "\\[")
-    .replace(/ \\\]/g, "\\]")
+    .replace(/\\begin\{aligned\}/g, "\\[")
+    .replace(/\\end\{aligned\}/g, "\\]")
+    .replace(/\\\( /g, "\\(").replace(/ \\\)/g, "\\)")
+    .replace(/\\\[ /g, "\\[").replace(/ \\\]/g, "\\]")
     // Ensure tables have spacing
     .replace(/\n(\|.*\|)\n/g, "\n\n$1\n\n");
 
   const paragraphs = normalizedContent.split(/\n{2,}/);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {paragraphs.map((para, pIdx) => {
         const trimmedPara = para.trim();
         if (!trimmedPara) return null;
 
         // --- TABLE DETECTION: lines starting/ending with |
-        if (
-          trimmedPara.includes("|") &&
-          trimmedPara.split("\n").some((l) => l.includes("|---"))
-        ) {
+        if (trimmedPara.includes("|") && trimmedPara.split("\n").some(l => l.includes("|---"))) {
           return <TableRenderer key={pIdx} markdown={trimmedPara} />;
         }
 
-        // --- SECTION HEADER: lines like "**Given:**" or "**∴ Conclusion:**"
-        const headerMatch = trimmedPara.match(/^\*\*(.+?)\*\*\s*$/);
-        if (headerMatch && trimmedPara.split("\n").length === 1) {
-          const headerText = headerMatch[1];
-          const type = /∴|conclusion|నిర్ణయం/i.test(headerText)
-            ? "conclusion"
-            : /💡|shortcut|షార్ట్/i.test(headerText)
-              ? "shortcut"
-              : /given|ఇవ్వబడింది/i.test(headerText)
-                ? "given"
-                : "default";
-
-          const styles = {
-            conclusion:
-              "text-emerald-400 border-emerald-500/30 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]",
-            shortcut:
-              "text-amber-400 border-amber-500/30 bg-amber-500/5 shadow-[0_0_15px_rgba(245,158,11,0.1)]",
-            given:
-              "text-sky-400 border-sky-500/30 bg-sky-500/5 shadow-[0_0_15px_rgba(14,165,233,0.1)]",
-            default: "text-primary border-primary/30 bg-primary/5",
-          };
-
-          return (
-            <div
-              key={pIdx}
-              className={`font-display text-[10px] sm:text-[11px] tracking-widest uppercase px-3 py-2 rounded-lg border ${styles[type as keyof typeof styles]} mt-3 mb-1 transition-all`}
-            >
-              {headerText}
-            </div>
-          );
+        // --- SECTION HEADER DETECTION
+        const isHeaderOnly = trimmedPara.split("\n").length === 1 && 
+          (/^(Given|Calculation|Conclusion|Shortcut|నిర్ణయం|గణన|ఇవ్వబడింది|షార్ట్|💡|∴)/i.test(trimmedPara) || trimmedPara.match(/^\*\*(.+?)\*\*:?\s*$/));
+        
+        if (isHeaderOnly) {
+          return <SectionHeader key={pIdx} text={trimmedPara} />;
         }
 
-        // --- MULTI-LINE PARAGRAPH: render line by line
+        // Check if paragraph *starts* with a header followed by content
         const lines = trimmedPara.split("\n");
+        const firstLine = lines[0];
+        const isInlineHeader = /^(Given|Calculation|Conclusion|Shortcut|నిర్ణయం|గణన|ఇవ్వబడింది|షార్ట్|💡|∴)/i.test(firstLine) && firstLine.includes(":");
+        
+        const contentLines = isInlineHeader ? lines.slice(1) : lines;
+
         return (
-          <div key={pIdx} className="space-y-2">
-            {lines.map((line, lIdx) => {
-              const trimmedLine = line.trim();
-              if (!trimmedLine) return null;
+          <div key={pIdx} className="space-y-3">
+            {isInlineHeader && <SectionHeader text={firstLine} />}
+            <div className={`space-y-2.5 ${isInlineHeader ? "pl-1 sm:pl-2" : ""}`}>
+              {contentLines.map((line, lIdx) => {
+                const trimmedLine = line.trim();
+                if (!trimmedLine) return null;
 
-              // Bullet / list item: handles -, •, ▸, *, or numeric like 1.
-              if (/^([-•▸*]|\d+\.)\s/.test(trimmedLine)) {
-                const bulletContent = trimmedLine.replace(
-                  /^([-•▸*]|\d+\.)\s*/,
-                  "",
-                );
-                const isStepHeader = /^Step \d+/i.test(bulletContent);
-
-                return (
-                  <div
-                    key={lIdx}
-                    className={`flex gap-3 items-start ${isStepHeader ? "mt-3 first:mt-0" : ""}`}
-                  >
-                    <span className="text-primary/60 mt-1.5 flex-shrink-0 text-[10px]">
-                      {isStepHeader ? "✦" : "▸"}
-                    </span>
-                    <span
-                      className={`flex-1 ${isStepHeader ? "font-display text-primary tracking-wide text-[11px] sm:text-xs" : ""}`}
-                    >
-                      <InlineRenderer text={bulletContent} />
-                    </span>
-                  </div>
-                );
-              }
-
-              // Math display block: \[...\] or $$...$$
-              if (
-                /^(\\\[|\$\$)/.test(trimmedLine) ||
-                /(\\\]|\$\$)$/.test(trimmedLine)
-              ) {
-                const mathContent = trimmedLine
-                  .replace(/^(\\\[|\$\$)\s*/, "")
-                  .replace(/\s*(\\\]|\$\$)$/, "")
-                  .trim();
-
-                if (mathContent) {
+                // Bullet / list item: handles -, •, ▸, *, or numeric like 1.
+                if (/^([-•▸*]|\d+\.)\s/.test(trimmedLine)) {
+                  const bulletContent = trimmedLine.replace(/^([-•▸*]|\d+\.)\s*/, "");
+                  const isStepHeader = /^Step \d+/i.test(bulletContent);
+                  
                   return (
-                    <div
-                      key={lIdx}
-                      className="font-mono text-xs sm:text-sm px-4 py-3 rounded-xl bg-black/60 border border-primary/20 text-primary my-2 overflow-x-auto shadow-inner group transition-all hover:border-primary/40"
-                    >
-                      <div className="flex justify-between items-center gap-4">
-                        <code className="whitespace-pre-wrap">
-                          {mathContent}
-                        </code>
-                        <CopyButton text={mathContent} />
+                    <div key={lIdx} className={`flex gap-3 items-start ${isStepHeader ? "mt-4 first:mt-0" : ""}`}>
+                      <div className={`mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full border border-primary/40 bg-primary/10 flex items-center justify-center ${isStepHeader ? "mt-2" : ""}`}>
+                         <div className="w-0.5 h-0.5 rounded-full bg-primary" />
                       </div>
+                      <span className={`flex-1 ${isStepHeader ? "font-display text-primary tracking-wide text-[11px] sm:text-xs font-bold border-b border-primary/10 pb-1 flex justify-between items-center" : "text-foreground/85"}`}>
+                        <InlineRenderer text={bulletContent} />
+                      </span>
                     </div>
                   );
                 }
-                return null;
-              }
 
-              // Special treatment for ∴ Conclusion
-              if (
-                trimmedLine.startsWith("∴") ||
-                trimmedLine.startsWith("Conclusion:")
-              ) {
+                // Math display block: \[...\] or $$...$$
+                if (/^(\\\[|\$\$)/.test(trimmedLine) || /(\\\]|\$\$)$/.test(trimmedLine)) {
+                  const mathContent = trimmedLine
+                    .replace(/^(\\\[|\$\$)\s*/, "")
+                    .replace(/\s*(\\\]|\$\$)$/, "")
+                    .trim();
+                  
+                  if (mathContent) {
+                    return (
+                      <div
+                        key={lIdx}
+                        className="font-mono text-xs sm:text-sm px-5 py-4 rounded-2xl bg-black/60 border border-primary/20 text-primary my-3 overflow-x-auto shadow-2xl relative group"
+                      >
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <CopyButton text={mathContent} />
+                        </div>
+                        <code className="whitespace-pre-wrap leading-relaxed block pr-8">
+                          {mathContent.split(/\s*\\\\s*/).map((mLine, mi) => (
+                            <div key={mi} className="min-h-[1.5em]">{mLine.trim()}</div>
+                          ))}
+                        </code>
+                      </div>
+                    );
+                  }
+                  return null;
+                }
+
+                // Regular line
+                const isConclusionArrow = trimmedLine.startsWith("⇒") || trimmedLine.startsWith("∴");
                 return (
-                  <div
-                    key={lIdx}
-                    className="px-4 py-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-300 font-semibold text-xs sm:text-sm leading-relaxed mt-2 shadow-[0_0_20px_rgba(16,185,129,0.05)]"
-                  >
+                  <p key={lIdx} className={`text-[13px] sm:text-[15px] leading-relaxed font-body ${isConclusionArrow ? "text-primary/95 font-medium pl-3 border-l-2 border-primary/20 py-1 bg-primary/5 rounded-r-lg" : "text-foreground/80"}`}>
                     <InlineRenderer text={trimmedLine} />
-                  </div>
+                  </p>
                 );
-              }
-
-              // Special treatment for 💡 Shortcut
-              if (
-                trimmedLine.startsWith("💡") ||
-                trimmedLine.startsWith("Shortcut:")
-              ) {
-                return (
-                  <div
-                    key={lIdx}
-                    className="px-4 py-3 rounded-xl border border-amber-500/30 bg-amber-500/5 text-amber-200 font-medium text-xs sm:text-sm leading-relaxed mt-2 shadow-[0_0_20px_rgba(245,158,11,0.05)]"
-                  >
-                    <InlineRenderer text={trimmedLine} />
-                  </div>
-                );
-              }
-
-              // Regular line
-              return (
-                <p
-                  key={lIdx}
-                  className="text-[12px] sm:text-[14px] text-foreground/90 leading-relaxed font-body"
-                >
-                  <InlineRenderer text={trimmedLine} />
-                </p>
-              );
-            })}
+              })}
+            </div>
           </div>
         );
       })}
@@ -924,12 +785,29 @@ const InlineRenderer = ({ text }: { text: string }) => {
         if (token.type === "math") {
           // Clean common math commands for cleaner inline display
           const cleanMath = token.value
-            .replace(/\\equiv/g, "≡")
-            .replace(/\\pmod/g, "mod")
-            .replace(/\\times/g, "×")
-            .replace(/\\div/g, "÷")
-            .replace(/\\implies/g, "⇒")
-            .replace(/\\therefore/g, "∴");
+            .replace(/\\equiv/g, " ≡ ")
+            .replace(/\\pmod\{(.+?)\}/g, " (mod $1)")
+            .replace(/\\pmod/g, " mod ")
+            .replace(/\\times/g, " × ")
+            .replace(/\\div/g, " ÷ ")
+            .replace(/\\implies/g, " ⇒ ")
+            .replace(/\\therefore/g, " ∴ ")
+            .replace(/\\text\{(.+?)\}/g, " $1 ")
+            .replace(/\\quad/g, "   ")
+            .replace(/\\rightarrow/g, " → ")
+            .replace(/\\Rightarrow/g, " ⇒ ")
+            .replace(/\\&/g, "&")
+            .replace(/\\;/g, " ")
+            .replace(/\\,/g, " ")
+            .replace(/\\dots/g, "...")
+            .replace(/\\ldots/g, "...")
+            .replace(/\\begin\{array\}\{.*?\}/g, "")
+            .replace(/\\end\{array\}/g, "")
+            .replace(/\\hline/g, "")
+            .replace(/\\begin\{aligned\}/g, "")
+            .replace(/\\end\{aligned\}/g, "")
+            .replace(/&/g, "")
+            .replace(/\\\\/g, "\n");
 
           return (
             <code
@@ -942,7 +820,7 @@ const InlineRenderer = ({ text }: { text: string }) => {
         }
         return (
           <span key={i}>
-            {token.value.split(/(⇒|∴)/).map((seg, j) => {
+            {token.value.split(/(⇒|∴|iff)/).map((seg, j) => {
               if (seg === "⇒")
                 return (
                   <span key={j} className="text-primary font-bold mx-1">
@@ -956,6 +834,12 @@ const InlineRenderer = ({ text }: { text: string }) => {
                     className="text-emerald-400 font-bold mr-1 mx-1"
                   >
                     ∴
+                  </span>
+                );
+              if (seg === "iff")
+                return (
+                  <span key={j} className="italic text-primary/80 mx-1">
+                    if and only if
                   </span>
                 );
               return seg;
@@ -1038,7 +922,6 @@ const MessageBubble = ({
               finalAnswer={msg.solution.finalAnswer}
               method={msg.solution.method}
               graphData={msg.solution.graphData}
-              mode={msg.solution.mode}
               content={msg.content} // Pass content for exporting together
               t={t}
             />
@@ -1156,16 +1039,6 @@ const Chat = () => {
   const t = UI_STRINGS[language];
   const quickPrompts = QUICK_PROMPTS_I18N[language];
 
-  /* Response mode — persisted */
-  const [responseMode, setResponseMode] = useState<ResponseMode>(() => {
-    try {
-      const saved = localStorage.getItem(MODE_KEY);
-      if (saved === "quick" || saved === "detailed") return saved;
-    } catch {
-      /* ignore */
-    }
-    return "detailed";
-  });
 
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     try {
@@ -1197,13 +1070,6 @@ const Chat = () => {
     }
   }, [sidebarOpen]);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(MODE_KEY, responseMode);
-    } catch {
-      /* ignore */
-    }
-  }, [responseMode]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1259,7 +1125,6 @@ const Chat = () => {
         role: "user",
         content: trimmed,
         timestamp: new Date(),
-        mode: responseMode,
       };
       setConversations((prev) =>
         prev.map((c) => {
@@ -1283,7 +1148,6 @@ const Chat = () => {
           conversation_id?: string;
         } = {
           content: trimmed,
-          mode: responseMode,
           language: language,
         };
         // Only send conversation_id if the backend might recognise it (e.g. not a legacy local one)
@@ -1362,7 +1226,7 @@ const Chat = () => {
         setIsTyping(false);
       }
     },
-    [activeId, isTyping, responseMode, language, t.error_backend],
+    [activeId, isTyping, language, t.error_backend],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -1536,7 +1400,7 @@ const Chat = () => {
               {activeConv?.messages.map((msg) => (
                 <MessageBubble key={msg.id} msg={msg} t={t} />
               ))}
-              {isTyping && <TypingIndicator mode={responseMode} t={t} />}
+              {isTyping && <TypingIndicator t={t} />}
               <div ref={bottomRef} />
             </div>
           )}
@@ -1565,13 +1429,7 @@ const Chat = () => {
         {/* ── Input area ── */}
         <div className="flex-shrink-0 border-t border-border/40 bg-background/80 backdrop-blur px-3 sm:px-6 py-3 sm:py-4">
           <div className="max-w-3xl mx-auto space-y-2">
-            {/* ── MODE + LANGUAGE TOGGLES (sits just above the text field) ── */}
-            <div className="flex items-center justify-between px-1 gap-2 flex-wrap">
-              <ModeToggle
-                mode={responseMode}
-                onChange={setResponseMode}
-                t={t}
-              />
+            <div className="flex items-center justify-end px-1 gap-2 flex-wrap">
               <LanguageToggle
                 language={language}
                 onChange={handleLanguageChange}
@@ -1583,9 +1441,7 @@ const Chat = () => {
               className={`flex gap-2 items-end rounded-xl sm:rounded-2xl border bg-muted/10 px-3 sm:px-4 py-2.5 sm:py-3 transition-all duration-200 ${
                 isOverLimit
                   ? "border-destructive/60"
-                  : responseMode === "quick"
-                    ? "border-amber-500/30 focus-within:border-amber-400/60 focus-within:shadow-[0_0_0_3px_hsl(45_100%_60%/0.08)]"
-                    : "border-border/60 focus-within:border-primary/50 focus-within:shadow-[0_0_0_3px_hsl(120_100%_54%/0.08)]"
+                  : "border-border/60 focus-within:border-primary/50 focus-within:shadow-[0_0_0_3px_hsl(120_100%_54%/0.08)]"
               }`}
             >
               <textarea
@@ -1595,11 +1451,7 @@ const Chat = () => {
                   setInput(e.target.value.slice(0, MAX_CHARS + 20))
                 }
                 onKeyDown={handleKeyDown}
-                placeholder={
-                  responseMode === "quick"
-                    ? t.placeholder_quick
-                    : t.placeholder_detailed
-                }
+                placeholder={t.placeholder_detailed}
                 rows={1}
                 className="flex-1 bg-transparent outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground font-body leading-relaxed max-h-[120px] py-0.5"
               />
@@ -1616,17 +1468,11 @@ const Chat = () => {
                   disabled={isTyping || !input.trim() || isOverLimit}
                   className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
                     input.trim() && !isTyping && !isOverLimit
-                      ? responseMode === "quick"
-                        ? "bg-amber-500 text-black hover:scale-105 active:scale-95 shadow-[0_0_15px_hsl(45_100%_60%/0.4)]"
-                        : "bg-primary text-primary-foreground hover:scale-105 active:scale-95 shadow-[0_0_15px_hsl(120_100%_54%/0.4)]"
+                      ? "bg-primary text-primary-foreground hover:scale-105 active:scale-95 shadow-[0_0_15px_hsl(120_100%_54%/0.4)]"
                       : "bg-muted/30 text-muted-foreground cursor-not-allowed"
                   }`}
                 >
-                  {responseMode === "quick" ? (
-                    <Zap size={13} />
-                  ) : (
-                    <Send size={13} />
-                  )}
+                  <Send size={13} />
                 </button>
               </div>
             </div>

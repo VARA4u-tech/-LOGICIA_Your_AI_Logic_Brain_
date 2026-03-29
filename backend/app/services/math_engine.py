@@ -23,14 +23,13 @@ def generate_graph_data(expr: sp.Expr, variable: sp.Symbol = sp.Symbol('x'), x_r
                 pass
     return data
 
-def solve_math(input_text: str, mode: str, language: str = "en") -> Dict[str, Any]:
+def solve_math(input_text: str, language: str = "en") -> Dict[str, Any]:
     trimmed = input_text.strip().lower()
 
     # Translation map
     T = {
         "en": {
             "no_understand": "I couldn't quite understand that math problem. Could you try rephrasing it?\n\nExamples:\n• derivative of x^2\n• integrate x^2\n• solve x^2 - 4 = 0\n• 125 * 4",
-            "quick_ans": "⚡ Quick Answer",
             "diff_method": "Differentiation",
             "diff_content": "Let's differentiate {expr} with respect to x:",
             "diff_step1": "Step 1 — Identify function",
@@ -65,7 +64,6 @@ def solve_math(input_text: str, mode: str, language: str = "en") -> Dict[str, An
         },
         "te": {
             "no_understand": "నేను ఆ గణిత సమస్యను పూర్తిగా అర్థం చేసుకోలేకపోయాను. దయచేసి మళ్ళీ వివరించడానికి ప్రయత్నించండి?\n\nఉదాహరణలు:\n• x^2 యొక్క డెరివేటివ్\n• x^2 ని ఇంటిగ్రేట్ చేయండి\n• x^2 - 4 = 0ని సాధించండి\n• 125 * 4",
-            "quick_ans": "⚡ శీఘ్ర సమాధానం",
             "diff_method": "అవకలనం (Differentiation)",
             "diff_content": "మనం x పరంగా {expr}ని అవకలనం చేద్దాం:",
             "diff_step1": "దశ 1 — ప్రమేయాన్ని గుర్తించండి",
@@ -120,39 +118,26 @@ def solve_math(input_text: str, mode: str, language: str = "en") -> Dict[str, An
             str_expr = str(expr).replace('**', '^')
             str_res = str(result).replace('**', '^')
             
-            if mode == "quick":
-                response_data = {
-                    "content": t["quick_ans"],
-                    "solution": {
-                        "method": t["diff_method"],
-                        "steps": [{"label": t["derivative"], "math": f"d/dx [{str_expr}] = {str_res}"}],
-                        "finalAnswer": str_res,
-                        "mode": mode,
-                    }
+            return {
+                "content": t["diff_content"].format(expr=str_expr),
+                "solution": {
+                    "method": t["diff_method"],
+                    "steps": [
+                        {
+                            "label": t["diff_step1"],
+                            "math": f"f(x) = {str_expr}",
+                            "explanation": t["diff_step1_expl"]
+                        },
+                        {
+                            "label": t["diff_step2"],
+                            "math": f"f'(x) = d/dx [{str_expr}] = {str_res}",
+                            "explanation": t["diff_step2_expl"]
+                        }
+                    ],
+                    "finalAnswer": f"f'(x) = {str_res}",
+                    "graphData": generate_graph_data(result),
                 }
-            else:
-                response_data = {
-                    "content": t["diff_content"].format(expr=str_expr),
-                    "solution": {
-                        "method": t["diff_method"],
-                        "steps": [
-                            {
-                                "label": t["diff_step1"],
-                                "math": f"f(x) = {str_expr}",
-                                "explanation": t["diff_step1_expl"]
-                            },
-                            {
-                                "label": t["diff_step2"],
-                                "math": f"f'(x) = d/dx [{str_expr}] = {str_res}",
-                                "explanation": t["diff_step2_expl"]
-                            }
-                        ],
-                        "finalAnswer": f"f'(x) = {str_res}",
-                        "graphData": generate_graph_data(result),
-                        "mode": mode,
-                    }
-                }
-            return response_data
+            }
 
         # 2. INTEGRAL
         if "integral" in trimmed or "integrate" in trimmed or "∫" in trimmed:
@@ -166,48 +151,34 @@ def solve_math(input_text: str, mode: str, language: str = "en") -> Dict[str, An
             str_expr = str(expr).replace('**', '^')
             str_res = str(result).replace('**', '^')
             
-            if mode == "quick":
-                response_data = {
-                    "content": t["quick_ans"],
-                    "solution": {
-                        "method": t["int_method"],
-                        "steps": [{"label": t["integral"], "math": f"∫ {str_expr} dx = {str_res} + C"}],
-                        "finalAnswer": f"{str_res} + C",
-                        "mode": mode,
-                    }
+            return {
+                "content": t["int_content"].format(expr=str_expr),
+                "solution": {
+                    "method": t["int_indef"],
+                    "steps": [
+                        {
+                            "label": t["int_step1"],
+                            "math": f"∫ {str_expr} dx",
+                            "explanation": t["int_step1_expl"]
+                        },
+                        {
+                            "label": t["int_step2"],
+                            "math": f"∫ {str_expr} dx = {str_res}",
+                            "explanation": t["int_step2_expl"]
+                        },
+                        {
+                            "label": t["int_step3"],
+                            "math": f"{str_res} + C",
+                            "explanation": t["int_step3_expl"]
+                        }
+                    ],
+                    "finalAnswer": f"{str_res} + C",
+                    "graphData": generate_graph_data(result),
                 }
-            else:
-                response_data = {
-                    "content": t["int_content"].format(expr=str_expr),
-                    "solution": {
-                        "method": t["int_indef"],
-                        "steps": [
-                            {
-                                "label": t["int_step1"],
-                                "math": f"∫ {str_expr} dx",
-                                "explanation": t["int_step1_expl"]
-                            },
-                            {
-                                "label": t["int_step2"],
-                                "math": f"∫ {str_expr} dx = {str_res}",
-                                "explanation": t["int_step2_expl"]
-                            },
-                            {
-                                "label": t["int_step3"],
-                                "math": f"{str_res} + C",
-                                "explanation": t["int_step3_expl"]
-                            }
-                        ],
-                        "finalAnswer": f"{str_res} + C",
-                        "graphData": generate_graph_data(result),
-                        "mode": mode,
-                    }
-                }
-            return response_data
+            }
 
         # 3. EQUATION SOLVING
         if "solve" in trimmed or "=" in trimmed:
-            # simple parsing for equations like solve x^2 - 4 = 0
             expr_str = re.sub(r'solve', '', trimmed).strip()
             if "=" in expr_str:
                 parts = expr_str.split("=", 1)
@@ -227,33 +198,56 @@ def solve_math(input_text: str, mode: str, language: str = "en") -> Dict[str, An
                 answers.append(f"x_{idx+1} = {str(res).replace('**', '^')}")
             final_ans_str = ", ".join(answers) if answers else "No solution found"
             
-            if mode == "quick":
-                response_data = {
-                    "content": t["quick_ans"] + " — " + str_eq,
-                    "solution": {
-                        "method": t["solve_method"],
-                        "steps": [{"label": t["roots"], "math": final_ans_str}],
-                        "finalAnswer": final_ans_str,
-                        "mode": mode,
-                    }
+            return {
+                "content": t["solve_content"].format(eq=str_eq),
+                "solution": {
+                    "method": t["solve_method"],
+                    "steps": [
+                        {
+                            "label": t["solve_step1"],
+                            "math": str_eq,
+                            "explanation": t["solve_step1_expl"]
+                        },
+                        {
+                            "label": t["solve_step2"],
+                            "math": final_ans_str,
+                            "explanation": t["solve_step2_expl"]
+                        }
+                    ],
+                    "finalAnswer": final_ans_str,
+                    "graphData": generate_graph_data(expr_to_plot),
                 }
-            else:
-                response_data = {
-                    "content": t["solve_content"].format(eq=str_eq),
-                    "solution": {
-                        "method": t["solve_method"],
-                        "steps": [
-                            {
-                                "label": t["solve_step1"],
-                                "math": str_eq,
-                                "explanation": t["solve_step1_expl"]
-                            },
-                            {
-                                "label": t["solve_step2"],
-                                "math": final_ans_str,
-                                "explanation": t["solve_step2_expl"]
-                            }
-                        ],
+            }
+
+        # 4. BASIC EVALUATION / ARITHMETIC
+        expr = parse_math(trimmed)
+        result = expr.evalf() if expr.is_number else sp.simplify(expr)
+        
+        str_expr = str(expr).replace('**', '^')
+        str_res = str(result).replace('**', '^')
+        
+        return {
+            "content": t["eval_content"],
+            "solution": {
+                "method": t["eval_method"],
+                "steps": [
+                    {
+                        "label": t["eval_step1"],
+                        "math": str_expr,
+                        "explanation": t["eval_step1_expl"]
+                    },
+                    {
+                        "label": t["eval_step2"],
+                        "math": f"{str_expr} = {str_res}",
+                        "explanation": t["eval_step2_expl"]
+                    }
+                ],
+                "finalAnswer": str_res,
+            }
+        }
+
+    except Exception:
+        return response_data
                         "finalAnswer": final_ans_str,
                         "graphData": generate_graph_data(expr_to_plot),
                         "mode": mode,

@@ -43,17 +43,17 @@ async def chat_interaction(
         conversation_id=conversation.id,
         role="user",
         content=req.content,
-        mode=req.mode,
+        mode="detailed",
     )
     db.add(user_msg)
     await db.flush()
 
     # 3. Generate AI response (call math engine)
     # Perform symbolic solve first
-    ai_response_dict = solve_math(req.content, req.mode, req.language)
+    ai_response_dict = solve_math(req.content, req.language)
     
-    # 3b. Determine if we need an LLM response (either pedagogical mode OR fallback)
-    use_llm = (req.mode == "pedagogical") or (ai_response_dict["solution"] is None)
+    # 3b. Determine if we need an LLM response (detailed/pedagogical mode ALWAYS or fallback)
+    use_llm = True # or (ai_response_dict["solution"] is None)
     
     # 3c. If LLM is needed, get enhanced explanation or fallback answer
     if use_llm:
@@ -64,6 +64,10 @@ async def chat_interaction(
         # If SymPy failed, don't create a dummy solution panel —
         # the LLM's rich explanation in content is sufficient.
     
+    # 3d. SAFETY CHECK: Ensure content is NOT None (for SQL NOT NULL constraint)
+    if not ai_response_dict.get("content"):
+        ai_response_dict["content"] = "I apologize, but I was unable to generate a text explanation for this result. Please review the symbolic calculation below."
+    
     # 4. Save AI message
     ai_json_solution = None
     if ai_response_dict.get("solution"):
@@ -73,7 +77,7 @@ async def chat_interaction(
         conversation_id=conversation.id,
         role="ai",
         content=ai_response_dict["content"],
-        mode=req.mode,
+        mode="detailed",
         solution_json=ai_json_solution
     )
     db.add(ai_msg)
@@ -90,7 +94,6 @@ async def chat_interaction(
             role="ai",
             content=ai_response_dict["content"],
             solution=SolutionData(**sol_data) if sol_data else None,
-            mode=req.mode,
             timestamp=ai_msg.created_at,
         )
     )

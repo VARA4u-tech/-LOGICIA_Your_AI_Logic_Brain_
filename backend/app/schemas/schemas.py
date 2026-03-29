@@ -44,11 +44,9 @@ class SolutionData(BaseModel):
     steps: List[Step]
     finalAnswer: str
     graphData: Optional[List[PlotData]] = None
-    mode: Optional[Literal["detailed", "quick"]] = None
 
 class ChatRequest(BaseModel):
     content: str
-    mode: Literal["detailed", "quick", "pedagogical"] = "detailed"
     language: str = "en"
     conversation_id: Optional[str] = None
 
@@ -57,7 +55,6 @@ class MessageSchema(BaseModel):
     role: Literal["user", "ai"]
     content: str
     solution: Optional[SolutionData] = None
-    mode: Literal["detailed", "quick", "pedagogical"]
     timestamp: datetime
 
     model_config = ConfigDict(from_attributes=True)
