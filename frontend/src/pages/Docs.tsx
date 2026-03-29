@@ -626,15 +626,19 @@ const ContactContent = () => {
             </h3>
             <div className="space-y-6">
               {[
-                { label: "Press & Media", val: "media@logicia.ai", icon: Mail },
+                {
+                  label: "Press & Media",
+                  val: "pappuridurgavaraprasad4pl@gamil.com",
+                  icon: Mail,
+                },
                 {
                   label: "Institutional Relations",
-                  val: "partners@logicia.ai",
+                  val: "DVR & DR.HS MIC College Of Technology",
                   icon: Globe,
                 },
                 {
                   label: "Research Lab",
-                  val: "Palo Alto, California",
+                  val: "Vijayawada, Andhra Pradesh",
                   icon: MapPin,
                 },
               ].map((item) => (
@@ -697,7 +701,7 @@ const ContactContent = () => {
                   <input
                     required
                     type="email"
-                    placeholder="name@organization.com"
+                    placeholder="Email Address"
                     value={form.email}
                     onChange={(e) =>
                       setForm({ ...form, email: e.target.value })
