@@ -1044,6 +1044,15 @@ const Chat = () => {
     return "en";
   });
 
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
+
   const handleLanguageChange = useCallback((lang: Language) => {
     setLanguage(lang);
     try {
@@ -1122,7 +1131,9 @@ const Chat = () => {
   const sendMessage = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
-      if (!trimmed || isTyping) return;
+      if (!trimmed || isTyping || cooldown > 0) return;
+
+      setCooldown(5);
 
       let convId = activeId;
       if (!convId) {
@@ -1480,14 +1491,18 @@ const Chat = () => {
                 )}
                 <button
                   onClick={() => sendMessage(input)}
-                  disabled={isTyping || !input.trim() || isOverLimit}
+                  disabled={isTyping || !input.trim() || isOverLimit || cooldown > 0}
                   className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
-                    input.trim() && !isTyping && !isOverLimit
+                    input.trim() && !isTyping && !isOverLimit && cooldown === 0
                       ? "bg-primary text-primary-foreground hover:scale-105 active:scale-95 shadow-[0_0_15px_hsl(120_100%_54%/0.4)]"
                       : "bg-muted/30 text-muted-foreground cursor-not-allowed"
                   }`}
                 >
-                  <Send size={13} />
+                  {cooldown > 0 ? (
+                    <span className="text-[10px] font-bold font-mono text-primary/60">{cooldown}s</span>
+                  ) : (
+                    <Send size={13} />
+                  )}
                 </button>
               </div>
             </div>
