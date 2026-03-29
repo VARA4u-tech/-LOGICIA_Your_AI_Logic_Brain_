@@ -425,12 +425,14 @@ const AboutContent = () => {
         </div>
 
         <div className="pt-8 flex items-center gap-6">
-          <div className="flex flex-col items-center gap-2">
-             <div className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center">
+             <a 
+               href="https://github.com/VARA4u-tech/-LOGICIA_Your_AI_Math_Brain_" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center hover:bg-primary/20 transition-all"
+             >
                 <Github size={18} className="text-primary/70" />
-             </div>
-             <span className="text-[9px] font-display tracking-widest text-muted-foreground">REPOS</span>
-          </div>
+             </a>
           <div className="flex flex-col items-center gap-2">
              <div className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center">
                 <Linkedin size={18} className="text-primary/70" />
@@ -740,9 +742,14 @@ const Docs = () => {
             </div>
 
             <div className="pt-6 border-t border-white/5">
-               <a href="#" className="flex items-center gap-3 px-3 py-3 rounded-xl text-muted-foreground hover:text-primary transition-colors">
+               <a 
+                 href="https://github.com/VARA4u-tech/-LOGICIA_Your_AI_Math_Brain_" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="flex items-center gap-3 px-3 py-3 rounded-xl text-muted-foreground hover:text-primary transition-colors"
+               >
                   <Github size={14} />
-                  <span className="font-display text-[9px] tracking-widest uppercase">Community</span>
+                  <span className="font-display text-[9px] tracking-widest uppercase">GitHub Repo</span>
                </a>
             </div>
           </nav>
