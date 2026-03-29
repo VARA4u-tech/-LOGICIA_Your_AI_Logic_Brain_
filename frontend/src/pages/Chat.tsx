@@ -628,7 +628,15 @@ const RenderContent = ({ content }: { content: string }) => {
     .replace(/\\\( /g, "\\(").replace(/ \\\)/g, "\\)")
     .replace(/\\\[ /g, "\\[").replace(/ \\\]/g, "\\]")
     // Ensure tables have spacing
-    .replace(/\n(\|.*\|)\n/g, "\n\n$1\n\n");
+    .replace(/\n(\|.*\|)\n/g, "\n\n$1\n\n")
+    // Safety net: Clean naked LaTeX commands if not wrapped in math blocks
+    .replace(/\\left\(/g, "(").replace(/\\right\)/g, ")")
+    .replace(/\\frac\{(.+?)\}\{(.+?)\}/g, "($1/$2)")
+    .replace(/\\times/g, "×")
+    .replace(/\\div/g, "÷")
+    .replace(/\\equiv/g, "≡")
+    .replace(/\\%/g, "%")
+    .replace(/\\text\{(.+?)\}/g, " $1 ");
 
   const paragraphs = normalizedContent.split(/\n{2,}/);
 
@@ -789,10 +797,17 @@ const InlineRenderer = ({ text }: { text: string }) => {
             .replace(/\\pmod\{(.+?)\}/g, " (mod $1)")
             .replace(/\\pmod/g, " mod ")
             .replace(/\\times/g, " × ")
+            .replace(/\\cdot/g, " · ")
             .replace(/\\div/g, " ÷ ")
             .replace(/\\implies/g, " ⇒ ")
             .replace(/\\therefore/g, " ∴ ")
             .replace(/\\text\{(.+?)\}/g, " $1 ")
+            .replace(/\\frac\{(.+?)\}\{(.+?)\}/g, "($1/$2)")
+            .replace(/\\left\(/g, "(")
+            .replace(/\\right\)/g, ")")
+            .replace(/\\left\[/g, "[")
+            .replace(/\\right\]/g, "]")
+            .replace(/\\%/g, "%")
             .replace(/\\quad/g, "   ")
             .replace(/\\rightarrow/g, " → ")
             .replace(/\\Rightarrow/g, " ⇒ ")
@@ -807,7 +822,9 @@ const InlineRenderer = ({ text }: { text: string }) => {
             .replace(/\\begin\{aligned\}/g, "")
             .replace(/\\end\{aligned\}/g, "")
             .replace(/&/g, "")
-            .replace(/\\\\/g, "\n");
+            .replace(/\\\\/g, "\n")
+            .replace(/\\\{/g, "{")
+            .replace(/\\\}/g, "}");
 
           return (
             <code
@@ -1143,7 +1160,6 @@ const Chat = () => {
       try {
         const payload: {
           content: string;
-          mode: ResponseMode;
           language: Language;
           conversation_id?: string;
         } = {
@@ -1215,7 +1231,6 @@ const Chat = () => {
           role: "ai",
           content: t.error_backend,
           timestamp: new Date(),
-          mode: responseMode,
         };
         setConversations((prev) =>
           prev.map((c) =>

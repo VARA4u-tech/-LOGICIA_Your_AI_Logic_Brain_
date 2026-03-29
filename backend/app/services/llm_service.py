@@ -73,6 +73,7 @@ class LLMService:
             "- For exam-type problems (SSC, competitive), always include the Shortcut Trick section\n"
             "- Use **bold** for section headers and key results\n"
             "- Use mathematical notation naturally (², √, π, ∫, etc.)\n"
+            "- IMPORTANT: For any LaTeX commands (like \\frac, \\sum, \\equiv) or complex expressions, you MUST wrap them in \\( ... \\) delimiters to ensure they render correctly.\n"
             "- If a graph or symbolic result is provided by the engine, reference it in your explanation\n"
         )
 
