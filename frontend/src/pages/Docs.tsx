@@ -41,14 +41,22 @@ const features = [
     title: "Algebraic Intelligence",
     description:
       "Advanced symbolic manipulation for solving linear, quadratic, and higher-order equations with literal precision.",
-    highlights: ["Polynomial Analysis", "Systems of Equations", "Inequality Solving"],
+    highlights: [
+      "Polynomial Analysis",
+      "Systems of Equations",
+      "Inequality Solving",
+    ],
   },
   {
     icon: TrendingUp,
     title: "Calculus & Analysis",
     description:
       "Compute derivatives, definite and indefinite integrals, and limits with full step-by-step derivational logic.",
-    highlights: ["Partial Derivatives", "Integration by Parts", "Taylor Series"],
+    highlights: [
+      "Partial Derivatives",
+      "Integration by Parts",
+      "Taylor Series",
+    ],
   },
   {
     icon: BarChart3,
@@ -79,15 +87,31 @@ const mathReference = [
   {
     category: "Calculus",
     items: [
-      { op: "Derivative", syntax: "diff(f, x) or d/dx", example: "derivative of x^2" },
-      { op: "Integral", syntax: "integrate(f, x) or \u222B", example: "integrate x dx" },
-      { op: "Limits", syntax: "limit(f, x, a)", example: "limit of 1/x as x -> 0" },
+      {
+        op: "Derivative",
+        syntax: "diff(f, x) or d/dx",
+        example: "derivative of x^2",
+      },
+      {
+        op: "Integral",
+        syntax: "integrate(f, x) or \u222B",
+        example: "integrate x dx",
+      },
+      {
+        op: "Limits",
+        syntax: "limit(f, x, a)",
+        example: "limit of 1/x as x -> 0",
+      },
     ],
   },
   {
     category: "Linear Algebra",
     items: [
-      { op: "Matrix Mul", syntax: "Matrix([[..]]) * ..", example: "Matrix multiplication" },
+      {
+        op: "Matrix Mul",
+        syntax: "Matrix([[..]]) * ..",
+        example: "Matrix multiplication",
+      },
       { op: "Determinant", syntax: "det(A)", example: "det of [[1,2],[3,4]]" },
     ],
   },
@@ -206,7 +230,9 @@ const StatCard = ({
         </div>
       </div>
       <div className="font-display text-xl sm:text-2xl font-bold text-primary tabular-nums tracking-tight">
-        {prefix}{display}{suffix}
+        {prefix}
+        {display}
+        {suffix}
       </div>
       <div className="text-[10px] sm:text-[11px] text-muted-foreground/60 tracking-[0.1em] font-display mt-1 uppercase">
         {label}
@@ -226,30 +252,39 @@ const FeaturesContent = () => {
   const statsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.1 });
+    const obs = new IntersectionObserver(
+      ([e]) => e.isIntersecting && setVisible(true),
+      { threshold: 0.1 },
+    );
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
 
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setStatsVisible(true), { threshold: 0.2 });
+    const obs = new IntersectionObserver(
+      ([e]) => e.isIntersecting && setStatsVisible(true),
+      { threshold: 0.2 },
+    );
     if (statsRef.current) obs.observe(statsRef.current);
     return () => obs.disconnect();
   }, []);
 
   return (
     <div ref={ref} className="space-y-16">
-      <SectionHeader 
-        title="Technical Capabilities" 
-        subtitle="A high-performance mathematical engine designed for accuracy and pedagogical clarity." 
+      <SectionHeader
+        title="Technical Capabilities"
+        subtitle="A high-performance mathematical engine designed for accuracy and pedagogical clarity."
       />
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {features.map((feat, i) => (
           <div
             key={feat.title}
             className={`group glass-strong rounded-2xl p-6 transition-all duration-500 hover:border-primary/40 hover:bg-primary/[0.02] ${visible ? "animate-fade-in-up opacity-100" : "opacity-0"}`}
-            style={{ animationDelay: `${i * 0.1}s`, animationFillMode: "forwards" }}
+            style={{
+              animationDelay: `${i * 0.1}s`,
+              animationFillMode: "forwards",
+            }}
           >
             <div className="flex items-start gap-4 mb-4">
               <div className="w-12 h-12 rounded-xl border border-primary/20 bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
@@ -266,7 +301,10 @@ const FeaturesContent = () => {
             </div>
             <div className="flex flex-wrap gap-2 mt-4">
               {feat.highlights.map((h) => (
-                <span key={h} className="text-[9px] font-display tracking-widest px-2.5 py-1.5 rounded-lg bg-black/40 border border-primary/10 text-primary/60 uppercase">
+                <span
+                  key={h}
+                  className="text-[9px] font-display tracking-widest px-2.5 py-1.5 rounded-lg bg-black/40 border border-primary/10 text-primary/60 uppercase"
+                >
                   {h}
                 </span>
               ))}
@@ -275,9 +313,17 @@ const FeaturesContent = () => {
         ))}
       </div>
 
-      <div ref={statsRef} className="glass rounded-2xl p-8 grid grid-cols-2 lg:grid-cols-4 gap-8 border border-white/5">
+      <div
+        ref={statsRef}
+        className="glass rounded-2xl p-8 grid grid-cols-2 lg:grid-cols-4 gap-8 border border-white/5"
+      >
         {stats.map((s, i) => (
-          <StatCard key={s.label} {...s} active={statsVisible} delay={i * 0.1} />
+          <StatCard
+            key={s.label}
+            {...s}
+            active={statsVisible}
+            delay={i * 0.1}
+          />
         ))}
       </div>
     </div>
@@ -287,11 +333,11 @@ const FeaturesContent = () => {
 const ReferenceContent = () => {
   return (
     <div className="space-y-12 animate-fade-in-up">
-      <SectionHeader 
-        title="Mathematical Reference" 
-        subtitle="Syntax guide for operations, functions, and solvers supported by the engine." 
+      <SectionHeader
+        title="Mathematical Reference"
+        subtitle="Syntax guide for operations, functions, and solvers supported by the engine."
       />
-      
+
       <div className="space-y-8">
         {mathReference.map((cat) => (
           <div key={cat.category} className="space-y-4">
@@ -309,10 +355,19 @@ const ReferenceContent = () => {
                 </thead>
                 <tbody className="divide-y divide-white/5">
                   {cat.items.map((item) => (
-                    <tr key={item.op} className="hover:bg-white/[0.02] transition-colors group">
-                      <td className="px-4 py-3 text-foreground/80 group-hover:text-primary transition-colors">{item.op}</td>
-                      <td className="px-4 py-3 font-mono text-primary/70">{item.syntax}</td>
-                      <td className="px-4 py-3 italic text-muted-foreground">{item.example}</td>
+                    <tr
+                      key={item.op}
+                      className="hover:bg-white/[0.02] transition-colors group"
+                    >
+                      <td className="px-4 py-3 text-foreground/80 group-hover:text-primary transition-colors">
+                        {item.op}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-primary/70">
+                        {item.syntax}
+                      </td>
+                      <td className="px-4 py-3 italic text-muted-foreground">
+                        {item.example}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -325,7 +380,9 @@ const ReferenceContent = () => {
       <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 text-amber-200/60 text-[10px] leading-relaxed flex gap-3">
         <Zap size={14} className="text-amber-500 flex-shrink-0 mt-0.5" />
         <p>
-          <strong className="text-amber-400">Pro Tip:</strong> You can often type in plain natural English like "solve for x in x plus five equals ten" and the system will auto-canonicalize the query.
+          <strong className="text-amber-400">Pro Tip:</strong> You can often
+          type in plain natural English like "solve for x in x plus five equals
+          ten" and the system will auto-canonicalize the query.
         </p>
       </div>
     </div>
@@ -336,33 +393,41 @@ const HowItWorksContent = () => {
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.1 });
+    const obs = new IntersectionObserver(
+      ([e]) => e.isIntersecting && setVisible(true),
+      { threshold: 0.1 },
+    );
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
 
   return (
     <div ref={ref} className="space-y-16">
-      <SectionHeader 
-        title="Processing Pipeline" 
-        subtitle="An intelligent multi-stage architecture delivering precision-grade mathematical results." 
+      <SectionHeader
+        title="Processing Pipeline"
+        subtitle="An intelligent multi-stage architecture delivering precision-grade mathematical results."
       />
-      
+
       <div className="relative">
         {/* Connection line for desktop */}
         <div className="absolute left-[50%] top-0 bottom-0 w-px bg-gradient-to-b from-primary/30 via-primary/5 to-transparent hidden lg:block" />
-        
+
         <div className="space-y-12">
           {steps.map((s, i) => {
             const isEven = i % 2 === 0;
             return (
-              <div 
-                key={s.step} 
+              <div
+                key={s.step}
                 className={`flex flex-col lg:flex-row items-center gap-8 ${isEven ? "" : "lg:flex-row-reverse"} ${visible ? "animate-fade-in-up opacity-100" : "opacity-0"}`}
-                style={{ animationDelay: `${i * 0.12}s`, animationFillMode: "forwards" }}
+                style={{
+                  animationDelay: `${i * 0.12}s`,
+                  animationFillMode: "forwards",
+                }}
               >
                 <div className="flex-1 w-full">
-                  <div className={`glass-strong rounded-2xl p-6 transition-all duration-500 hover:border-primary/40 group relative overflow-hidden`}>
+                  <div
+                    className={`glass-strong rounded-2xl p-6 transition-all duration-500 hover:border-primary/40 group relative overflow-hidden`}
+                  >
                     <div className="flex items-center gap-4 mb-4">
                       <div className="w-10 h-10 rounded-lg bg-primary/5 border border-primary/20 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                         <s.icon size={18} className="text-primary" />
@@ -375,8 +440,8 @@ const HowItWorksContent = () => {
                       {s.description}
                     </p>
                     <div className="font-mono text-[9px] px-3 py-2 rounded-lg bg-black/40 border border-white/5 text-primary/60 flex items-center gap-2">
-                       <span className="w-1 h-1 rounded-full bg-primary/40 animate-pulse" />
-                       {s.example}
+                      <span className="w-1 h-1 rounded-full bg-primary/40 animate-pulse" />
+                      {s.example}
                     </div>
                   </div>
                 </div>
@@ -397,7 +462,10 @@ const AboutContent = () => {
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setVisible(true), { threshold: 0.1 });
+    const obs = new IntersectionObserver(
+      ([e]) => e.isIntersecting && setVisible(true),
+      { threshold: 0.1 },
+    );
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
@@ -405,46 +473,71 @@ const AboutContent = () => {
   return (
     <div ref={ref} className="space-y-12 max-w-3xl">
       <SectionHeader title="Origins" subtitle="The mission behind Logicia." />
-      <div className={`space-y-6 text-foreground/70 leading-relaxed font-body text-sm ${visible ? "animate-fade-in-up" : "opacity-0"}`}>
+      <div
+        className={`space-y-6 text-foreground/70 leading-relaxed font-body text-sm ${visible ? "animate-fade-in-up" : "opacity-0"}`}
+      >
         <p>
-          LOGICIA was conceived at the intersection of symbolic logic and neural language processing. Traditional AI models often struggle with "mathematical hallucination"—where the output appears correct but lacks structural validity. 
+          LOGICIA was conceived at the intersection of symbolic logic and neural
+          language processing. Traditional AI models often struggle with
+          "mathematical hallucination"—where the output appears correct but
+          lacks structural validity.
         </p>
         <p>
-          Our mission is to bridge this gap by leveraging the power of <strong>OpenRouter-orchestrated AI models</strong> exclusively for pedagogical explanation, while delegating the actual computation to a deterministic symbolic math engine. This ensures that every step provided to the user is not just "likely," but mathematically proven.
+          Our mission is to bridge this gap by leveraging the power of{" "}
+          <strong>OpenRouter-orchestrated AI models</strong> exclusively for
+          pedagogical explanation, while delegating the actual computation to a
+          deterministic symbolic math engine. This ensures that every step
+          provided to the user is not just "likely," but mathematically proven.
         </p>
-        
+
         <div className="pt-6 grid grid-cols-2 gap-4">
           <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5">
-            <h5 className="font-display text-[10px] tracking-widest text-primary mb-2 uppercase">Our Vision</h5>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">To democratize high-level mathematical expertise for students and researchers globally.</p>
+            <h5 className="font-display text-[10px] tracking-widest text-primary mb-2 uppercase">
+              Our Vision
+            </h5>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              To democratize high-level mathematical expertise for students and
+              researchers globally.
+            </p>
           </div>
           <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5">
-            <h5 className="font-display text-[10px] tracking-widest text-primary mb-2 uppercase">Integrity</h5>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">Commitment to open standards, data privacy, and mathematical rigor.</p>
+            <h5 className="font-display text-[10px] tracking-widest text-primary mb-2 uppercase">
+              Integrity
+            </h5>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              Commitment to open standards, data privacy, and mathematical
+              rigor.
+            </p>
           </div>
         </div>
 
         <div className="pt-8 flex items-center gap-6">
-             <a 
-               href="https://github.com/VARA4u-tech/-LOGICIA_Your_AI_Math_Brain_" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center hover:bg-primary/20 transition-all"
-             >
-                <Github size={18} className="text-primary/70" />
-             </a>
-          <div className="flex flex-col items-center gap-2">
-             <div className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center">
-                <Linkedin size={18} className="text-primary/70" />
-             </div>
-             <span className="text-[9px] font-display tracking-widest text-muted-foreground">UPDATES</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-             <div className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center">
-                <Twitter size={18} className="text-primary/70" />
-             </div>
-             <span className="text-[9px] font-display tracking-widest text-muted-foreground">SOCIAL</span>
-          </div>
+          <a
+            href="https://github.com/VARA4u-tech/-LOGICIA_Your_AI_Math_Brain_"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center gap-2 group"
+          >
+            <div className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center group-hover:bg-primary/20 transition-all">
+              <Github size={18} className="text-primary/70" />
+            </div>
+            <span className="text-[9px] font-display tracking-widest text-muted-foreground uppercase">
+              Repo
+            </span>
+          </a>
+          <a
+            href="https://vara-s-portfolio.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center gap-2 group"
+          >
+            <div className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center group-hover:bg-primary/20 transition-all">
+              <User size={18} className="text-primary/70" />
+            </div>
+            <span className="text-[9px] font-display tracking-widest text-muted-foreground">
+              CREATOR
+            </span>
+          </a>
         </div>
       </div>
     </div>
@@ -453,7 +546,12 @@ const AboutContent = () => {
 
 const ContactContent = () => {
   const [status, setStatus] = useState<"idle" | "sending" | "success">("idle");
-  const [form, setForm] = useState({ name: "", email: "", inquiry: "General Support", message: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    inquiry: "General Support",
+    message: "",
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -467,11 +565,14 @@ const ContactContent = () => {
         <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_hsl(120_100%_54%/0.15)]">
           <CheckCircle size={32} className="text-primary" />
         </div>
-        <h2 className="font-display text-2xl font-bold text-foreground tracking-tight">MESSAGE DISPATCHED</h2>
+        <h2 className="font-display text-2xl font-bold text-foreground tracking-tight">
+          MESSAGE DISPATCHED
+        </h2>
         <p className="text-muted-foreground font-body text-sm max-w-sm mx-auto leading-relaxed">
-          Your transmission has been received by our mathematical advisory team. We typically synchronize within 24 standard business hours.
+          Your transmission has been received by our mathematical advisory team.
+          We typically synchronize within 24 standard business hours.
         </p>
-        <button 
+        <button
           onClick={() => setStatus("idle")}
           className="mt-8 px-8 py-3 rounded-xl border border-primary/30 text-[10px] font-display tracking-widest text-primary hover:bg-primary/5 transition-colors"
         >
@@ -483,48 +584,71 @@ const ContactContent = () => {
 
   return (
     <div className="space-y-16 animate-fade-in-up">
-      <SectionHeader 
-        title="Connect & Support" 
-        subtitle="Access specialized support channels for technical inquiries, pedagogical integration, or institutional partnerships." 
+      <SectionHeader
+        title="Connect & Support"
+        subtitle="Access specialized support channels for technical inquiries, pedagogical integration, or institutional partnerships."
       />
 
       <div className="grid lg:grid-cols-12 gap-12 items-start">
         {/* Left Column: Info & Shortcuts */}
         <div className="lg:col-span-5 space-y-10">
-          
           <div className="space-y-6">
-            <h3 className="font-display text-[10px] tracking-[0.3em] text-muted-foreground/50 uppercase">Knowledge Base Shortcuts</h3>
+            <h3 className="font-display text-[10px] tracking-[0.3em] text-muted-foreground/50 uppercase">
+              Knowledge Base Shortcuts
+            </h3>
             <div className="grid grid-cols-1 gap-3">
               {[
                 { label: "API Rate-Limiting Docs", icon: Zap },
                 { label: "Pedagogical Theory Whitepaper", icon: BookOpen },
-                { label: "Security & Data Governance", icon: Cpu }
+                { label: "Security & Data Governance", icon: Cpu },
               ].map((faq) => (
-                <button key={faq.label} className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/5 hover:border-primary/40 hover:bg-primary/[0.02] transition-all group text-left">
+                <button
+                  key={faq.label}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/5 hover:border-primary/40 hover:bg-primary/[0.02] transition-all group text-left"
+                >
                   <div className="p-2 rounded-lg bg-white/5 border border-white/10 group-hover:border-primary/20 transition-colors">
-                    <faq.icon size={14} className="text-primary/60 group-hover:text-primary transition-colors" />
+                    <faq.icon
+                      size={14}
+                      className="text-primary/60 group-hover:text-primary transition-colors"
+                    />
                   </div>
-                  <span className="text-xs font-body text-foreground/80 group-hover:text-foreground transition-colors">{faq.label}</span>
+                  <span className="text-xs font-body text-foreground/80 group-hover:text-foreground transition-colors">
+                    {faq.label}
+                  </span>
                 </button>
               ))}
             </div>
           </div>
 
           <div className="space-y-6 pt-4">
-            <h3 className="font-display text-[10px] tracking-[0.3em] text-muted-foreground/50 uppercase">Global Communication</h3>
+            <h3 className="font-display text-[10px] tracking-[0.3em] text-muted-foreground/50 uppercase">
+              Global Communication
+            </h3>
             <div className="space-y-6">
               {[
                 { label: "Press & Media", val: "media@logicia.ai", icon: Mail },
-                { label: "Institutional Relations", val: "partners@logicia.ai", icon: Globe },
-                { label: "Research Lab", val: "Palo Alto, California", icon: MapPin }
+                {
+                  label: "Institutional Relations",
+                  val: "partners@logicia.ai",
+                  icon: Globe,
+                },
+                {
+                  label: "Research Lab",
+                  val: "Palo Alto, California",
+                  icon: MapPin,
+                },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-4 group">
                   <div className="w-10 h-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center group-hover:neon-box group-hover:bg-primary/10 transition-all duration-300">
                     <item.icon size={16} className="text-primary/70" />
                   </div>
                   <div>
-                    <span className="block text-[8px] font-display tracking-[0.3em] text-muted-foreground/40 mb-0.5 uppercase">{item.label}</span>
-                    <span className="text-xs font-body text-foreground/90">{item.val}</span>
+                    <span className="block text-[8px] font-display tracking-[0.3em] text-muted-foreground/40 mb-0.5 uppercase">
+                      {item.label}
+                    </span>
+                    <span className="text-xs font-body text-foreground/90">
+                      {item.val}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -534,69 +658,99 @@ const ContactContent = () => {
 
         {/* Right Column: Refined Contact Form */}
         <div className="lg:col-span-7">
-          <form onSubmit={handleSubmit} className="glass-strong rounded-2xl p-8 border border-white/5 space-y-6 relative overflow-hidden group">
+          <form
+            onSubmit={handleSubmit}
+            className="glass-strong rounded-2xl p-8 border border-white/5 space-y-6 relative overflow-hidden group"
+          >
             {/* Subtle corner accent */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-primary/10 transition-colors" />
-            
+
             <div className="grid sm:grid-cols-2 gap-6 relative">
               <div className="space-y-2">
-                <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">Identity</label>
+                <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">
+                  Identity
+                </label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" size={14} />
-                  <input 
+                  <User
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40"
+                    size={14}
+                  />
+                  <input
                     required
-                    type="text" 
-                    placeholder="Full Name" 
+                    type="text"
+                    placeholder="Full Name"
                     value={form.name}
-                    onChange={(e) => setForm({...form, name: e.target.value})}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all" 
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">Electronic Mail</label>
+                <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">
+                  Electronic Mail
+                </label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" size={14} />
-                  <input 
+                  <Mail
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40"
+                    size={14}
+                  />
+                  <input
                     required
-                    type="email" 
-                    placeholder="name@organization.com" 
+                    type="email"
+                    placeholder="name@organization.com"
                     value={form.email}
-                    onChange={(e) => setForm({...form, email: e.target.value})}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all" 
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
+                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
                   />
                 </div>
               </div>
             </div>
 
             <div className="space-y-2 relative">
-              <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">Inquiry Vector</label>
-              <select 
+              <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">
+                Inquiry Vector
+              </label>
+              <select
                 value={form.inquiry}
-                onChange={(e) => setForm({...form, inquiry: e.target.value})}
+                onChange={(e) => setForm({ ...form, inquiry: e.target.value })}
                 className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all appearance-none cursor-pointer"
               >
-                <option value="General Support" className="bg-background">General Support Desk</option>
-                <option value="API Integration" className="bg-background">API Integration Support</option>
-                <option value="Institutional" className="bg-background">Institutional Partnerships</option>
-                <option value="Security" className="bg-background">Security & Vulnerability</option>
+                <option value="General Support" className="bg-background">
+                  General Support Desk
+                </option>
+                <option value="API Integration" className="bg-background">
+                  API Integration Support
+                </option>
+                <option value="Institutional" className="bg-background">
+                  Institutional Partnerships
+                </option>
+                <option value="Security" className="bg-background">
+                  Security & Vulnerability
+                </option>
               </select>
-              <ChevronRight className="absolute right-4 bottom-4 rotate-90 text-muted-foreground/40 pointer-events-none" size={14} />
-            </div>
-
-            <div className="space-y-2 relative">
-              <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">Message Breakdown</label>
-              <textarea 
-                required
-                rows={5} 
-                placeholder="Details of your inquiry..." 
-                value={form.message}
-                onChange={(e) => setForm({...form, message: e.target.value})}
-                className="w-full bg-black/40 border border-white/10 rounded-xl px-5 py-4 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all resize-none" 
+              <ChevronRight
+                className="absolute right-4 bottom-4 rotate-90 text-muted-foreground/40 pointer-events-none"
+                size={14}
               />
             </div>
 
-            <button 
+            <div className="space-y-2 relative">
+              <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">
+                Message Breakdown
+              </label>
+              <textarea
+                required
+                rows={5}
+                placeholder="Details of your inquiry..."
+                value={form.message}
+                onChange={(e) => setForm({ ...form, message: e.target.value })}
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-5 py-4 text-sm focus:outline-none focus:border-primary/50 focus:bg-primary/5 transition-all resize-none"
+              />
+            </div>
+
+            <button
               type="submit"
               disabled={status === "sending"}
               className={`w-full py-4 bg-primary text-primary-foreground font-display text-[10px] tracking-[0.3em] rounded-xl hover:scale-[0.99] active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3 disabled:opacity-50`}
@@ -620,8 +774,8 @@ const ContactContent = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 /* ═══════════════════════════════════════════════════════════════
    SHARED SECTION HEADER
@@ -668,11 +822,16 @@ const Docs = () => {
 
   const renderContent = () => {
     switch (active) {
-      case "features": return <FeaturesContent />;
-      case "reference": return <ReferenceContent />;
-      case "how-it-works": return <HowItWorksContent />;
-      case "about": return <AboutContent />;
-      case "contact": return <ContactContent />;
+      case "features":
+        return <FeaturesContent />;
+      case "reference":
+        return <ReferenceContent />;
+      case "how-it-works":
+        return <HowItWorksContent />;
+      case "about":
+        return <AboutContent />;
+      case "contact":
+        return <ContactContent />;
     }
   };
 
@@ -686,18 +845,27 @@ const Docs = () => {
       <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 h-16">
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Link
+              to="/"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
               <img src="/logo.png" alt="Logicia" className="w-6 h-6" />
-              <span className="font-display text-sm font-bold tracking-[0.2em] text-primary">LOGICIA</span>
+              <span className="font-display text-sm font-bold tracking-[0.2em] text-primary">
+                LOGICIA
+              </span>
             </Link>
             <div className="h-4 w-px bg-white/10 hidden sm:block" />
-            <span className="text-[10px] font-display tracking-widest text-muted-foreground hidden sm:block">DOCUMENTATION V1.0.4</span>
+            <span className="text-[10px] font-display tracking-widest text-muted-foreground hidden sm:block">
+              DOCUMENTATION V1.0.4
+            </span>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="text-[9px] font-display tracking-widest text-primary/80 uppercase">{activeSection.label}</span>
+              <span className="text-[9px] font-display tracking-widest text-primary/80 uppercase">
+                {activeSection.label}
+              </span>
             </div>
             <button
               onClick={() => setSidebarOpen((p) => !p)}
@@ -719,59 +887,98 @@ const Docs = () => {
           <nav className="p-6 flex flex-col h-full">
             <div className="space-y-1 flex-1">
               <div className="px-3 mb-6">
-                 <span className="text-[9px] font-display tracking-[0.3em] text-muted-foreground/40 uppercase">Resources</span>
+                <span className="text-[9px] font-display tracking-[0.3em] text-muted-foreground/40 uppercase">
+                  Resources
+                </span>
               </div>
               {sections.map(({ id, label, icon: Icon }) => {
                 const isActive = active === id;
                 return (
                   <button
                     key={id}
-                    onClick={() => { setActive(id); setSidebarOpen(false); }}
+                    onClick={() => {
+                      setActive(id);
+                      setSidebarOpen(false);
+                    }}
                     className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all duration-300 group ${
                       isActive
                         ? "bg-primary/5 text-primary border border-primary/20 shadow-[0_0_20px_hsl(120_100%_54%/0.05)]"
                         : "text-muted-foreground hover:text-foreground border border-transparent"
                     }`}
                   >
-                    <Icon size={14} className={isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary transition-colors"} />
-                    <span className="font-display text-[10px] tracking-widest uppercase">{label}</span>
-                    {isActive && <ChevronRight size={10} className="ml-auto animate-pulse" />}
+                    <Icon
+                      size={14}
+                      className={
+                        isActive
+                          ? "text-primary"
+                          : "text-muted-foreground group-hover:text-primary transition-colors"
+                      }
+                    />
+                    <span className="font-display text-[10px] tracking-widest uppercase">
+                      {label}
+                    </span>
+                    {isActive && (
+                      <ChevronRight
+                        size={10}
+                        className="ml-auto animate-pulse"
+                      />
+                    )}
                   </button>
                 );
               })}
             </div>
 
             <div className="pt-6 border-t border-white/5">
-               <a 
-                 href="https://github.com/VARA4u-tech/-LOGICIA_Your_AI_Math_Brain_" 
-                 target="_blank" 
-                 rel="noopener noreferrer"
-                 className="flex items-center gap-3 px-3 py-3 rounded-xl text-muted-foreground hover:text-primary transition-colors"
-               >
-                  <Github size={14} />
-                  <span className="font-display text-[9px] tracking-widest uppercase">GitHub Repo</span>
-               </a>
+              <a
+                href="https://vara-s-portfolio.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-3 py-3 rounded-xl text-muted-foreground hover:text-primary transition-colors"
+              >
+                <User size={14} />
+                <span className="font-display text-[9px] tracking-widest uppercase">
+                  My Portfolio
+                </span>
+              </a>
+              <a
+                href="https://github.com/VARA4u-tech/-LOGICIA_Your_AI_Math_Brain_"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-3 py-3 rounded-xl text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Github size={14} />
+                <span className="font-display text-[9px] tracking-widest uppercase">
+                  GitHub Repo
+                </span>
+              </a>
             </div>
           </nav>
         </aside>
 
         {/* Sidebar overlay on mobile */}
         {sidebarOpen && (
-          <div className="fixed inset-0 z-30 bg-black/80 backdrop-blur-sm md:hidden" onClick={() => setSidebarOpen(false)} />
+          <div
+            className="fixed inset-0 z-30 bg-black/80 backdrop-blur-sm md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
         )}
 
         {/* ── Main content ── */}
         <main className="flex-1 px-6 sm:px-12 py-12 md:py-16 max-w-5xl mx-auto w-full overflow-hidden">
-          <div className="max-w-4xl mx-auto">
-            {renderContent()}
-          </div>
-          
+          <div className="max-w-4xl mx-auto">{renderContent()}</div>
+
           <footer className="mt-24 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-muted-foreground/40 text-[9px] font-display tracking-widest uppercase">
             <span>© 2026 LOGICIA SYSTEMS</span>
             <div className="flex gap-6">
-               <Link to="#" className="hover:text-primary transition-colors">Documentation</Link>
-               <Link to="#" className="hover:text-primary transition-colors">Release Notes</Link>
-               <Link to="#" className="hover:text-primary transition-colors">Privacy</Link>
+              <Link to="#" className="hover:text-primary transition-colors">
+                Documentation
+              </Link>
+              <Link to="#" className="hover:text-primary transition-colors">
+                Release Notes
+              </Link>
+              <Link to="#" className="hover:text-primary transition-colors">
+                Privacy
+              </Link>
             </div>
           </footer>
         </main>
