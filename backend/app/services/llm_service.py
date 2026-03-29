@@ -73,7 +73,8 @@ class LLMService:
             "- For exam-type problems (SSC, competitive), always include the Shortcut Trick section\n"
             "- Use **bold** for section headers and key results\n"
             "- Use mathematical notation naturally (², √, π, ∫, etc.)\n"
-            "- IMPORTANT: For any LaTeX commands (like \\frac, \\sum, \\equiv) or complex expressions, you MUST wrap them in \\( ... \\) delimiters to ensure they render correctly.\n"
+            "- CLEAN MATH RULE: Avoid using LaTeX commands like \\cos, \\sin, \\tan, or ^\\circ in plain text explanations. Use plain text or Unicode symbols instead (e.g., 'cos 90°' or 'x²'). Only use LaTeX for very complex equations if absolutely necessary.\n"
+            "- IMPORTANT: For any complex LaTeX formulas you DO use, you MUST wrap them in \\( ... \\) delimiters to ensure they render correctly.\n"
             "- If a graph or symbolic result is provided by the engine, reference it in your explanation\n"
         )
 
