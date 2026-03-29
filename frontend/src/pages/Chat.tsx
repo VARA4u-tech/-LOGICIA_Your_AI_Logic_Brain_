@@ -33,6 +33,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import html2canvas from "html2canvas";
+import { Share } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════════════
    TYPES
@@ -96,7 +98,8 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     back_to_home: "Back to Home",
     clear: "CLEAR",
     ask_anything: "Ask me anything math",
-    ask_subtitle: "Solve equations, derivatives, integrals, and more — step by step.",
+    ask_subtitle:
+      "Solve equations, derivatives, integrals, and more — step by step.",
     placeholder_detailed: "Ask a math question…",
     placeholder_quick: "Ask for a quick answer…",
     enter_to_send: "Press",
@@ -104,7 +107,8 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     new_line: "for new line",
     computing: "Computing...",
     computing_fast: "Computing fast...",
-    error_backend: "Sorry, I am having trouble connecting to the Logicia server right now. Please make sure the backend is running on :8000.",
+    error_backend:
+      "Sorry, I am having trouble connecting to the Logicia server right now. Please make sure the backend is running on :8000.",
     logicia_ai: "LOGICIA AI",
     you: "YOU",
     final_answer: "Final Answer",
@@ -125,7 +129,8 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     back_to_home: "హోమ్‌కి తిరిగి వెళ్ళు",
     clear: "క్లియర్",
     ask_anything: "ఏదైనా గణితం అడగండి",
-    ask_subtitle: "సమీకరణాలు, డెరివేటివ్‌లు, ఇంటిగ్రల్‌లు మరియు మరిన్నింటిని దశలవారీగా పరిష్కరించండి.",
+    ask_subtitle:
+      "సమీకరణాలు, డెరివేటివ్‌లు, ఇంటిగ్రల్‌లు మరియు మరిన్నింటిని దశలవారీగా పరిష్కరించండి.",
     placeholder_detailed: "ఒక గణిత ప్రశ్న అడగండి…",
     placeholder_quick: "శీఘ్ర సమాధానం కోసం అడగండి…",
     enter_to_send: "పంపడానికి",
@@ -133,7 +138,8 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     new_line: "కొత్త పంక్తి కోసం",
     computing: "గణన జరుగుతోంది...",
     computing_fast: "వేగంగా గణన...",
-    error_backend: "క్షమించండి, లాజిషియా సర్వర్‌కు కనెక్ట్ అవడంలో సమస్య ఉంది. దయచేసి బ్యాకెండ్ :8000 పోర్ట్‌లో నడుస్తుందో లేదో తనిఖీ చేయండి.",
+    error_backend:
+      "క్షమించండి, లాజిషియా సర్వర్‌కు కనెక్ట్ అవడంలో సమస్య ఉంది. దయచేసి బ్యాకెండ్ :8000 పోర్ట్‌లో నడుస్తుందో లేదో తనిఖీ చేయండి.",
     logicia_ai: "లాజిషియా AI",
     you: "మీరు",
     final_answer: "తుది సమాధానం",
@@ -149,7 +155,10 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
   },
 };
 
-const QUICK_PROMPTS_I18N: Record<Language, { label: string; prompt: string }[]> = {
+const QUICK_PROMPTS_I18N: Record<
+  Language,
+  { label: string; prompt: string }[]
+> = {
   en: [
     { label: "Solve x² − 5x + 6", prompt: "solve quadratic x^2 - 5x + 6" },
     { label: "Derivative of x²", prompt: "derivative of x²" },
@@ -300,6 +309,7 @@ const SolutionPanel = ({
   graphData,
   mode,
   t,
+  content,
 }: {
   steps: Step[];
   finalAnswer: string;
@@ -307,12 +317,58 @@ const SolutionPanel = ({
   graphData?: PlotData[];
   mode?: ResponseMode;
   t: Record<string, string>;
+  content?: string;
 }) => {
   const [expanded, setExpanded] = useState(true);
   const isQuick = mode === "quick";
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    if (!panelRef.current) return;
+    setIsExporting(true);
+    try {
+      // Small delay to ensure any transient animations settle
+      await new Promise((r) => setTimeout(r, 100));
+
+      const canvas = await html2canvas(panelRef.current, {
+        backgroundColor: "#050505",
+        scale: 2, // High quality
+        logging: false,
+        useCORS: true,
+      });
+
+      const link = document.createElement("a");
+      link.download = `Logicia-Solution-${Date.now()}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch (err) {
+      console.error("Export failed", err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
-    <div className="mt-3 sm:mt-4 space-y-3 border-t border-border/40 pt-3 sm:pt-4">
+    <div
+      className="mt-3 sm:mt-4 space-y-3 border-t border-border/40 pt-3 sm:pt-4"
+      ref={panelRef}
+    >
+      {/* Invisible header for export branding */}
+      {isExporting && (
+        <div className="flex items-center gap-3 mb-6 px-2">
+          <img src="/logo.png" alt="Logicia" className="w-8 h-8" />
+          <div>
+            <h3 className="text-primary font-display tracking-widest text-lg">
+              LOGICIA AI
+            </h3>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">
+              Your AI Math Brain
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header row */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2 min-w-0">
@@ -337,25 +393,47 @@ const SolutionPanel = ({
             </span>
           )}
         </div>
-        {!isQuick && (
-          <button
-            onClick={() => setExpanded((p) => !p)}
-            className="ml-auto flex items-center gap-1 text-[10px] font-display tracking-widest text-primary/70 hover:text-primary transition-colors border border-primary/20 rounded-md px-2.5 py-1 hover:border-primary/40 flex-shrink-0 min-h-[30px]"
-          >
-            {expanded ? (
-              <>
-                <span>{t.hide}</span>
-                <ChevronUp size={11} />
-              </>
-            ) : (
-              <>
-                <span>{t.show_steps}</span>
-                <ChevronDown size={11} />
-              </>
-            )}
-          </button>
-        )}
+
+        <div className="flex items-center gap-2">
+          {!isExporting && (
+            <button
+              onClick={handleExport}
+              disabled={isExporting}
+              className="flex items-center gap-1.5 text-[10px] font-display tracking-widest text-muted-foreground hover:text-primary transition-all bg-muted/10 hover:bg-primary/5 border border-border/50 rounded-md px-2.5 py-1 min-h-[30px]"
+              title="Share solution as image"
+            >
+              <Share size={11} className={isExporting ? "animate-pulse" : ""} />
+              <span>{isExporting ? "PREPARING..." : "SHARE"}</span>
+            </button>
+          )}
+
+          {!isQuick && !isExporting && (
+            <button
+              onClick={() => setExpanded((p) => !p)}
+              className="ml-auto flex items-center gap-1 text-[10px] font-display tracking-widest text-primary/70 hover:text-primary transition-colors border border-primary/20 rounded-md px-2.5 py-1 hover:border-primary/40 flex-shrink-0 min-h-[30px]"
+            >
+              {expanded ? (
+                <>
+                  <span>{t.hide}</span>
+                  <ChevronUp size={11} />
+                </>
+              ) : (
+                <>
+                  <span>{t.show_steps}</span>
+                  <ChevronDown size={11} />
+                </>
+              )}
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Export context: if exporting, include the main content too */}
+      {isExporting && content && (
+        <div className="mb-4 p-4 rounded-2xl bg-muted/5 border border-border/30">
+          <RenderContent content={content} />
+        </div>
+      )}
 
       {/* Graph — only shown in detailed mode */}
       {!isQuick && graphData && graphData.length > 0 && (
@@ -458,7 +536,10 @@ const SolutionPanel = ({
                 {/* Explanation — shown in both modes */}
                 {step.explanation && (
                   <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-relaxed">
-                    <ChevronRight size={9} className={`inline mr-1 ${isQuick ? "text-amber-400/60" : "text-primary"}`} />
+                    <ChevronRight
+                      size={9}
+                      className={`inline mr-1 ${isQuick ? "text-amber-400/60" : "text-primary"}`}
+                    />
                     {step.explanation}
                   </p>
                 )}
@@ -467,8 +548,13 @@ const SolutionPanel = ({
                 {!isQuick && step.subSteps && step.subSteps.length > 0 && (
                   <div className="mt-1.5 ml-1 pl-3 border-l border-primary/20 space-y-1">
                     {step.subSteps.map((sub, j) => (
-                      <p key={j} className="text-[10px] sm:text-[11px] font-mono text-primary/70 leading-relaxed">
-                        <span className="text-primary/40 mr-2 font-display">{String.fromCharCode(97 + j)})</span>
+                      <p
+                        key={j}
+                        className="text-[10px] sm:text-[11px] font-mono text-primary/70 leading-relaxed"
+                      >
+                        <span className="text-primary/40 mr-2 font-display">
+                          {String.fromCharCode(97 + j)})
+                        </span>
                         {sub}
                       </p>
                     ))}
@@ -478,7 +564,10 @@ const SolutionPanel = ({
                 {/* Note callout (only in detailed mode) */}
                 {!isQuick && step.note && (
                   <div className="mt-2 flex gap-2 items-start px-3 py-2 rounded-lg border border-amber-500/20 bg-amber-500/5">
-                    <Lightbulb size={11} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                    <Lightbulb
+                      size={11}
+                      className="text-amber-400 flex-shrink-0 mt-0.5"
+                    />
                     <p className="text-[10px] sm:text-[11px] text-amber-200/70 leading-relaxed font-body italic">
                       {step.note}
                     </p>
@@ -489,7 +578,6 @@ const SolutionPanel = ({
           ))}
         </div>
       </div>
-
 
       {/* Final Answer */}
       <div
@@ -535,7 +623,13 @@ const SolutionPanel = ({
 /* ═══════════════════════════════════════════════════════════════
    TYPING INDICATOR
 ═══════════════════════════════════════════════════════════════ */
-const TypingIndicator = ({ mode, t }: { mode: ResponseMode; t: Record<string, string> }) => (
+const TypingIndicator = ({
+  mode,
+  t,
+}: {
+  mode: ResponseMode;
+  t: Record<string, string>;
+}) => (
   <div className="flex gap-3 sm:gap-4 items-start max-w-3xl mx-auto px-3 sm:px-6 py-3 animate-fade-in-up">
     <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
       <Bot size={14} className="text-primary" />
@@ -558,39 +652,105 @@ const TypingIndicator = ({ mode, t }: { mode: ResponseMode; t: Record<string, st
 /* ═══════════════════════════════════════════════════════════════
    RICH CONTENT RENDERER
    Handles: **bold**, section headers, bullet lists, math blocks,
-   ⇒/∴ symbols, paragraphs, and inline code
+   markdown tables, symbols, and inline LaTeX
 ═══════════════════════════════════════════════════════════════ */
-const RenderContent = ({ content }: { content: string }) => {
-  // Split content into paragraphs by double newlines
-  const paragraphs = content.split(/\n{2,}/);
+
+const TableRenderer = ({ markdown }: { markdown: string }) => {
+  const rows = markdown.split("\n").filter((r) => r.includes("|"));
+  if (rows.length < 2) return null;
+
+  const parseRow = (row: string) =>
+    row
+      .split("|")
+      .map((c) => c.trim())
+      .filter((_, i, arr) => i > 0 && i < arr.length - 1);
+
+  const head = parseRow(rows[0]);
+  const body = rows.slice(2).map(parseRow); // Skip header and separator row
 
   return (
-    <div className="space-y-3">
+    <div className="my-3 overflow-x-auto rounded-xl border border-primary/20 bg-black/40">
+      <table className="w-full text-[10px] sm:text-xs">
+        <thead className="bg-primary/10 border-b border-primary/20">
+          <tr>
+            {head.map((h, i) => (
+              <th
+                key={i}
+                className="px-3 py-2 text-left font-display uppercase tracking-widest text-primary/70"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-primary/10">
+          {body.map((row, i) => (
+            <tr key={i} className="hover:bg-primary/5 transition-colors">
+              {row.map((cell, j) => (
+                <td key={j} className="px-3 py-2 font-body text-foreground/80">
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+const RenderContent = ({ content }: { content: string }) => {
+  // Normalize newline formatting for tables and lists
+  const normalizedContent = content
+    .replace(/\\\( /g, "\\(")
+    .replace(/ \\\)/g, "\\)")
+    .replace(/\\\[ /g, "\\[")
+    .replace(/ \\\]/g, "\\]")
+    // Ensure tables have spacing
+    .replace(/\n(\|.*\|)\n/g, "\n\n$1\n\n");
+
+  const paragraphs = normalizedContent.split(/\n{2,}/);
+
+  return (
+    <div className="space-y-4">
       {paragraphs.map((para, pIdx) => {
         const trimmedPara = para.trim();
         if (!trimmedPara) return null;
 
-        // --- SECTION HEADER: lines like "**Given:**" or "**∴ Conclusion:**" or "**💡 Shortcut Trick**"
-        const headerMatch = trimmedPara.match(
-          /^\*\*(.+?)\*\*\s*$/
-        );
+        // --- TABLE DETECTION: lines starting/ending with |
+        if (
+          trimmedPara.includes("|") &&
+          trimmedPara.split("\n").some((l) => l.includes("|---"))
+        ) {
+          return <TableRenderer key={pIdx} markdown={trimmedPara} />;
+        }
+
+        // --- SECTION HEADER: lines like "**Given:**" or "**∴ Conclusion:**"
+        const headerMatch = trimmedPara.match(/^\*\*(.+?)\*\*\s*$/);
         if (headerMatch && trimmedPara.split("\n").length === 1) {
           const headerText = headerMatch[1];
-          const isConclusion = /∴|conclusion|నిర్ణయం/i.test(headerText);
-          const isShortcut = /💡|shortcut|షార్ట్/i.test(headerText);
-          const isGiven = /given|ఇవ్వబడింది/i.test(headerText);
-          const isCalc = /calculation|గణన/i.test(headerText);
+          const type = /∴|conclusion|నిర్ణయం/i.test(headerText)
+            ? "conclusion"
+            : /💡|shortcut|షార్ట్/i.test(headerText)
+              ? "shortcut"
+              : /given|ఇవ్వబడింది/i.test(headerText)
+                ? "given"
+                : "default";
 
-          let headerClass = "text-primary border-primary/30 bg-primary/5";
-          if (isConclusion) headerClass = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5";
-          if (isShortcut) headerClass = "text-amber-400 border-amber-500/30 bg-amber-500/5";
-          if (isGiven) headerClass = "text-sky-400 border-sky-500/30 bg-sky-500/5";
-          if (isCalc) headerClass = "text-primary border-primary/30 bg-primary/5";
+          const styles = {
+            conclusion:
+              "text-emerald-400 border-emerald-500/30 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]",
+            shortcut:
+              "text-amber-400 border-amber-500/30 bg-amber-500/5 shadow-[0_0_15px_rgba(245,158,11,0.1)]",
+            given:
+              "text-sky-400 border-sky-500/30 bg-sky-500/5 shadow-[0_0_15px_rgba(14,165,233,0.1)]",
+            default: "text-primary border-primary/30 bg-primary/5",
+          };
 
           return (
             <div
               key={pIdx}
-              className={`font-display text-[11px] sm:text-xs tracking-wider uppercase px-3 py-2 rounded-lg border ${headerClass} mt-2`}
+              className={`font-display text-[10px] sm:text-[11px] tracking-widest uppercase px-3 py-2 rounded-lg border ${styles[type as keyof typeof styles]} mt-3 mb-1 transition-all`}
             >
               {headerText}
             </div>
@@ -600,83 +760,88 @@ const RenderContent = ({ content }: { content: string }) => {
         // --- MULTI-LINE PARAGRAPH: render line by line
         const lines = trimmedPara.split("\n");
         return (
-          <div key={pIdx} className="space-y-1.5">
+          <div key={pIdx} className="space-y-2">
             {lines.map((line, lIdx) => {
               const trimmedLine = line.trim();
               if (!trimmedLine) return null;
 
-              // Bold header line within a paragraph (e.g. "**Given:**\n...")
-              const inlineHeaderMatch = trimmedLine.match(/^\*\*(.+?)\*\*:?\s*$/);
-              if (inlineHeaderMatch && trimmedLine === `**${inlineHeaderMatch[1]}**` || inlineHeaderMatch && trimmedLine === `**${inlineHeaderMatch[1]}**:`) {
-                const headerText = inlineHeaderMatch[1];
-                const isConclusion = /∴|conclusion|నిర్ణయం/i.test(headerText);
-                const isShortcut = /💡|shortcut|షార్ట్/i.test(headerText);
-                const isGiven = /given|ఇవ్వబడింది/i.test(headerText);
-
-                let headerClass = "text-primary border-primary/30 bg-primary/5";
-                if (isConclusion) headerClass = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5";
-                if (isShortcut) headerClass = "text-amber-400 border-amber-500/30 bg-amber-500/5";
-                if (isGiven) headerClass = "text-sky-400 border-sky-500/30 bg-sky-500/5";
+              // Bullet / list item: handles -, •, ▸, *, or numeric like 1.
+              if (/^([-•▸*]|\d+\.)\s/.test(trimmedLine)) {
+                const bulletContent = trimmedLine.replace(
+                  /^([-•▸*]|\d+\.)\s*/,
+                  "",
+                );
+                const isStepHeader = /^Step \d+/i.test(bulletContent);
 
                 return (
                   <div
                     key={lIdx}
-                    className={`font-display text-[11px] sm:text-xs tracking-wider uppercase px-3 py-2 rounded-lg border ${headerClass} mt-2`}
+                    className={`flex gap-3 items-start ${isStepHeader ? "mt-3 first:mt-0" : ""}`}
                   >
-                    {headerText}
-                  </div>
-                );
-              }
-
-              // Bullet / list item: "- Step 1 — ..."
-              if (/^[-•]\s/.test(trimmedLine)) {
-                const bulletContent = trimmedLine.replace(/^[-•]\s*/, "");
-                return (
-                  <div key={lIdx} className="flex gap-2 items-start pl-1">
-                    <span className="text-primary mt-1 flex-shrink-0">▸</span>
-                    <span className="flex-1">
+                    <span className="text-primary/60 mt-1.5 flex-shrink-0 text-[10px]">
+                      {isStepHeader ? "✦" : "▸"}
+                    </span>
+                    <span
+                      className={`flex-1 ${isStepHeader ? "font-display text-primary tracking-wide text-[11px] sm:text-xs" : ""}`}
+                    >
                       <InlineRenderer text={bulletContent} />
                     </span>
                   </div>
                 );
               }
 
-              // Math display block: \[...\] or lines that are purely math
-              if (/^\\\[/.test(trimmedLine) || /\\\]$/.test(trimmedLine)) {
+              // Math display block: \[...\] or $$...$$
+              if (
+                /^(\\\[|\$\$)/.test(trimmedLine) ||
+                /(\\\]|\$\$)$/.test(trimmedLine)
+              ) {
                 const mathContent = trimmedLine
-                  .replace(/^\\\[\s*/, "")
-                  .replace(/\s*\\\]$/, "")
+                  .replace(/^(\\\[|\$\$)\s*/, "")
+                  .replace(/\s*(\\\]|\$\$)$/, "")
                   .trim();
+
                 if (mathContent) {
                   return (
                     <div
                       key={lIdx}
-                      className="font-mono text-xs sm:text-sm px-3 py-2 rounded-lg bg-black/40 border border-primary/20 text-primary my-1 overflow-x-auto"
+                      className="font-mono text-xs sm:text-sm px-4 py-3 rounded-xl bg-black/60 border border-primary/20 text-primary my-2 overflow-x-auto shadow-inner group transition-all hover:border-primary/40"
                     >
-                      {mathContent}
+                      <div className="flex justify-between items-center gap-4">
+                        <code className="whitespace-pre-wrap">
+                          {mathContent}
+                        </code>
+                        <CopyButton text={mathContent} />
+                      </div>
                     </div>
                   );
                 }
                 return null;
               }
 
-              // Lines that look like math results (contain ⇒ or start with =)
-              if (/⇒/.test(trimmedLine)) {
+              // Special treatment for ∴ Conclusion
+              if (
+                trimmedLine.startsWith("∴") ||
+                trimmedLine.startsWith("Conclusion:")
+              ) {
                 return (
-                  <div key={lIdx} className="flex gap-2 items-baseline pl-2">
-                    <span className="font-mono text-xs sm:text-sm text-foreground leading-relaxed">
-                      <InlineRenderer text={trimmedLine} />
-                    </span>
+                  <div
+                    key={lIdx}
+                    className="px-4 py-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-300 font-semibold text-xs sm:text-sm leading-relaxed mt-2 shadow-[0_0_20px_rgba(16,185,129,0.05)]"
+                  >
+                    <InlineRenderer text={trimmedLine} />
                   </div>
                 );
               }
 
-              // Conclusion line with ∴
-              if (/^∴/.test(trimmedLine)) {
+              // Special treatment for 💡 Shortcut
+              if (
+                trimmedLine.startsWith("💡") ||
+                trimmedLine.startsWith("Shortcut:")
+              ) {
                 return (
                   <div
                     key={lIdx}
-                    className="px-3 py-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-300 font-semibold text-xs sm:text-sm leading-relaxed mt-1"
+                    className="px-4 py-3 rounded-xl border border-amber-500/30 bg-amber-500/5 text-amber-200 font-medium text-xs sm:text-sm leading-relaxed mt-2 shadow-[0_0_20px_rgba(245,158,11,0.05)]"
                   >
                     <InlineRenderer text={trimmedLine} />
                   </div>
@@ -685,7 +850,10 @@ const RenderContent = ({ content }: { content: string }) => {
 
               // Regular line
               return (
-                <p key={lIdx} className="text-xs sm:text-sm leading-relaxed">
+                <p
+                  key={lIdx}
+                  className="text-[12px] sm:text-[14px] text-foreground/90 leading-relaxed font-body"
+                >
                   <InlineRenderer text={trimmedLine} />
                 </p>
               );
@@ -697,37 +865,50 @@ const RenderContent = ({ content }: { content: string }) => {
   );
 };
 
-/* Inline renderer for bold, inline math ($...$), and ⇒/∴ symbols */
+/* Inline renderer for bold, inline math ($...$ or \(...\)), and symbols */
 const InlineRenderer = ({ text }: { text: string }) => {
-  // Split by **bold** and $inline math$ patterns
-  const tokens: { type: "text" | "bold" | "math" | "arrow" | "therefore"; value: string }[] = [];
+  const tokens: {
+    type: "text" | "bold" | "math" | "highlight";
+    value: string;
+  }[] = [];
   let remaining = text;
 
   while (remaining.length > 0) {
-    // Bold: **...**
+    // Patterns with capturing groups for the content inside
     const boldMatch = remaining.match(/^(.*?)\*\*(.+?)\*\*(.*)/s);
-    // Inline math: $...$
-    const mathMatch = remaining.match(/^(.*?)\$(.+?)\$(.*)/s);
+    const mathMatch1 = remaining.match(/^(.*?)\\\((.+?)\\\)(.*)/s);
+    const mathMatch2 = remaining.match(/^(.*?)\$(.+?)\$(.*)/s);
 
-    // Pick the earliest match
-    const boldIdx = boldMatch ? boldMatch[1].length : Infinity;
-    const mathIdx = mathMatch ? mathMatch[1].length : Infinity;
+    const matches = [
+      {
+        result: boldMatch,
+        type: "bold" as const,
+        index: boldMatch ? boldMatch[1].length : Infinity,
+      },
+      {
+        result: mathMatch1,
+        type: "math" as const,
+        index: mathMatch1 ? mathMatch1[1].length : Infinity,
+      },
+      {
+        result: mathMatch2,
+        type: "math" as const,
+        index: mathMatch2 ? mathMatch2[1].length : Infinity,
+      },
+    ].sort((a, b) => a.index - b.index);
 
-    if (boldIdx === Infinity && mathIdx === Infinity) {
-      // No more patterns — push rest and break
-      if (remaining) tokens.push({ type: "text", value: remaining });
+    const earliest = matches[0];
+
+    if (earliest.index === Infinity) {
+      tokens.push({ type: "text", value: remaining });
       break;
     }
 
-    if (boldIdx <= mathIdx && boldMatch) {
-      if (boldMatch[1]) tokens.push({ type: "text", value: boldMatch[1] });
-      tokens.push({ type: "bold", value: boldMatch[2] });
-      remaining = boldMatch[3];
-    } else if (mathMatch) {
-      if (mathMatch[1]) tokens.push({ type: "text", value: mathMatch[1] });
-      tokens.push({ type: "math", value: mathMatch[2] });
-      remaining = mathMatch[3];
+    if (earliest.result![1]) {
+      tokens.push({ type: "text", value: earliest.result![1] });
     }
+    tokens.push({ type: earliest.type, value: earliest.result![2] });
+    remaining = earliest.result![3];
   }
 
   return (
@@ -735,28 +916,49 @@ const InlineRenderer = ({ text }: { text: string }) => {
       {tokens.map((token, i) => {
         if (token.type === "bold") {
           return (
-            <strong key={i} className="text-primary font-semibold">
+            <strong key={i} className="text-primary font-bold">
               {token.value}
             </strong>
           );
         }
         if (token.type === "math") {
+          // Clean common math commands for cleaner inline display
+          const cleanMath = token.value
+            .replace(/\\equiv/g, "≡")
+            .replace(/\\pmod/g, "mod")
+            .replace(/\\times/g, "×")
+            .replace(/\\div/g, "÷")
+            .replace(/\\implies/g, "⇒")
+            .replace(/\\therefore/g, "∴");
+
           return (
             <code
               key={i}
-              className="font-mono text-primary bg-black/30 px-1.5 py-0.5 rounded text-[11px] sm:text-xs border border-primary/15"
+              className="font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded-md text-[11px] sm:text-xs border border-primary/20 mx-0.5"
             >
-              {token.value}
+              {cleanMath}
             </code>
           );
         }
-        // For regular text, highlight ⇒ and ∴ symbols
         return (
           <span key={i}>
             {token.value.split(/(⇒|∴)/).map((seg, j) => {
-              if (seg === "⇒") return <span key={j} className="text-primary font-bold mx-1">⇒</span>;
-              if (seg === "∴") return <span key={j} className="text-emerald-400 font-bold mr-1">∴</span>;
-              return <span key={j}>{seg}</span>;
+              if (seg === "⇒")
+                return (
+                  <span key={j} className="text-primary font-bold mx-1">
+                    ⇒
+                  </span>
+                );
+              if (seg === "∴")
+                return (
+                  <span
+                    key={j}
+                    className="text-emerald-400 font-bold mr-1 mx-1"
+                  >
+                    ∴
+                  </span>
+                );
+              return seg;
             })}
           </span>
         );
@@ -768,7 +970,13 @@ const InlineRenderer = ({ text }: { text: string }) => {
 /* ═══════════════════════════════════════════════════════════════
    MESSAGE BUBBLE
 ═══════════════════════════════════════════════════════════════ */
-const MessageBubble = ({ msg, t }: { msg: Message; t: Record<string, string> }) => {
+const MessageBubble = ({
+  msg,
+  t,
+}: {
+  msg: Message;
+  t: Record<string, string>;
+}) => {
   const isUser = msg.role === "user";
   const time =
     msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp);
@@ -831,6 +1039,7 @@ const MessageBubble = ({ msg, t }: { msg: Message; t: Record<string, string> }) 
               method={msg.solution.method}
               graphData={msg.solution.graphData}
               mode={msg.solution.mode}
+              content={msg.content} // Pass content for exporting together
               t={t}
             />
           )}
@@ -843,7 +1052,15 @@ const MessageBubble = ({ msg, t }: { msg: Message; t: Record<string, string> }) 
 /* ═══════════════════════════════════════════════════════════════
    EMPTY STATE
 ═══════════════════════════════════════════════════════════════ */
-const EmptyState = ({ onPrompt, t, prompts }: { onPrompt: (p: string) => void; t: Record<string, string>; prompts: { label: string; prompt: string }[] }) => (
+const EmptyState = ({
+  onPrompt,
+  t,
+  prompts,
+}: {
+  onPrompt: (p: string) => void;
+  t: Record<string, string>;
+  prompts: { label: string; prompt: string }[];
+}) => (
   <div className="flex flex-col items-center justify-center h-full px-4 py-10 sm:py-16 text-center">
     <div
       className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border border-primary/30 bg-primary/5 flex items-center justify-center mb-4 sm:mb-5"
@@ -931,7 +1148,9 @@ const Chat = () => {
     setLanguage(lang);
     try {
       localStorage.setItem(LANG_KEY, lang);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const t = UI_STRINGS[language];
@@ -1090,7 +1309,13 @@ const Chat = () => {
           const data = await retryRes.json();
           setConversations((prev) =>
             prev.map((c) =>
-              c.id === convId ? { ...c, id: data.conversation_id, messages: [...c.messages, data.message] } : c,
+              c.id === convId
+                ? {
+                    ...c,
+                    id: data.conversation_id,
+                    messages: [...c.messages, data.message],
+                  }
+                : c,
             ),
           );
           setActiveId(data.conversation_id);
@@ -1099,20 +1324,25 @@ const Chat = () => {
         }
 
         if (!res.ok) throw new Error("Backend error");
-        
+
         const data = await res.json();
-        
+
         setConversations((prev) =>
           prev.map((c) =>
-            c.id === convId ? { ...c, id: data.conversation_id, messages: [...c.messages, data.message] } : c,
+            c.id === convId
+              ? {
+                  ...c,
+                  id: data.conversation_id,
+                  messages: [...c.messages, data.message],
+                }
+              : c,
           ),
         );
-        
+
         // If it was a new conversation, update activeId to the remote UUID
         if (!convId || convId !== data.conversation_id) {
           setActiveId(data.conversation_id);
         }
-
       } catch (error) {
         console.error("Failed to fetch from backend", error);
         // Fallback error message
@@ -1261,7 +1491,6 @@ const Chat = () => {
 
       {/* ════ MAIN AREA ════ */}
       <div className="relative flex flex-col flex-1 min-w-0">
-
         {/* Top bar */}
         <header className="flex items-center justify-between px-3 sm:px-5 h-13 sm:h-14 border-b border-border/40 bg-background/70 backdrop-blur flex-shrink-0 z-10 gap-2">
           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -1336,11 +1565,17 @@ const Chat = () => {
         {/* ── Input area ── */}
         <div className="flex-shrink-0 border-t border-border/40 bg-background/80 backdrop-blur px-3 sm:px-6 py-3 sm:py-4">
           <div className="max-w-3xl mx-auto space-y-2">
-
             {/* ── MODE + LANGUAGE TOGGLES (sits just above the text field) ── */}
             <div className="flex items-center justify-between px-1 gap-2 flex-wrap">
-              <ModeToggle mode={responseMode} onChange={setResponseMode} t={t} />
-              <LanguageToggle language={language} onChange={handleLanguageChange} />
+              <ModeToggle
+                mode={responseMode}
+                onChange={setResponseMode}
+                t={t}
+              />
+              <LanguageToggle
+                language={language}
+                onChange={handleLanguageChange}
+              />
             </div>
 
             {/* Text input row */}
@@ -1356,7 +1591,9 @@ const Chat = () => {
               <textarea
                 ref={inputRef}
                 value={input}
-                onChange={(e) => setInput(e.target.value.slice(0, MAX_CHARS + 20))}
+                onChange={(e) =>
+                  setInput(e.target.value.slice(0, MAX_CHARS + 20))
+                }
                 onKeyDown={handleKeyDown}
                 placeholder={
                   responseMode === "quick"
@@ -1396,8 +1633,9 @@ const Chat = () => {
 
             {/* Hint text */}
             <p className="hidden sm:block text-[10px] text-muted-foreground/25 text-center font-body">
-              {t.enter_to_send} <kbd className="font-mono">Enter</kbd> {t.to_send}{" "}
-              <kbd className="font-mono">Shift+Enter</kbd> {t.new_line}
+              {t.enter_to_send} <kbd className="font-mono">Enter</kbd>{" "}
+              {t.to_send} <kbd className="font-mono">Shift+Enter</kbd>{" "}
+              {t.new_line}
             </p>
           </div>
         </div>
