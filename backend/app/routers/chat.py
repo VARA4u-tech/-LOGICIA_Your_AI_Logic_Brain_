@@ -1,14 +1,11 @@
 import json
+import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.database import get_db
-from app.models.user import User
-from app.models.conversation import Conversation, Message
 from app.schemas.schemas import ChatRequest, ChatResponse, MessageSchema, SolutionData
-from app.services.auth import get_current_user
 from app.services.math_engine import solve_math
 from app.services.llm_service import llm_service
 
@@ -17,105 +14,109 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 @router.post("/", response_model=ChatResponse)
 async def chat_interaction(
     req: ChatRequest,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     # For now, allow guest users without login
     GUEST_USER_ID = "global-guest-id"
+    now = datetime.now(timezone.utc)
+    
     # 1. Fetch or create conversation
     if req.conversation_id:
-        stmt = select(Conversation).where(
-            Conversation.id == req.conversation_id
-        )
-        result = await db.execute(stmt)
-        conversation = result.scalars().first()
+        conversation = await db["conversations"].find_one({"_id": req.conversation_id})
         if not conversation:
-             # Fallback: Create new if ID not found (sometimes happens with local storage)
-             title = req.content[:30] + "..." if len(req.content) > 30 else req.content
-             conversation = Conversation(user_id=GUEST_USER_ID, title=title)
-             db.add(conversation)
-             await db.flush()
-        # Update updated_at
-        conversation.updated_at = datetime.now(timezone.utc)
+            # Fallback: Create new if ID not found
+            title = req.content[:30] + "..." if len(req.content) > 30 else req.content
+            conversation = {
+                "_id": str(uuid.uuid4()),
+                "user_id": GUEST_USER_ID,
+                "title": title,
+                "created_at": now,
+                "updated_at": now
+            }
+            await db["conversations"].insert_one(conversation)
+        else:
+            # Update updated_at
+            await db["conversations"].update_one(
+                {"_id": conversation["_id"]},
+                {"$set": {"updated_at": now}}
+            )
     else:
         # Auto-generate title using first few chars of input
         title = req.content[:30] + "..." if len(req.content) > 30 else req.content
-        conversation = Conversation(user_id=GUEST_USER_ID, title=title)
-        db.add(conversation)
-        await db.flush() # flush to generate ID
+        conversation = {
+            "_id": str(uuid.uuid4()),
+            "user_id": GUEST_USER_ID,
+            "title": title,
+            "created_at": now,
+            "updated_at": now
+        }
+        await db["conversations"].insert_one(conversation)
 
     # 2. Save user message
-    user_msg = Message(
-        conversation_id=conversation.id,
-        role="user",
-        content=req.content,
-        mode="detailed",
-    )
-    db.add(user_msg)
-    await db.flush()
+    user_msg_id = str(uuid.uuid4())
+    user_msg = {
+        "_id": user_msg_id,
+        "conversation_id": conversation["_id"],
+        "role": "user",
+        "content": req.content,
+        "mode": "detailed",
+        "created_at": now
+    }
+    await db["messages"].insert_one(user_msg)
 
     # 3. Generate AI response (call math engine)
-    # Perform symbolic solve first
     ai_response_dict = solve_math(req.content, req.language)
     
-    # 3b. Determine if we need an LLM response (detailed/pedagogical mode ALWAYS or fallback)
-    use_llm = True # or (ai_response_dict["solution"] is None)
-    
-    # 3c. If LLM is needed, get enhanced explanation or fallback answer
+    # 3b. Determine if we need an LLM response (detailed/pedagogical mode ALWAYS)
+    use_llm = True
     if use_llm:
-        # Grounding context from symbolic engine if available
         context = ai_response_dict.get("solution")
         llm_response = await llm_service.generate_response(req.content, context, req.language)
         ai_response_dict["content"] = llm_response["content"]
-        # If SymPy failed, don't create a dummy solution panel —
-        # the LLM's rich explanation in content is sufficient.
-    
-    # 3d. SAFETY CHECK: Ensure content is NOT None (for SQL NOT NULL constraint)
+        
     if not ai_response_dict.get("content"):
-        ai_response_dict["content"] = "I apologize, but I was unable to generate a text explanation for this result. Please review the symbolic calculation below."
+        ai_response_dict["content"] = "I apologize, but I was unable to generate a response."
     
     # 4. Save AI message
-    ai_json_solution = None
-    if ai_response_dict.get("solution"):
-        ai_json_solution = json.dumps(ai_response_dict["solution"])
-        
-    ai_msg = Message(
-        conversation_id=conversation.id,
-        role="ai",
-        content=ai_response_dict["content"],
-        mode="detailed",
-        solution_json=ai_json_solution
-    )
-    db.add(ai_msg)
-    await db.flush()
+    ai_msg_id = str(uuid.uuid4())
+    ai_msg = {
+        "_id": ai_msg_id,
+        "conversation_id": conversation["_id"],
+        "role": "ai",
+        "content": ai_response_dict["content"],
+        "mode": "detailed",
+        "solution": ai_response_dict.get("solution"),
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db["messages"].insert_one(ai_msg)
 
     # 5. Format return
-    # Parse solution correctly to match Schema
     sol_data = ai_response_dict.get("solution")
     
     return ChatResponse(
-        conversation_id=conversation.id,
+        conversation_id=conversation["_id"],
         message=MessageSchema(
-            id=ai_msg.id,
+            id=ai_msg_id,
             role="ai",
             content=ai_response_dict["content"],
             solution=SolutionData(**sol_data) if sol_data else None,
-            timestamp=ai_msg.created_at,
+            timestamp=ai_msg["created_at"],
         )
     )
 
 @router.get("/conversations", response_model=list[dict])
 async def list_conversations(
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: AsyncIOMotorDatabase = Depends(get_db)
 ):
-    stmt = select(Conversation).where(Conversation.user_id == current_user.id).order_by(Conversation.updated_at.desc())
-    result = await db.execute(stmt)
-    convos = result.scalars().all()
+    # Note: Using GUEST_USER_ID as primary for now since we removed auth
+    GUEST_USER_ID = "global-guest-id"
+    cursor = db["conversations"].find({"user_id": GUEST_USER_ID}).sort("updated_at", -1)
+    convos = await cursor.to_list(length=50)
     
     return [
         {
-            "id": c.id,
-            "title": c.title,
-            "updated_at": c.updated_at.isoformat()
+            "id": c["_id"],
+            "title": c["title"],
+            "updated_at": c["updated_at"].isoformat()
         } for c in convos
     ]

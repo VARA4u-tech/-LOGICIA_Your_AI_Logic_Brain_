@@ -5,36 +5,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.database import engine, Base
 from app.routers import auth, chat
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    from app.models.user import User
-    from sqlalchemy.ext.asyncio import AsyncSession
-    from sqlalchemy.orm import sessionmaker
-    from sqlalchemy import select
-
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    
-    # Create global guest user if missing
-    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-    async with async_session() as session:
-        guest_check = await session.execute(select(User).where(User.id == "global-guest-id"))
-        if not guest_check.scalars().first():
-            guest_user = User(
-                id="global-guest-id",
-                username="Guest",
-                email="guest@logicia.ai",
-                hashed_password="not-a-real-password",
-                is_active=True
-            )
-            session.add(guest_user)
-            await session.commit()
-            
+    from app.database import get_mongodb_client
+    get_mongodb_client()
     yield
-    await engine.dispose()
 
 app = FastAPI(
     title="Logicia AI Math Brain",

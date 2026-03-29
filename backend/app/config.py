@@ -9,8 +9,9 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
-    # Database
-    DATABASE_URL: str = "sqlite+aiosqlite:///./logicia.db"
+    # Mongo Database
+    MONGODB_URI: str = "mongodb://localhost:27017"
+    MONGODB_DB: str = "logicia"
 
     # CORS (Stored as comma-separated string for .env compatibility)
     FRONTEND_ORIGINS_STR: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080"
