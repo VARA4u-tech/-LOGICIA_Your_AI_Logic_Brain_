@@ -306,26 +306,28 @@ const LanguageToggle = ({
   language: Language;
   onChange: (l: Language) => void;
 }) => (
-  <div className="flex items-center p-1 rounded-xl bg-muted/10 border border-border/40 backdrop-blur-sm">
+  <div className="flex items-center p-0.5 sm:p-1 rounded-lg sm:rounded-xl bg-muted/10 border border-border/40 backdrop-blur-sm shadow-inner">
     <button
       onClick={() => onChange("en")}
-      className={`px-4 py-1.5 rounded-lg text-[11px] font-display tracking-widest transition-all duration-500 min-h-[32px] ${
+      className={`px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-display tracking-[0.1em] sm:tracking-widest transition-all duration-500 min-h-[28px] sm:min-h-[32px] flex items-center justify-center ${
         language === "en"
-          ? "bg-primary/20 text-primary border border-primary/30 shadow-lg shadow-primary/10"
+          ? "bg-primary/20 text-primary border border-primary/30 shadow-lg shadow-primary/10 font-bold"
           : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/10"
       }`}
     >
-      ENGLISH
+      <span className="hidden xs:inline">ENGLISH</span>
+      <span className="xs:hidden">EN</span>
     </button>
     <button
       onClick={() => onChange("te")}
-      className={`px-4 py-1.5 rounded-lg text-[11px] font-display tracking-widest transition-all duration-500 min-h-[32px] ${
+      className={`px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-display tracking-[0.1em] sm:tracking-widest transition-all duration-500 min-h-[28px] sm:min-h-[32px] flex items-center justify-center ${
         language === "te"
-          ? "bg-primary/20 text-primary border border-primary/30 shadow-lg shadow-primary/10"
+          ? "bg-primary/20 text-primary border border-primary/30 shadow-lg shadow-primary/10 font-bold"
           : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/10"
       }`}
     >
-      తెలుగు
+      <span className="hidden xs:inline">తెలుగు</span>
+      <span className="xs:hidden">TE</span>
     </button>
   </div>
 );
@@ -1465,10 +1467,10 @@ const Chat = () => {
               </button>
             )}
             <div className="flex flex-col min-w-0">
-              <span className="font-display text-[12px] sm:text-[13px] tracking-widest text-primary/90 font-bold truncate">
+              <span className="font-display text-[10px] xs:text-[12px] sm:text-[13px] tracking-wide xs:tracking-widest text-primary/90 font-bold truncate">
                 {activeConv ? activeConv.title : t.new_conv_title}
               </span>
-              <span className="text-[10px] text-muted-foreground/60 uppercase tracking-tighter">
+              <span className="text-[9px] xs:text-[10px] text-muted-foreground/60 uppercase tracking-tighter">
                 Logicia Intelligence v2.0
               </span>
             </div>
