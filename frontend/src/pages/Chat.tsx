@@ -185,8 +185,8 @@ const CopyButton = ({ text }: { text: string }) => {
 };
 
 const MathBlock = ({ expr }: { expr: string }) => (
-  <div className="flex items-center gap-2 my-1 min-w-0">
-    <div className="font-mono text-xs sm:text-sm px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-black/40 border border-primary/20 text-primary inline-block overflow-x-auto max-w-full whitespace-nowrap">
+  <div className="flex items-center gap-3 my-2 min-w-0 group/math">
+    <div className="font-mono text-sm sm:text-base px-4 py-2 rounded-xl bg-black/40 border border-primary/20 text-primary inline-block overflow-x-auto max-w-full whitespace-nowrap shadow-lg group-hover/math:border-primary/40 transition-all duration-300">
       {expr}
     </div>
     <CopyButton text={expr} />
@@ -237,30 +237,27 @@ const LanguageToggle = ({
   language: Language;
   onChange: (l: Language) => void;
 }) => (
-  <div className="flex items-center gap-1.5">
-    <Globe size={11} className="text-muted-foreground/50 flex-shrink-0" />
-    <div className="flex items-center p-0.5 rounded-lg border border-border/50 bg-muted/10 gap-0.5">
-      <button
-        onClick={() => onChange("en")}
-        className={`px-2.5 py-1.5 rounded-md text-[10px] sm:text-[11px] font-display tracking-wider transition-all duration-200 min-h-[30px] ${
-          language === "en"
-            ? "bg-primary/15 text-primary border border-primary/30 shadow-[0_0_8px_hsl(120_100%_54%/0.15)]"
-            : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
-        }`}
-      >
-        EN
-      </button>
-      <button
-        onClick={() => onChange("te")}
-        className={`px-2.5 py-1.5 rounded-md text-[10px] sm:text-[11px] font-display tracking-wider transition-all duration-200 min-h-[30px] ${
-          language === "te"
-            ? "bg-primary/15 text-primary border border-primary/30 shadow-[0_0_8px_hsl(120_100%_54%/0.15)]"
-            : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
-        }`}
-      >
-        తెలుగు
-      </button>
-    </div>
+  <div className="flex items-center p-1 rounded-xl bg-muted/10 border border-border/40 backdrop-blur-sm">
+    <button
+      onClick={() => onChange("en")}
+      className={`px-4 py-1.5 rounded-lg text-[11px] font-display tracking-widest transition-all duration-500 min-h-[32px] ${
+        language === "en"
+          ? "bg-primary/20 text-primary border border-primary/30 shadow-lg shadow-primary/10"
+          : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/10"
+      }`}
+    >
+      ENGLISH
+    </button>
+    <button
+      onClick={() => onChange("te")}
+      className={`px-4 py-1.5 rounded-lg text-[11px] font-display tracking-widest transition-all duration-500 min-h-[32px] ${
+        language === "te"
+          ? "bg-primary/20 text-primary border border-primary/30 shadow-lg shadow-primary/10"
+          : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/10"
+      }`}
+    >
+      తెలుగు
+    </button>
   </div>
 );
 
@@ -290,16 +287,13 @@ const SolutionPanel = ({
     if (!panelRef.current) return;
     setIsExporting(true);
     try {
-      // Small delay to ensure any transient animations settle
       await new Promise((r) => setTimeout(r, 100));
-
       const canvas = await html2canvas(panelRef.current, {
         backgroundColor: "#050505",
-        scale: 2, // High quality
+        scale: 2,
         logging: false,
         useCORS: true,
       });
-
       const link = document.createElement("a");
       link.download = `Logicia-Solution-${Date.now()}.png`;
       link.href = canvas.toDataURL("image/png");
@@ -313,31 +307,16 @@ const SolutionPanel = ({
 
   return (
     <div
-      className="mt-3 sm:mt-4 space-y-3 border-t border-border/40 pt-3 sm:pt-4"
+      className="mt-6 space-y-6 border-t border-border/10 pt-6 animate-in fade-in duration-700"
       ref={panelRef}
     >
-      {/* Invisible header for export branding */}
-      {isExporting && (
-        <div className="flex items-center gap-3 mb-6 px-2">
-          <img src="/logo.png" alt="Logicia" className="w-8 h-8" />
-          <div>
-            <h3 className="text-primary font-display tracking-widest text-lg">
-              LOGICIA AI
-            </h3>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">
-              Your AI Math Brain
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Header row */}
-      <div className="flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex items-center gap-2 min-w-0">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
           {method && (
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
-              <Lightbulb size={12} className="text-primary flex-shrink-0" />
-              <span className="tracking-wider uppercase font-display truncate text-[10px]">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+              <Lightbulb size={12} className="text-primary animate-pulse" />
+              <span className="tracking-widest uppercase font-display text-[10px] text-primary font-bold">
                 {method}
               </span>
             </div>
@@ -349,28 +328,27 @@ const SolutionPanel = ({
             <button
               onClick={handleExport}
               disabled={isExporting}
-              className="flex items-center gap-1.5 text-[10px] font-display tracking-widest text-muted-foreground hover:text-primary transition-all bg-muted/10 hover:bg-primary/5 border border-border/50 rounded-md px-2.5 py-1 min-h-[30px]"
-              title="Share solution as image"
+              className="group flex items-center gap-2 text-[10px] font-display tracking-widest text-muted-foreground hover:text-primary transition-all bg-muted/10 hover:bg-primary/5 border border-border/40 rounded-xl px-4 py-2"
             >
-              <Share size={11} className={isExporting ? "animate-pulse" : ""} />
-              <span>{isExporting ? "PREPARING..." : "SHARE"}</span>
+              <Share size={12} className={isExporting ? "animate-spin" : "group-hover:scale-110 transition-transform"} />
+              <span>{isExporting ? "EXPORTING..." : "SHARE SOLUTION"}</span>
             </button>
           )}
 
           {!isExporting && (
             <button
               onClick={() => setExpanded((p) => !p)}
-              className="ml-auto flex items-center gap-1 text-[10px] font-display tracking-widest text-primary/70 hover:text-primary transition-colors border border-primary/20 rounded-md px-2.5 py-1 hover:border-primary/40 flex-shrink-0 min-h-[30px]"
+              className="flex items-center gap-2 text-[10px] font-display tracking-widest text-primary/70 hover:text-primary transition-all border border-primary/20 hover:border-primary/40 rounded-xl px-4 py-2"
             >
               {expanded ? (
                 <>
-                  <span>{t.hide}</span>
-                  <ChevronUp size={11} />
+                  <span>COLLAPSE</span>
+                  <ChevronUp size={12} />
                 </>
               ) : (
                 <>
-                  <span>{t.show_steps}</span>
-                  <ChevronDown size={11} />
+                  <span>EXPAND STEPS</span>
+                  <ChevronDown size={12} />
                 </>
               )}
             </button>
@@ -378,69 +356,26 @@ const SolutionPanel = ({
         </div>
       </div>
 
-      {/* Export context: if exporting, include the main content too */}
-      {isExporting && content && (
-        <div className="mb-4 p-4 rounded-2xl bg-muted/5 border border-border/30">
-          <RenderContent content={content} />
-        </div>
-      )}
-
       {/* Graph */}
       {graphData && graphData.length > 0 && (
-        <div className="rounded-xl overflow-hidden border border-primary/15 bg-black/30">
-          <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-border/30 text-[10px] text-muted-foreground font-display tracking-widest uppercase">
-            <BarChart2 size={12} className="text-primary" /> {t.visualization}
+        <div className="rounded-3xl overflow-hidden border border-primary/10 bg-black/40 shadow-2xl backdrop-blur-sm group hover:border-primary/30 transition-all duration-500">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border/5">
+            <div className="flex items-center gap-3 text-[10px] text-primary/60 font-display tracking-[0.3em] uppercase">
+              <BarChart2 size={14} className="text-primary" /> Visual Intelligence
+            </div>
           </div>
-          <div className="h-[160px] sm:h-[200px] p-2 sm:p-3">
+          <div className="h-[200px] sm:h-[300px] p-4 sm:p-6">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={graphData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="hsl(120 100% 54% / 0.08)"
-                />
-                <XAxis
-                  dataKey="x"
-                  stroke="hsl(120 20% 40%)"
-                  fontSize={9}
-                  tickFormatter={(v) => v.toFixed(1)}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="hsl(120 20% 40%)"
-                  fontSize={9}
-                  tickFormatter={(v) => v.toFixed(1)}
-                  tickLine={false}
-                  axisLine={false}
-                  width={32}
-                />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(120 100% 54% / 0.05)" vertical={false} />
+                <XAxis dataKey="x" stroke="hsl(120 20% 30%)" fontSize={10} tickFormatter={(v) => v.toFixed(1)} axisLine={false} tickLine={false} />
+                <YAxis stroke="hsl(120 20% 30%)" fontSize={10} tickFormatter={(v) => v.toFixed(1)} axisLine={false} tickLine={false} width={30} />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(120 20% 6% / 0.95)",
-                    borderColor: "hsl(120 100% 54% / 0.3)",
-                    borderRadius: "10px",
-                    fontSize: "11px",
-                  }}
-                  itemStyle={{ color: "hsl(120 100% 54%)" }}
-                  cursor={{
-                    stroke: "hsl(120 100% 54% / 0.4)",
-                    strokeWidth: 1.5,
-                  }}
+                  contentStyle={{ backgroundColor: "rgba(5, 5, 5, 0.9)", borderColor: "rgba(18, 255, 18, 0.2)", borderRadius: "16px", fontSize: "12px", backdropFilter: "blur(8px)" }}
+                  itemStyle={{ color: "#12ff12" }}
+                  cursor={{ stroke: "rgba(18, 255, 18, 0.2)", strokeWidth: 2 }}
                 />
-                <Line
-                  type="monotone"
-                  dataKey="y"
-                  stroke="hsl(120 100% 54%)"
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={{
-                    r: 4,
-                    fill: "hsl(120 100% 54%)",
-                    stroke: "white",
-                    strokeWidth: 2,
-                  }}
-                  animationDuration={1200}
-                />
+                <Line type="monotone" dataKey="y" stroke="#12ff12" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: "#12ff12", stroke: "white", strokeWidth: 2 }} animationDuration={2000} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -449,63 +384,38 @@ const SolutionPanel = ({
 
       {/* Steps */}
       <div
-        className="overflow-hidden transition-all duration-500"
+        className="overflow-hidden transition-all duration-700 ease-in-out"
         style={{
-          maxHeight: expanded ? `${steps.length * 300 + 400}px` : "0px",
+          maxHeight: expanded ? `${steps.length * 400 + 500}px` : "0px",
           opacity: expanded ? 1 : 0,
         }}
       >
-        <div className="space-y-3 sm:space-y-4 py-1">
+        <div className="space-y-6 py-2">
           {steps.map((step, i) => (
-            <div key={i} className="flex gap-2.5 sm:gap-3 items-start">
-              {/* Step number bubble */}
-              <div className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border border-primary/30 bg-primary/5 text-primary flex items-center justify-center text-[9px] sm:text-[10px] font-display mt-0.5">
-                {i + 1}
+            <div key={i} className="flex gap-4 sm:gap-6 items-start group/step">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full border border-primary/20 bg-primary/5 text-primary flex items-center justify-center text-[10px] font-display font-black transition-all group-hover/step:border-primary/60 group-hover/step:scale-110">
+                {String(i + 1).padStart(2, '0')}
               </div>
 
-              <div className="flex-1 min-w-0 overflow-hidden space-y-1.5">
-                {/* Step label */}
-                <p className="text-[10px] tracking-wide uppercase font-display text-muted-foreground">
+              <div className="flex-1 min-w-0 space-y-3">
+                <p className="text-[10px] tracking-[0.2em] uppercase font-display text-primary/40 font-bold group-hover/step:text-primary/70 transition-colors">
                   {step.label}
                 </p>
 
-                {/* Math expression */}
-                <MathBlock expr={step.math} />
+                <div className="p-4 sm:p-5 rounded-2xl bg-black/40 border border-primary/10 group-hover/step:border-primary/30 transition-all duration-500 shadow-xl overflow-x-auto">
+                    <code className="text-primary font-mono text-base sm:text-lg">{step.math}</code>
+                </div>
 
-                {/* Explanation */}
                 {step.explanation && (
-                  <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-relaxed">
-                    <ChevronRight
-                      size={9}
-                      className="inline mr-1 text-primary"
-                    />
+                  <p className="text-[13px] sm:text-[14px] text-muted-foreground/80 leading-relaxed font-body pl-2 border-l-2 border-primary/10 group-hover/step:border-primary/40 transition-all">
                     {step.explanation}
                   </p>
                 )}
 
-                {step.subSteps && step.subSteps.length > 0 && (
-                  <div className="mt-1.5 ml-1 pl-3 border-l border-primary/20 space-y-1">
-                    {step.subSteps.map((sub, j) => (
-                      <p
-                        key={j}
-                        className="text-[10px] sm:text-[11px] font-mono text-primary/70 leading-relaxed"
-                      >
-                        <span className="text-primary/40 mr-2 font-display">
-                          {String.fromCharCode(97 + j)})
-                        </span>
-                        {sub}
-                      </p>
-                    ))}
-                  </div>
-                )}
-
                 {step.note && (
-                  <div className="mt-2 flex gap-2 items-start px-3 py-2 rounded-lg border border-amber-500/20 bg-amber-500/5">
-                    <Lightbulb
-                      size={11}
-                      className="text-amber-400 flex-shrink-0 mt-0.5"
-                    />
-                    <p className="text-[10px] sm:text-[11px] text-amber-200/70 leading-relaxed font-body italic">
+                  <div className="flex gap-3 items-start px-4 py-3 rounded-2xl bg-amber-500/5 border border-amber-500/20 backdrop-blur-sm">
+                    <Lightbulb size={14} className="text-amber-400 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs sm:text-[13px] text-amber-200/60 leading-relaxed italic font-body">
                       {step.note}
                     </p>
                   </div>
@@ -517,27 +427,29 @@ const SolutionPanel = ({
       </div>
 
       {/* Final Answer */}
-      <div className="p-3 sm:p-4 rounded-xl border border-primary/40 bg-primary/8 flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
-        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-          <CheckCircle2
-            size={15}
-            className="flex-shrink-0 text-primary"
-          />
-          <div className="min-w-0">
-            <p className="font-display text-[9px] tracking-[0.25em] mb-0.5 uppercase text-primary/60">
-              {t.final_answer}
-            </p>
-            <p
-              className="font-mono text-base sm:text-xl font-bold break-all text-primary"
-              style={{
-                textShadow: "0 0 20px hsl(120 100% 54% / 0.6)",
-              }}
-            >
-              {finalAnswer}
-            </p>
+      <div className="relative group overflow-hidden rounded-[2rem] p-0.5 bg-gradient-to-br from-primary/40 via-primary/10 to-transparent shadow-2xl">
+        <div className="bg-[#0a0a0a] rounded-[1.95rem] p-6 sm:p-8 flex items-center justify-between gap-6 flex-wrap relative z-10">
+          <div className="flex items-center gap-4 sm:gap-6 min-w-0 flex-1">
+            <div className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary shadow-lg shadow-primary/10">
+              <CheckCircle2 size={24} />
+            </div>
+            <div className="min-w-0">
+              <p className="font-display text-[11px] tracking-[0.4em] mb-2 uppercase text-primary/40 font-black">
+                {t.final_answer}
+              </p>
+              <p className="font-mono text-2xl sm:text-3xl lg:text-4xl font-black text-primary drop-shadow-[0_0_12px_rgba(18,255,18,0.3)] truncate">
+                {finalAnswer}
+              </p>
+            </div>
           </div>
+          <button
+            onClick={() => navigator.clipboard.writeText(finalAnswer)}
+            className="w-12 h-12 rounded-2xl bg-muted/10 border border-border/40 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 transition-all duration-300"
+          >
+            <Copy size={18} />
+          </button>
         </div>
-        <CopyButton text={finalAnswer} />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] -z-0 opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
       </div>
     </div>
   );
@@ -551,21 +463,27 @@ const TypingIndicator = ({
 }: {
   t: Record<string, string>;
 }) => (
-  <div className="flex gap-3 sm:gap-4 items-start max-w-3xl mx-auto px-3 sm:px-6 py-3 animate-fade-in-up">
-    <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-      <Bot size={14} className="text-primary" />
+  <div className="flex gap-4 sm:gap-6 items-start max-w-4xl mx-auto px-4 sm:px-6">
+    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center shadow-lg">
+      <Bot size={18} className="text-primary animate-bounce" />
     </div>
-    <div className="flex items-center gap-1.5 sm:gap-2 pt-2">
-      {[0, 0.15, 0.3].map((delay, i) => (
-        <span
-          key={i}
-          className="w-2 h-2 rounded-full bg-primary/60"
-          style={{ animation: `pulse 1.4s ease-in-out ${delay}s infinite` }}
-        />
-      ))}
-      <span className="text-xs text-muted-foreground ml-1 font-display tracking-wider">
-        {t.computing}
-      </span>
+    <div className="flex-1 space-y-3 pt-1">
+      <div className="flex items-center gap-3">
+         <span className="font-display text-[11px] sm:text-xs tracking-widest uppercase text-primary/60 font-bold">
+           {t.logicia_ai}
+         </span>
+         <span className="text-[10px] text-muted-foreground/30 uppercase tracking-widest">{t.computing}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        {[0, 0.15, 0.3].map((delay, i) => (
+          <div
+            key={i}
+            className="w-2 h-2 rounded-full bg-primary/40"
+            style={{ animation: `pulse 1.4s ease-in-out ${delay}s infinite` }}
+          />
+        ))}
+        <div className="h-4 w-48 bg-primary/5 border border-primary/10 rounded-full animate-pulse" />
+      </div>
     </div>
   </div>
 );
@@ -884,65 +802,55 @@ const MessageBubble = ({
 
   return (
     <div
-      className={`group flex gap-2.5 sm:gap-4 max-w-4xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 animate-fade-in-up ${isUser ? "flex-row-reverse" : ""}`}
+      className={`group w-full py-6 sm:py-8 border-b border-border/10 transition-colors duration-300 ${
+        isUser ? "bg-transparent" : "bg-muted/5 backdrop-blur-sm"
+      }`}
     >
-      {/* Avatar */}
-      <div
-        className={`hidden xs:flex flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full border items-center justify-center self-start mt-1 ${
-          isUser
-            ? "bg-primary/20 border-primary/40"
-            : "bg-primary/10 border-primary/30"
-        }`}
-      >
-        {isUser ? (
-          <UserIcon size={13} className="text-primary" />
-        ) : (
-          <Bot size={13} className="text-primary" />
-        )}
-      </div>
-
-      {/* Content */}
-      <div
-        className={`flex-1 min-w-0 ${isUser ? "flex flex-col items-end" : ""}`}
-      >
-        {/* Label + time + mode badge for AI */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 flex gap-4 sm:gap-6">
+        {/* Avatar */}
         <div
-          className={`flex items-center gap-2 mb-1 sm:mb-1.5 flex-wrap ${isUser ? "flex-row-reverse" : ""}`}
-        >
-          <span className="font-display text-[10px] tracking-wider text-muted-foreground">
-            {isUser ? t.you : t.logicia_ai}
-          </span>
-          <span className="text-[9px] text-muted-foreground/40 hidden sm:inline">
-            {time.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </span>
-        </div>
-
-        {/* Bubble */}
-        <div
-          className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm leading-relaxed overflow-hidden ${
+          className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center self-start mt-1 shadow-lg transition-transform group-hover:scale-105 duration-300 ${
             isUser
-              ? "bg-primary/10 border border-primary/25 text-foreground rounded-tr-sm max-w-[90%] sm:max-w-[85%] whitespace-pre-wrap"
-              : "bg-muted/20 border border-border/50 text-foreground rounded-tl-sm w-full"
+              ? "bg-primary/20 border-primary/40 text-primary"
+              : "bg-muted/20 border-border/50 text-primary"
           }`}
         >
-          {isUser ? (
-            <span>{msg.content}</span>
-          ) : (
-            <RenderContent content={msg.content} />
-          )}
-          {msg.solution && (
-            <SolutionPanel
-              steps={msg.solution.steps}
-              finalAnswer={msg.solution.finalAnswer}
-              method={msg.solution.method}
-              graphData={msg.solution.graphData}
-              content={msg.content} // Pass content for exporting together
-              t={t}
-            />
-          )}
+          {isUser ? <UserIcon size={16} /> : <Bot size={18} className="animate-pulse" />}
+        </div>
+
+        {/* Content Area */}
+        <div className="flex-1 min-w-0 space-y-2">
+          <div className="flex items-center gap-3">
+            <span className="font-display text-[11px] sm:text-xs tracking-wider uppercase text-foreground/80 font-bold">
+              {isUser ? t.you : t.logicia_ai}
+            </span>
+            <span className="text-[10px] text-muted-foreground/40 font-mono">
+              {time.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </div>
+
+          <div className="text-[14px] sm:text-[16px] leading-relaxed text-foreground/90 font-body">
+            {isUser ? (
+              <span className="whitespace-pre-wrap">{msg.content}</span>
+            ) : (
+              <RenderContent content={msg.content} />
+            )}
+            {msg.solution && (
+              <div className="mt-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <SolutionPanel
+                  steps={msg.solution.steps}
+                  finalAnswer={msg.solution.finalAnswer}
+                  method={msg.solution.method}
+                  graphData={msg.solution.graphData}
+                  content={msg.content}
+                  t={t}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -961,35 +869,36 @@ const EmptyState = ({
   t: Record<string, string>;
   prompts: { label: string; prompt: string }[];
 }) => (
-  <div className="flex flex-col items-center justify-center h-full px-4 py-10 sm:py-16 text-center">
+  <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 py-20 text-center animate-in fade-in duration-700">
     <div
-      className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border border-primary/30 bg-primary/5 flex items-center justify-center mb-4 sm:mb-5"
-      style={{ boxShadow: "0 0 30px hsl(120 100% 54% / 0.15)" }}
+      className="w-20 h-20 sm:w-24 sm:h-24 rounded-[2rem] border-2 border-primary/30 bg-primary/5 flex items-center justify-center mb-8 relative group"
     >
-      <Bot size={24} className="text-primary sm:hidden" />
-      <Bot size={28} className="text-primary hidden sm:block" />
+      <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse" />
+      <Bot size={40} className="text-primary relative z-10 transition-transform group-hover:scale-110 duration-500" />
     </div>
+    
     <h2
-      className="font-display text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 tracking-wider leading-tight"
-      style={{ textShadow: "0 0 20px hsl(120 100% 54% / 0.5)" }}
+      className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-primary via-primary/80 to-primary/40 mb-4 tracking-tighter leading-tight"
     >
       {t.ask_anything}
     </h2>
-    <p className="text-xs sm:text-sm text-muted-foreground max-w-sm sm:max-w-md mb-6 sm:mb-8 leading-relaxed px-2">
+    
+    <p className="text-sm sm:text-base text-muted-foreground/60 max-w-lg mb-12 leading-relaxed font-body">
       {t.ask_subtitle}
     </p>
-    <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 w-full max-w-xs xs:max-w-sm sm:max-w-md">
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
       {prompts.map((qp) => (
         <button
           key={qp.prompt}
           onClick={() => onPrompt(qp.prompt)}
-          className="group text-left px-3 sm:px-4 py-3 rounded-xl border border-border/60 bg-muted/10 hover:bg-primary/5 hover:border-primary/30 active:scale-95 transition-all duration-200 text-xs sm:text-sm text-muted-foreground hover:text-foreground min-h-[44px] flex items-center"
+          className="group relative flex flex-col items-start p-5 rounded-2xl border border-border/40 bg-muted/5 hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 text-left overflow-hidden"
         >
-          <Hash
-            size={11}
-            className="inline mr-2 text-primary/50 group-hover:text-primary transition-colors flex-shrink-0"
-          />
-          <span className="truncate">{qp.label}</span>
+          <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Sparkles size={14} className="text-primary/40" />
+          </div>
+          <span className="text-[12px] font-display tracking-widest text-primary/40 group-hover:text-primary transition-colors mb-2 uppercase">Example Query</span>
+          <span className="text-sm sm:text-base text-muted-foreground group-hover:text-foreground transition-colors font-body">{qp.label}</span>
         </button>
       ))}
     </div>
@@ -1274,58 +1183,61 @@ const Chat = () => {
       {/* ════ SIDEBAR ════ */}
       <aside
         className={`
-          flex flex-col flex-shrink-0 border-r border-border/50
-          bg-background/95 backdrop-blur-xl z-50 
-          transition-all duration-300 ease-in-out overflow-hidden
+          flex flex-col flex-shrink-0 border-r border-border/10
+          bg-[#050505] z-50 
+          transition-all duration-500 ease-in-out overflow-hidden
           fixed inset-y-0 left-0 md:relative md:inset-auto
-          ${sidebarOpen ? "w-64 sm:w-72 translate-x-0" : "w-0 -translate-x-full md:translate-x-0"}
+          ${sidebarOpen ? "w-72 sm:w-80 translate-x-0" : "w-0 -translate-x-full md:translate-x-0"}
         `}
       >
-        <div className="flex flex-col h-full w-64 sm:w-72 min-w-[16rem] sm:min-w-[18rem]">
+        <div className="flex flex-col h-full w-72 sm:w-80 min-w-[18rem] sm:min-w-[20rem]">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3.5 sm:py-4 border-b border-border/50 flex-shrink-0">
-            <Link to="/" className="flex items-center gap-2 group">
-              <img src="/logo.png" alt="Logicia" className="w-6 h-6" />
-              <span
-                className="font-display text-sm tracking-wider text-primary"
-                style={{ textShadow: "0 0 10px hsl(120 100% 54% / 0.5)" }}
-              >
-                LOGICIA
-              </span>
+          <div className="flex items-center justify-between px-6 py-6 border-b border-border/5 flex-shrink-0">
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/40 group-hover:neon-box transition-all duration-500">
+                <img src="/logo.png" alt="Logicia" className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-display text-sm tracking-[0.2em] text-primary font-black uppercase">
+                  LOGICIA
+                </span>
+                <span className="text-[10px] text-muted-foreground/40 uppercase tracking-tighter">
+                  Neural Network v2
+                </span>
+              </div>
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              title="Close sidebar"
-              className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/20 transition-all min-w-[32px] min-h-[32px] flex items-center justify-center"
+              className="p-2 text-muted-foreground hover:text-primary rounded-xl transition-all duration-300"
             >
-              <PanelLeftClose size={17} />
+              <PanelLeftClose size={18} />
             </button>
           </div>
 
           {/* New chat */}
-          <div className="p-3 flex-shrink-0">
+          <div className="p-4 flex-shrink-0">
             <button
               onClick={newConversation}
-              className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-primary/25 text-primary/80 hover:text-primary hover:bg-primary/8 hover:border-primary/50 active:scale-[0.98] transition-all duration-200 font-display text-[11px] sm:text-xs tracking-wider group min-h-[44px]"
+              className="w-full h-12 flex items-center gap-3 px-5 rounded-2xl bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 hover:border-primary/40 transition-all duration-300 font-display text-[11px] tracking-widest uppercase font-bold active:scale-95 shadow-lg shadow-primary/5"
             >
-              <Plus
-                size={15}
-                className="group-hover:rotate-90 transition-transform duration-300 flex-shrink-0"
-              />
+              <Plus size={16} />
               {t.new_conversation}
             </button>
           </div>
 
           {/* History list */}
-          <div className="flex-1 overflow-y-auto px-2 pb-4">
+          <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1 custom-scrollbar">
             {conversations.length === 0 ? (
-              <p className="text-center text-xs text-muted-foreground/50 mt-8 px-4">
-                {t.no_conversations}
-              </p>
+              <div className="flex flex-col items-center justify-center py-12 opacity-50">
+                <Hash size={24} className="text-muted-foreground mb-3" />
+                <p className="text-center text-[10px] uppercase tracking-widest text-muted-foreground px-4">
+                  {t.no_conversations}
+                </p>
+              </div>
             ) : (
               <>
-                <p className="font-display text-[9px] tracking-[0.25em] text-muted-foreground/40 px-3 py-2">
-                  {t.history}
+                <p className="font-display text-[9px] tracking-[0.3em] text-muted-foreground/30 px-3 py-4 uppercase">
+                  Brain History
                 </p>
                 {conversations.map((conv) => (
                   <div
@@ -1334,20 +1246,21 @@ const Chat = () => {
                       setActiveId(conv.id);
                       if (isMobile()) setSidebarOpen(false);
                     }}
-                    className={`group flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer mb-0.5 transition-all duration-150 min-h-[44px] ${
+                    className={`group flex items-center gap-3 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden ${
                       activeId === conv.id
-                        ? "bg-primary/8 text-foreground border border-primary/20"
-                        : "text-muted-foreground hover:bg-muted/20 hover:text-foreground border border-transparent"
+                        ? "bg-primary/10 text-primary border border-primary/20"
+                        : "text-muted-foreground/60 hover:bg-muted/10 hover:text-foreground border border-transparent"
                     }`}
                   >
-                    <span className="flex-1 text-xs truncate font-body">
+                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${activeId === conv.id ? "bg-primary scale-110 shadow-[0_0_8px_primary]" : "bg-muted scale-75 group-hover:bg-primary/40"}`} />
+                    <span className="flex-1 text-[13px] truncate font-body">
                       {conv.title}
                     </span>
                     <button
                       onClick={(e) => deleteConversation(conv.id, e)}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-destructive/10 hover:text-destructive transition-all text-muted-foreground min-w-[28px] min-h-[28px] flex items-center justify-center"
+                      className="opacity-0 group-hover:opacity-100 p-2 rounded-lg hover:bg-destructive/20 hover:text-destructive transition-all duration-300"
                     >
-                      <Trash2 size={12} />
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 ))}
@@ -1356,14 +1269,14 @@ const Chat = () => {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-border/50 p-4 flex-shrink-0">
+          <div className="border-t border-border/5 p-6 space-y-4 flex-shrink-0">
             <Link
               to="/"
-              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors group min-h-[36px]"
+              className="flex items-center gap-3 text-[11px] font-display tracking-widest uppercase text-muted-foreground hover:text-primary transition-all duration-300 group"
             >
               <ArrowLeft
-                size={13}
-                className="group-hover:-translate-x-0.5 transition-transform flex-shrink-0"
+                size={14}
+                className="group-hover:-translate-x-1 transition-transform"
               />
               {t.back_to_home}
             </Link>
@@ -1382,22 +1295,31 @@ const Chat = () => {
       {/* ════ MAIN AREA ════ */}
       <div className="relative flex flex-col flex-1 min-w-0">
         {/* Top bar */}
-        <header className="flex items-center justify-between px-3 sm:px-5 h-13 sm:h-14 border-b border-border/40 bg-background/70 backdrop-blur flex-shrink-0 z-10 gap-2">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
+        <header className="flex items-center justify-between px-4 sm:px-6 h-14 sm:h-16 border-b border-border/20 bg-background/50 backdrop-blur-md sticky top-0 z-30">
+          <div className="flex items-center gap-4 min-w-0">
             {!sidebarOpen && (
               <button
                 onClick={() => setSidebarOpen(true)}
                 title="Show sidebar"
-                className="flex-shrink-0 p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/20 transition-all min-w-[36px] min-h-[36px] flex items-center justify-center"
+                className="flex-shrink-0 p-2 text-muted-foreground hover:text-primary rounded-xl hover:bg-primary/10 transition-all duration-300"
               >
-                <PanelLeftOpen size={17} />
+                <PanelLeftOpen size={20} />
               </button>
             )}
-            <span className="font-display text-[11px] sm:text-sm tracking-wider text-foreground/70 truncate">
-              {activeConv ? activeConv.title : t.new_conv_title}
-            </span>
+            <div className="flex flex-col min-w-0">
+              <span className="font-display text-[12px] sm:text-[13px] tracking-widest text-primary/90 font-bold truncate">
+                {activeConv ? activeConv.title : t.new_conv_title}
+              </span>
+              <span className="text-[10px] text-muted-foreground/60 uppercase tracking-tighter">
+                Logicia Intelligence v2.0
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <LanguageToggle
+              language={language}
+              onChange={handleLanguageChange}
+            />
             {activeConv && activeConv.messages.length > 0 && (
               <button
                 title="Clear current chat"
@@ -1408,26 +1330,30 @@ const Chat = () => {
                     ),
                   )
                 }
-                className="flex items-center gap-1.5 text-[10px] font-display tracking-wider text-muted-foreground hover:text-destructive border border-border/50 hover:border-destructive/40 rounded-lg px-2.5 sm:px-3 py-1.5 transition-all min-h-[34px]"
+                className="flex items-center gap-2 text-[10px] font-display tracking-widest text-muted-foreground hover:text-destructive hover:bg-destructive/10 border border-border/50 hover:border-destructive/40 rounded-xl px-3 py-2 transition-all duration-300"
               >
-                <Trash2 size={11} />
-                <span className="hidden sm:inline">{t.clear}</span>
+                <Trash2 size={13} />
+                <span className="hidden md:inline">{t.clear}</span>
               </button>
             )}
           </div>
         </header>
 
         {/* Messages area */}
-        <main className="flex-1 overflow-y-auto overscroll-contain">
+        <main className="flex-1 overflow-y-auto scroll-smooth">
           {(!activeConv || activeConv.messages.length === 0) && !isTyping ? (
             <EmptyState onPrompt={sendMessage} t={t} prompts={quickPrompts} />
           ) : (
-            <div className="max-w-4xl mx-auto py-4 sm:py-6 px-3 sm:px-6 pb-2">
+            <div className="w-full">
               {activeConv?.messages.map((msg) => (
                 <MessageBubble key={msg.id} msg={msg} t={t} />
               ))}
-              {isTyping && <TypingIndicator t={t} />}
-              <div ref={bottomRef} />
+              {isTyping && (
+                <div className="py-8 bg-muted/5 backdrop-blur-sm border-b border-border/10">
+                  <TypingIndicator t={t} />
+                </div>
+              )}
+              <div ref={bottomRef} className="h-32" />
             </div>
           )}
         </main>
@@ -1453,21 +1379,14 @@ const Chat = () => {
         )}
 
         {/* ── Input area ── */}
-        <div className="flex-shrink-0 border-t border-border/40 bg-background/80 backdrop-blur px-3 sm:px-6 py-3 sm:py-4">
-          <div className="max-w-4xl mx-auto space-y-2">
-            <div className="flex items-center justify-end px-1 gap-2 flex-wrap">
-              <LanguageToggle
-                language={language}
-                onChange={handleLanguageChange}
-              />
-            </div>
-
-            {/* Text input row */}
+        <div className="flex-shrink-0 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-12 pb-4 sm:pb-8 px-4 z-20">
+          <div className="max-w-3xl mx-auto relative">
+            {/* Input Container */}
             <div
-              className={`flex gap-2 items-end rounded-xl sm:rounded-2xl border bg-muted/10 px-3 sm:px-4 py-2.5 sm:py-3 transition-all duration-200 ${
+              className={`relative group bg-muted/20 backdrop-blur-xl border-2 rounded-2xl sm:rounded-[2rem] transition-all duration-500 overflow-hidden shadow-2xl ${
                 isOverLimit
-                  ? "border-destructive/60"
-                  : "border-border/60 focus-within:border-primary/50 focus-within:shadow-[0_0_0_3px_hsl(120_100%_54%/0.08)]"
+                  ? "border-destructive/50"
+                  : "border-border/40 focus-within:border-primary/40 focus-within:shadow-[0_0_40px_-10px_hsl(120_100%_54%/0.15)] group-hover:border-border/60"
               }`}
             >
               <textarea
@@ -1479,40 +1398,42 @@ const Chat = () => {
                 onKeyDown={handleKeyDown}
                 placeholder={t.placeholder_detailed}
                 rows={1}
-                className="flex-1 bg-transparent outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground font-body leading-relaxed max-h-[120px] py-0.5"
+                className="w-full bg-transparent outline-none resize-none text-[15px] text-foreground placeholder:text-muted-foreground font-body leading-relaxed max-h-[200px] py-4 sm:py-5 pl-5 sm:pl-7 pr-16 sm:pr-20 block custom-scrollbar transition-all"
               />
-              <div className="flex items-center gap-2 flex-shrink-0 pb-0.5">
+              
+              <div className="absolute right-3 sm:right-4 bottom-3 sm:bottom-4 flex items-center gap-3">
                 {showCounter && (
                   <span
-                    className={`text-[10px] font-mono tabular-nums ${isOverLimit ? "text-destructive" : "text-muted-foreground/50"}`}
+                    className={`text-[10px] font-mono tabular-nums font-bold ${isOverLimit ? "text-destructive" : "text-primary/40"}`}
                   >
                     {charsLeft}
                   </span>
                 )}
+                
                 <button
                   onClick={() => sendMessage(input)}
                   disabled={isTyping || !input.trim() || isOverLimit || cooldown > 0}
-                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
+                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500 flex-shrink-0 shadow-lg ${
                     input.trim() && !isTyping && !isOverLimit && cooldown === 0
-                      ? "bg-primary text-primary-foreground hover:scale-105 active:scale-95 shadow-[0_0_15px_hsl(120_100%_54%/0.4)]"
-                      : "bg-muted/30 text-muted-foreground cursor-not-allowed"
+                      ? "bg-primary text-primary-foreground hover:scale-105 active:scale-95 neon-box shadow-primary/20"
+                      : "bg-muted/40 text-muted-foreground/30 cursor-not-allowed scale-95"
                   }`}
                 >
                   {cooldown > 0 ? (
-                    <span className="text-[10px] font-bold font-mono text-primary/60">{cooldown}s</span>
+                    <span className="text-[11px] font-bold font-mono text-primary/60">{cooldown}s</span>
                   ) : (
-                    <Send size={13} />
+                    <Send size={18} className={input.trim() ? "animate-in zoom-in duration-300" : ""} />
                   )}
                 </button>
               </div>
             </div>
 
             {/* Hint text */}
-            <p className="hidden sm:block text-[10px] text-muted-foreground/60 text-center font-body">
-              {t.enter_to_send} <kbd className="font-mono opacity-80">Enter</kbd>{" "}
-              {t.to_send} <kbd className="font-mono opacity-80">Shift+Enter</kbd>{" "}
-              {t.new_line}
-            </p>
+            <div className="mt-3 flex justify-center gap-4 text-[10px] text-muted-foreground/40 font-display tracking-widest uppercase">
+              <span className="hidden sm:inline">Press <kbd className="font-mono text-primary/60 border border-primary/20 px-1 rounded bg-primary/5">Enter</kbd> to send</span>
+              <span className="hidden sm:inline">·</span>
+              <span className="hidden sm:inline"><kbd className="font-mono text-primary/60 border border-primary/20 px-1 rounded bg-primary/5">Shift + Enter</kbd> for new line</span>
+            </div>
           </div>
         </div>
       </div>
