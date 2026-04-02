@@ -29,7 +29,7 @@ export default function HeroSection() {
       <img
         src={heroBg}
         alt=""
-        className="absolute inset-0 w-full h-full object-cover opacity-[0.4] sm:opacity-[0.5] mix-blend-luminosity scale-110 animate-slow-pan"
+        className="absolute inset-0 w-full h-full object-cover opacity-[0.65] mix-blend-luminosity scale-110 animate-slow-pan"
         width={1920}
         height={1080}
       />
@@ -54,7 +54,7 @@ export default function HeroSection() {
         className="absolute top-1/4 -left-20 w-[400px] h-[400px] sm:w-[800px] sm:h-[800px] rounded-full blur-[120px] animate-pulse-glow z-[2]"
         style={{
           background:
-            "radial-gradient(circle, hsl(120 100% 54% / 0.08) 0%, transparent 70%)",
+            "radial-gradient(circle, hsl(120 100% 54% / 0.12) 0%, transparent 70%)",
           animationDuration: "10s",
         }}
       />
@@ -62,9 +62,18 @@ export default function HeroSection() {
         className="absolute bottom-1/4 -right-20 w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] rounded-full blur-[100px] animate-pulse-glow z-[2]"
         style={{
           background:
-            "radial-gradient(circle, hsl(200 100% 54% / 0.05) 0%, transparent 70%)",
+            "radial-gradient(circle, hsl(200 100% 54% / 0.12) 0%, transparent 70%)",
           animationDuration: "12s",
           animationDelay: "1s",
+        }}
+      />
+      {/* 🔮 Center Mobile/Tablet Glow - Added for better background fill */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] sm:w-[600px] sm:h-[600px] rounded-full blur-[110px] animate-pulse-glow z-[2] lg:hidden"
+        style={{
+          background:
+            "radial-gradient(circle, hsl(120 100% 54% / 0.1) 0%, transparent 75%)",
+          animationDuration: "15s",
         }}
       />
 
@@ -96,7 +105,7 @@ export default function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 text-center px-4 w-full flex flex-col items-center animate-fade-in-up mt-10 sm:mt-0">
-        <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-[10rem] font-black text-primary neon-text-strong tracking-tighter sm:tracking-normal leading-[0.85] sm:leading-none select-none">
+        <h1 className="font-display text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-black text-primary neon-text-strong tracking-tighter sm:tracking-normal leading-[0.85] sm:leading-none select-none">
           LOGICIA
         </h1>
 
@@ -104,7 +113,7 @@ export default function HeroSection() {
         <div className="h-8 sm:h-10 md:h-12 mt-4 sm:mt-6 md:mt-8 flex items-center justify-center overflow-hidden">
           <p
             key={textIndex}
-            className="font-body text-[10px] sm:text-xs md:text-sm lg:text-base tracking-[0.3em] sm:tracking-[0.4em] text-secondary-foreground font-light uppercase animate-fade-in-up"
+            className="font-body text-[10px] sm:text-xs md:text-sm lg:text-base tracking-[0.3em] sm:tracking-[0.4em] text-secondary-foreground/90 font-light uppercase animate-fade-in-up"
             style={{ animationDuration: "0.8s" }}
           >
             {subtitles[textIndex]}
