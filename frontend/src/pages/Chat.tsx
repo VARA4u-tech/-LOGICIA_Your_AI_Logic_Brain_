@@ -1563,7 +1563,7 @@ const Chat = () => {
                   onKeyDown={handleKeyDown}
                   placeholder={t.placeholder_detailed}
                   rows={1}
-                  className="w-full bg-transparent outline-none resize-none text-[15px] text-foreground placeholder:text-muted-foreground font-body leading-relaxed max-h-[200px] py-4 sm:py-5 pl-5 sm:pl-7 pr-16 sm:pr-20 block custom-scrollbar transition-all"
+                  className="w-full bg-transparent outline-none resize-none text-[15px] text-foreground placeholder:text-muted-foreground/30 font-body leading-relaxed max-h-[200px] py-4 sm:py-5 pl-5 sm:pl-7 pr-16 sm:pr-20 block custom-scrollbar transition-all"
                 />
 
                 <div className="absolute right-3 sm:right-4 bottom-3 sm:bottom-4 flex items-center gap-3">

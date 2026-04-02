@@ -9,7 +9,7 @@ const subtitles = [
   "Step-by-Step. Zero Guesswork.",
 ];
 
-const HeroSection = () => {
+export default function HeroSection() {
   const [textIndex, setTextIndex] = useState(0);
 
   // Rotating subtitle effect
@@ -144,6 +144,4 @@ const HeroSection = () => {
       </div>
     </section>
   );
-};
-
-export default HeroSection;
+}

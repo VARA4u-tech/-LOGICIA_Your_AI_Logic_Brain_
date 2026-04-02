@@ -90,13 +90,61 @@ const Index = () => {
         </div>
       </div>
 
-      <footer className="relative z-10 text-center py-8 border-t border-border">
-        <p className="font-body text-[10px] tracking-[0.3em] text-muted-foreground">
-          LOGICIA — YOUR AI MATH BRAIN
-        </p>
-        <p className="font-body text-[9px] tracking-widest text-muted-foreground/40 mt-2">
-          © {new Date().getFullYear()} · Built with ❤️ for math learners
-        </p>
+      <footer className="relative z-10 py-16 border-t border-border/10 bg-black/20 overflow-hidden">
+        {/* Subtle decorative glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+
+        <div className="max-w-7xl mx-auto px-4 flex flex-col items-center text-center">
+          {/* Logo / Brand Mark */}
+          <div className="mb-10 group cursor-default">
+            <div className="flex flex-col items-center gap-2 opacity-70 group-hover:opacity-100 transition-all duration-700">
+              <div className="w-10 h-10 rounded-xl border border-primary/30 bg-primary/5 flex items-center justify-center group-hover:border-primary/50 group-hover:neon-box group-hover:scale-110 transition-all duration-500">
+                <img
+                  src="/logo.png"
+                  alt=""
+                  className="w-5 h-5 grayscale-[0.5] group-hover:grayscale-0 transition-all"
+                />
+              </div>
+              <span className="font-display text-[10px] tracking-[0.5em] text-primary font-black uppercase">
+                LOGICIA
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-4 max-w-sm">
+            <p className="font-display text-[9px] sm:text-[10px] tracking-[0.4em] text-muted-foreground/90 uppercase leading-relaxed font-medium">
+              Intelligent logic brain for India's competitive exams
+            </p>
+            <div className="h-4 w-px bg-gradient-to-b from-primary/40 to-transparent mx-auto" />
+            <p className="font-body text-[10px] sm:text-[11px] text-muted-foreground/60 flex items-center gap-2 flex-wrap justify-center leading-relaxed max-w-sm sm:max-w-none">
+              <span>© {new Date().getFullYear()} LOGICIA</span>
+              <span className="w-1 h-1 rounded-full bg-border/40 hidden xs:inline" />
+              <span>
+                Designed & Engineered with{" "}
+                <span className="text-primary/60">💚</span> by{" "}
+                <span className="text-primary/80 font-medium">VARA</span> for
+                the aspirants of India
+              </span>
+            </p>
+          </div>
+
+          {/* Minimal Links */}
+          <div className="mt-12 flex items-center gap-8 text-[9px] font-display tracking-[0.25em] text-muted-foreground/50">
+            <Link
+              to="/chat"
+              className="hover:text-primary transition-colors hover:tracking-[0.35em] duration-300"
+            >
+              CHAT
+            </Link>
+            <span className="w-1 h-1 rounded-full bg-border/40" />
+            <Link
+              to="/docs"
+              className="hover:text-primary transition-colors hover:tracking-[0.35em] duration-300"
+            >
+              DOCS
+            </Link>
+          </div>
+        </div>
       </footer>
 
       <button
