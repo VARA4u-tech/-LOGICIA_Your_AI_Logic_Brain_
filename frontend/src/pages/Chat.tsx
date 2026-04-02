@@ -96,7 +96,8 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     ask_anything: "Ask me anything — Exams, GK, Math & More",
     ask_subtitle:
       "UPSC, SSC, Banking, Railways, GK, Reasoning, Science, Math — intelligent step-by-step answers.",
-    placeholder_detailed: "Ask any competitive exam question (UPSC, SSC, GK, Math, Reasoning…)",
+    placeholder_detailed:
+      "Ask any competitive exam question (UPSC, SSC, GK, Math, Reasoning…)",
     placeholder_quick: "Ask for a quick answer (GK, shortcut, formula…)",
     enter_to_send: "Press",
     to_send: "to send ·",
@@ -121,7 +122,8 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     ask_anything: "ఏదైనా అడగండి — పరీక్షలు, GK, గణితం & మరిన్ని",
     ask_subtitle:
       "UPSC, SSC, Banking, Railways, GK, Reasoning, Science, గణితం — తెలివైన దశలవారీ సమాధానాలు.",
-    placeholder_detailed: "ఏదైనా పోటీ పరీక్ష ప్రశ్న అడగండి (UPSC, SSC, GK, గణితం, Reasoning…)",
+    placeholder_detailed:
+      "ఏదైనా పోటీ పరీక్ష ప్రశ్న అడగండి (UPSC, SSC, GK, గణితం, Reasoning…)",
     placeholder_quick: "శీఘ్ర సమాధానం కోసం అడగండి (GK, shortcut, formula…)",
     enter_to_send: "పంపడానికి",
     to_send: "నొక్కండి ·",
@@ -144,24 +146,79 @@ const QUICK_PROMPTS_I18N: Record<
   { label: string; prompt: string }[]
 > = {
   en: [
-    { label: "🏛️ Who is PM of India?", prompt: "Who is the current Prime Minister of India? Give full background." },
-    { label: "📜 Article 370 what?", prompt: "What is Article 370? Why was it removed? Explain for UPSC." },
-    { label: "💰 Profit & Loss shortcut", prompt: "Explain profit and loss percentage shortcut trick for SSC CGL with example." },
-    { label: "🧠 Blood relation puzzle", prompt: "A is B's brother. B is C's mother. How is A related to C? Reasoning step by step." },
-    { label: "🚆 RRB GK question", prompt: "Which is the longest railway platform in India? Give related railway GK facts." },
-    { label: "🏦 Bank interest trick", prompt: "Simple vs Compound Interest difference with formula and shortcut trick for banking exams." },
-    { label: "🧪 Science question", prompt: "What is Ohm's Law? Explain with formula and real-life example for SSC/Railways." },
+    {
+      label: "🏛️ Who is PM of India?",
+      prompt:
+        "Who is the current Prime Minister of India? Give full background.",
+    },
+    {
+      label: "📜 Article 370 what?",
+      prompt: "What is Article 370? Why was it removed? Explain for UPSC.",
+    },
+    {
+      label: "💰 Profit & Loss shortcut",
+      prompt:
+        "Explain profit and loss percentage shortcut trick for SSC CGL with example.",
+    },
+    {
+      label: "🧠 Blood relation puzzle",
+      prompt:
+        "A is B's brother. B is C's mother. How is A related to C? Reasoning step by step.",
+    },
+    {
+      label: "🚆 RRB GK question",
+      prompt:
+        "Which is the longest railway platform in India? Give related railway GK facts.",
+    },
+    {
+      label: "🏦 Bank interest trick",
+      prompt:
+        "Simple vs Compound Interest difference with formula and shortcut trick for banking exams.",
+    },
+    {
+      label: "🧪 Science question",
+      prompt:
+        "What is Ohm's Law? Explain with formula and real-life example for SSC/Railways.",
+    },
     { label: "📐 Solve x² − 5x + 6", prompt: "solve quadratic x^2 - 5x + 6" },
   ],
   te: [
-    { label: "🏛️ భారత PM ఎవరు?", prompt: "భారత ప్రస్తుత ప్రధానమంత్రి ఎవరు? పూర్తి వివరాలు చెప్పండి." },
-    { label: "📜 Article 370 అంటే?", prompt: "Article 370 అంటే ఏమిటి? ఎందుకు రద్దు చేశారు? UPSC కోసం వివరించండి." },
-    { label: "💰 లాభ నష్టం ట్రిక్", prompt: "SSC CGL కోసం లాభ నష్టం శాతం shortcut trick ఉదాహరణతో వివరించండి." },
-    { label: "🧠 Blood Relation puzzle", prompt: "A అనేది B యొక్క సోదరుడు. B అనేది C యొక్క తల్లి. A మరియు C మధ్య సంబంధం ఏమిటి?" },
-    { label: "🚆 RRB GK ప్రశ్న", prompt: "భారతదేశంలో అతి పొడవైన రైల్వే ప్లాట్‌ఫారమ్ ఏది? రైల్వే GK facts చెప్పండి." },
-    { label: "🏦 వడ్డీ ట్రిక్", prompt: "Simple vs Compound Interest తేడా, formula, banking exams కోసం shortcut trick వివరించండి." },
-    { label: "🧪 Science ప్రశ్న", prompt: "Ohm's Law అంటే ఏమిటి? SSC/Railways కోసం formula తో వివరించండి." },
-    { label: "📐 x² − 5x + 6 సాధించండి", prompt: "solve quadratic x^2 - 5x + 6" },
+    {
+      label: "🏛️ భారత PM ఎవరు?",
+      prompt: "భారత ప్రస్తుత ప్రధానమంత్రి ఎవరు? పూర్తి వివరాలు చెప్పండి.",
+    },
+    {
+      label: "📜 Article 370 అంటే?",
+      prompt:
+        "Article 370 అంటే ఏమిటి? ఎందుకు రద్దు చేశారు? UPSC కోసం వివరించండి.",
+    },
+    {
+      label: "💰 లాభ నష్టం ట్రిక్",
+      prompt: "SSC CGL కోసం లాభ నష్టం శాతం shortcut trick ఉదాహరణతో వివరించండి.",
+    },
+    {
+      label: "🧠 Blood Relation puzzle",
+      prompt:
+        "A అనేది B యొక్క సోదరుడు. B అనేది C యొక్క తల్లి. A మరియు C మధ్య సంబంధం ఏమిటి?",
+    },
+    {
+      label: "🚆 RRB GK ప్రశ్న",
+      prompt:
+        "భారతదేశంలో అతి పొడవైన రైల్వే ప్లాట్‌ఫారమ్ ఏది? రైల్వే GK facts చెప్పండి.",
+    },
+    {
+      label: "🏦 వడ్డీ ట్రిక్",
+      prompt:
+        "Simple vs Compound Interest తేడా, formula, banking exams కోసం shortcut trick వివరించండి.",
+    },
+    {
+      label: "🧪 Science ప్రశ్న",
+      prompt: "Ohm's Law అంటే ఏమిటి? SSC/Railways కోసం formula తో వివరించండి.",
+    },
+    {
+      label: "📐 x² − 5x + 6 సాధించండి",
+      prompt: "solve quadratic x^2 - 5x + 6",
+    },
   ],
 };
 
@@ -207,31 +264,37 @@ const SectionHeader = ({ text }: { text: string }) => {
 
   let icon = <Hash size={12} />;
   let styles = "text-primary border-primary/30 bg-primary/5";
-  
+
   if (isGiven) {
     icon = <BookOpen size={12} />;
-    styles = "text-sky-400 border-sky-500/30 bg-sky-500/5 shadow-[0_0_15px_rgba(14,165,233,0.1)]";
+    styles =
+      "text-sky-400 border-sky-500/30 bg-sky-500/5 shadow-[0_0_15px_rgba(14,165,233,0.1)]";
   } else if (isCalculation) {
     icon = <Zap size={12} />;
     styles = "text-primary border-primary/30 bg-primary/5";
   } else if (isConclusion) {
     icon = <CheckCircle2 size={12} />;
-    styles = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]";
+    styles =
+      "text-emerald-400 border-emerald-500/30 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]";
   } else if (isShortcut) {
     icon = <Sparkles size={12} />;
-    styles = "text-amber-400 border-amber-500/30 bg-amber-500/5 shadow-[0_0_15px_rgba(245,158,11,0.1)]";
+    styles =
+      "text-amber-400 border-amber-500/30 bg-amber-500/5 shadow-[0_0_15px_rgba(245,158,11,0.1)]";
   }
 
   const cleanText = text.replace(/\*\*/g, "").replace(/:$/, "").trim();
 
   return (
-    <div className={`flex items-center gap-2 font-display text-[10px] sm:text-[11px] tracking-[0.2em] uppercase px-3 py-2 rounded-lg border ${styles} mt-4 mb-2 transition-all group w-fit`}>
-      <span className="group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">{icon}</span>
+    <div
+      className={`flex items-center gap-2 font-display text-[10px] sm:text-[11px] tracking-[0.2em] uppercase px-3 py-2 rounded-lg border ${styles} mt-4 mb-2 transition-all group w-fit`}
+    >
+      <span className="group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">
+        {icon}
+      </span>
       <span>{cleanText}</span>
     </div>
   );
 };
-
 
 /* ═══════════════════════════════════════════════════════════════
    LANGUAGE TOGGLE
@@ -336,7 +399,14 @@ const SolutionPanel = ({
               disabled={isExporting}
               className="group flex items-center gap-2 text-[10px] font-display tracking-widest text-muted-foreground hover:text-primary transition-all bg-muted/10 hover:bg-primary/5 border border-border/40 rounded-xl px-4 py-2"
             >
-              <Share size={12} className={isExporting ? "animate-spin" : "group-hover:scale-110 transition-transform"} />
+              <Share
+                size={12}
+                className={
+                  isExporting
+                    ? "animate-spin"
+                    : "group-hover:scale-110 transition-transform"
+                }
+              />
               <span>{isExporting ? "EXPORTING..." : "SHARE SOLUTION"}</span>
             </button>
           )}
@@ -367,21 +437,59 @@ const SolutionPanel = ({
         <div className="rounded-3xl overflow-hidden border border-primary/10 bg-black/40 shadow-2xl backdrop-blur-sm group hover:border-primary/30 transition-all duration-500">
           <div className="flex items-center justify-between px-6 py-4 border-b border-border/5">
             <div className="flex items-center gap-3 text-[10px] text-primary/60 font-display tracking-[0.3em] uppercase">
-              <BarChart2 size={14} className="text-primary" /> Visual Intelligence
+              <BarChart2 size={14} className="text-primary" /> Visual
+              Intelligence
             </div>
           </div>
           <div className="h-[200px] sm:h-[300px] p-4 sm:p-6">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={graphData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(120 100% 54% / 0.05)" vertical={false} />
-                <XAxis dataKey="x" stroke="hsl(120 20% 30%)" fontSize={10} tickFormatter={(v) => v.toFixed(1)} axisLine={false} tickLine={false} />
-                <YAxis stroke="hsl(120 20% 30%)" fontSize={10} tickFormatter={(v) => v.toFixed(1)} axisLine={false} tickLine={false} width={30} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="hsl(120 100% 54% / 0.05)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="x"
+                  stroke="hsl(120 20% 30%)"
+                  fontSize={10}
+                  tickFormatter={(v) => v.toFixed(1)}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  stroke="hsl(120 20% 30%)"
+                  fontSize={10}
+                  tickFormatter={(v) => v.toFixed(1)}
+                  axisLine={false}
+                  tickLine={false}
+                  width={30}
+                />
                 <Tooltip
-                  contentStyle={{ backgroundColor: "rgba(5, 5, 5, 0.9)", borderColor: "rgba(18, 255, 18, 0.2)", borderRadius: "16px", fontSize: "12px", backdropFilter: "blur(8px)" }}
+                  contentStyle={{
+                    backgroundColor: "rgba(5, 5, 5, 0.9)",
+                    borderColor: "rgba(18, 255, 18, 0.2)",
+                    borderRadius: "16px",
+                    fontSize: "12px",
+                    backdropFilter: "blur(8px)",
+                  }}
                   itemStyle={{ color: "#12ff12" }}
                   cursor={{ stroke: "rgba(18, 255, 18, 0.2)", strokeWidth: 2 }}
                 />
-                <Line type="monotone" dataKey="y" stroke="#12ff12" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: "#12ff12", stroke: "white", strokeWidth: 2 }} animationDuration={2000} />
+                <Line
+                  type="monotone"
+                  dataKey="y"
+                  stroke="#12ff12"
+                  strokeWidth={3}
+                  dot={false}
+                  activeDot={{
+                    r: 6,
+                    fill: "#12ff12",
+                    stroke: "white",
+                    strokeWidth: 2,
+                  }}
+                  animationDuration={2000}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -400,7 +508,7 @@ const SolutionPanel = ({
           {steps.map((step, i) => (
             <div key={i} className="flex gap-4 sm:gap-6 items-start group/step">
               <div className="flex-shrink-0 w-8 h-8 rounded-full border border-primary/20 bg-primary/5 text-primary flex items-center justify-center text-[10px] font-display font-black transition-all group-hover/step:border-primary/60 group-hover/step:scale-110">
-                {String(i + 1).padStart(2, '0')}
+                {String(i + 1).padStart(2, "0")}
               </div>
 
               <div className="flex-1 min-w-0 space-y-3">
@@ -409,7 +517,9 @@ const SolutionPanel = ({
                 </p>
 
                 <div className="p-4 sm:p-5 rounded-2xl bg-black/40 border border-primary/10 group-hover/step:border-primary/30 transition-all duration-500 shadow-xl overflow-x-auto">
-                    <code className="text-primary font-mono text-base sm:text-lg">{step.math}</code>
+                  <code className="text-primary font-mono text-base sm:text-lg">
+                    {step.math}
+                  </code>
                 </div>
 
                 {step.explanation && (
@@ -420,7 +530,10 @@ const SolutionPanel = ({
 
                 {step.note && (
                   <div className="flex gap-3 items-start px-4 py-3 rounded-2xl bg-amber-500/5 border border-amber-500/20 backdrop-blur-sm">
-                    <Lightbulb size={14} className="text-amber-400 mt-0.5 flex-shrink-0" />
+                    <Lightbulb
+                      size={14}
+                      className="text-amber-400 mt-0.5 flex-shrink-0"
+                    />
                     <p className="text-xs sm:text-[13px] text-amber-200/60 leading-relaxed italic font-body">
                       {step.note}
                     </p>
@@ -464,21 +577,19 @@ const SolutionPanel = ({
 /* ═══════════════════════════════════════════════════════════════
    TYPING INDICATOR
 ═══════════════════════════════════════════════════════════════ */
-const TypingIndicator = ({
-  t,
-}: {
-  t: Record<string, string>;
-}) => (
+const TypingIndicator = ({ t }: { t: Record<string, string> }) => (
   <div className="flex gap-4 sm:gap-6 items-start max-w-4xl mx-auto px-4 sm:px-6">
     <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center shadow-lg">
       <Bot size={18} className="text-primary animate-bounce" />
     </div>
     <div className="flex-1 space-y-3 pt-1">
       <div className="flex items-center gap-3">
-         <span className="font-display text-[11px] sm:text-xs tracking-widest uppercase text-primary/60 font-bold">
-           {t.logicia_ai}
-         </span>
-         <span className="text-[10px] text-muted-foreground/30 uppercase tracking-widest">{t.computing}</span>
+        <span className="font-display text-[11px] sm:text-xs tracking-widest uppercase text-primary/60 font-bold">
+          {t.logicia_ai}
+        </span>
+        <span className="text-[10px] text-muted-foreground/30 uppercase tracking-widest">
+          {t.computing}
+        </span>
       </div>
       <div className="flex items-center gap-2">
         {[0, 0.15, 0.3].map((delay, i) => (
@@ -549,12 +660,15 @@ const RenderContent = ({ content }: { content: string }) => {
   const normalizedContent = content
     .replace(/\\begin\{aligned\}/g, "\\[")
     .replace(/\\end\{aligned\}/g, "\\]")
-    .replace(/\\\( /g, "\\(").replace(/ \\\)/g, "\\)")
-    .replace(/\\\[ /g, "\\[").replace(/ \\\]/g, "\\]")
+    .replace(/\\\( /g, "\\(")
+    .replace(/ \\\)/g, "\\)")
+    .replace(/\\\[ /g, "\\[")
+    .replace(/ \\\]/g, "\\]")
     // Ensure tables have spacing
     .replace(/\n(\|.*\|)\n/g, "\n\n$1\n\n")
     // Safety net: Clean naked LaTeX commands if not wrapped in math blocks
-    .replace(/\\left\(/g, "(").replace(/\\right\)/g, ")")
+    .replace(/\\left\(/g, "(")
+    .replace(/\\right\)/g, ")")
     .replace(/\\frac\{(.+?)\}\{(.+?)\}/g, "($1/$2)")
     .replace(/\\times/g, "×")
     .replace(/\\div/g, "÷")
@@ -571,14 +685,21 @@ const RenderContent = ({ content }: { content: string }) => {
         if (!trimmedPara) return null;
 
         // --- TABLE DETECTION: lines starting/ending with |
-        if (trimmedPara.includes("|") && trimmedPara.split("\n").some(l => l.includes("|---"))) {
+        if (
+          trimmedPara.includes("|") &&
+          trimmedPara.split("\n").some((l) => l.includes("|---"))
+        ) {
           return <TableRenderer key={pIdx} markdown={trimmedPara} />;
         }
 
         // --- SECTION HEADER DETECTION
-        const isHeaderOnly = trimmedPara.split("\n").length === 1 && 
-          (/^(Given|Calculation|Conclusion|Shortcut|నిర్ణయం|గణన|ఇవ్వబడింది|షార్ట్|💡|∴)/i.test(trimmedPara) || trimmedPara.match(/^\*\*(.+?)\*\*:?\s*$/));
-        
+        const isHeaderOnly =
+          trimmedPara.split("\n").length === 1 &&
+          (/^(Given|Calculation|Conclusion|Shortcut|నిర్ణయం|గణన|ఇవ్వబడింది|షార్ట్|💡|∴)/i.test(
+            trimmedPara,
+          ) ||
+            trimmedPara.match(/^\*\*(.+?)\*\*:?\s*$/));
+
         if (isHeaderOnly) {
           return <SectionHeader key={pIdx} text={trimmedPara} />;
         }
@@ -586,29 +707,44 @@ const RenderContent = ({ content }: { content: string }) => {
         // Check if paragraph *starts* with a header followed by content
         const lines = trimmedPara.split("\n");
         const firstLine = lines[0];
-        const isInlineHeader = /^(Given|Calculation|Conclusion|Shortcut|నిర్ణయం|గణన|ఇవ్వబడింది|షార్ట్|💡|∴)/i.test(firstLine) && firstLine.includes(":");
-        
+        const isInlineHeader =
+          /^(Given|Calculation|Conclusion|Shortcut|నిర్ణయం|గణన|ఇవ్వబడింది|షార్ట్|💡|∴)/i.test(
+            firstLine,
+          ) && firstLine.includes(":");
+
         const contentLines = isInlineHeader ? lines.slice(1) : lines;
 
         return (
           <div key={pIdx} className="space-y-3">
             {isInlineHeader && <SectionHeader text={firstLine} />}
-            <div className={`space-y-2.5 ${isInlineHeader ? "pl-1 sm:pl-2" : ""}`}>
+            <div
+              className={`space-y-2.5 ${isInlineHeader ? "pl-1 sm:pl-2" : ""}`}
+            >
               {contentLines.map((line, lIdx) => {
                 const trimmedLine = line.trim();
                 if (!trimmedLine) return null;
 
                 // Bullet / list item: handles -, •, ▸, *, or numeric like 1.
                 if (/^([-•▸*]|\d+\.)\s/.test(trimmedLine)) {
-                  const bulletContent = trimmedLine.replace(/^([-•▸*]|\d+\.)\s*/, "");
+                  const bulletContent = trimmedLine.replace(
+                    /^([-•▸*]|\d+\.)\s*/,
+                    "",
+                  );
                   const isStepHeader = /^Step \d+/i.test(bulletContent);
-                  
+
                   return (
-                    <div key={lIdx} className={`flex gap-3 items-start ${isStepHeader ? "mt-4 first:mt-0" : ""}`}>
-                      <div className={`mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full border border-primary/40 bg-primary/10 flex items-center justify-center ${isStepHeader ? "mt-2" : ""}`}>
-                         <div className="w-0.5 h-0.5 rounded-full bg-primary" />
+                    <div
+                      key={lIdx}
+                      className={`flex gap-3 items-start ${isStepHeader ? "mt-4 first:mt-0" : ""}`}
+                    >
+                      <div
+                        className={`mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full border border-primary/40 bg-primary/10 flex items-center justify-center ${isStepHeader ? "mt-2" : ""}`}
+                      >
+                        <div className="w-0.5 h-0.5 rounded-full bg-primary" />
                       </div>
-                      <span className={`flex-1 ${isStepHeader ? "font-display text-primary tracking-wide text-[11px] sm:text-xs font-bold border-b border-primary/10 pb-1 flex justify-between items-center" : "text-foreground/85"}`}>
+                      <span
+                        className={`flex-1 ${isStepHeader ? "font-display text-primary tracking-wide text-[11px] sm:text-xs font-bold border-b border-primary/10 pb-1 flex justify-between items-center" : "text-foreground/85"}`}
+                      >
                         <InlineRenderer text={bulletContent} />
                       </span>
                     </div>
@@ -616,12 +752,15 @@ const RenderContent = ({ content }: { content: string }) => {
                 }
 
                 // Math display block: \[...\] or $$...$$
-                if (/^(\\\[|\$\$)/.test(trimmedLine) || /(\\\]|\$\$)$/.test(trimmedLine)) {
+                if (
+                  /^(\\\[|\$\$)/.test(trimmedLine) ||
+                  /(\\\]|\$\$)$/.test(trimmedLine)
+                ) {
                   const mathContent = trimmedLine
                     .replace(/^(\\\[|\$\$)\s*/, "")
                     .replace(/\s*(\\\]|\$\$)$/, "")
                     .trim();
-                  
+
                   if (mathContent) {
                     return (
                       <div
@@ -633,7 +772,9 @@ const RenderContent = ({ content }: { content: string }) => {
                         </div>
                         <code className="whitespace-pre-wrap leading-relaxed block pr-8">
                           {mathContent.split(/\s*\\\\s*/).map((mLine, mi) => (
-                            <div key={mi} className="min-h-[1.5em]">{mLine.trim()}</div>
+                            <div key={mi} className="min-h-[1.5em]">
+                              {mLine.trim()}
+                            </div>
                           ))}
                         </code>
                       </div>
@@ -643,9 +784,13 @@ const RenderContent = ({ content }: { content: string }) => {
                 }
 
                 // Regular line
-                const isConclusionArrow = trimmedLine.startsWith("⇒") || trimmedLine.startsWith("∴");
+                const isConclusionArrow =
+                  trimmedLine.startsWith("⇒") || trimmedLine.startsWith("∴");
                 return (
-                  <p key={lIdx} className={`text-[13px] sm:text-[15px] leading-relaxed font-body ${isConclusionArrow ? "text-primary/95 font-medium pl-3 border-l-2 border-primary/20 py-1 bg-primary/5 rounded-r-lg" : "text-foreground/80"}`}>
+                  <p
+                    key={lIdx}
+                    className={`text-[13px] sm:text-[15px] leading-relaxed font-body ${isConclusionArrow ? "text-primary/95 font-medium pl-3 border-l-2 border-primary/20 py-1 bg-primary/5 rounded-r-lg" : "text-foreground/80"}`}
+                  >
                     <InlineRenderer text={trimmedLine} />
                   </p>
                 );
@@ -821,7 +966,11 @@ const MessageBubble = ({
               : "bg-muted/20 border-border/50 text-primary"
           }`}
         >
-          {isUser ? <UserIcon size={16} /> : <Bot size={18} className="animate-pulse" />}
+          {isUser ? (
+            <UserIcon size={16} />
+          ) : (
+            <Bot size={18} className="animate-pulse" />
+          )}
         </div>
 
         {/* Content Area */}
@@ -876,19 +1025,18 @@ const EmptyState = ({
   prompts: { label: string; prompt: string }[];
 }) => (
   <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 py-20 text-center animate-in fade-in duration-700">
-    <div
-      className="w-20 h-20 sm:w-24 sm:h-24 rounded-[2rem] border-2 border-primary/30 bg-primary/5 flex items-center justify-center mb-8 relative group"
-    >
+    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[2rem] border-2 border-primary/30 bg-primary/5 flex items-center justify-center mb-8 relative group">
       <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse" />
-      <Bot size={40} className="text-primary relative z-10 transition-transform group-hover:scale-110 duration-500" />
+      <Bot
+        size={40}
+        className="text-primary relative z-10 transition-transform group-hover:scale-110 duration-500"
+      />
     </div>
-    
-    <h2
-      className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-primary via-primary/80 to-primary/40 mb-4 tracking-tighter leading-tight"
-    >
+
+    <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-primary via-primary/80 to-primary/40 mb-4 tracking-tighter leading-tight">
       {t.ask_anything}
     </h2>
-    
+
     <p className="text-sm sm:text-base text-muted-foreground/60 max-w-lg mb-12 leading-relaxed font-body">
       {t.ask_subtitle}
     </p>
@@ -903,8 +1051,12 @@ const EmptyState = ({
           <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
             <Sparkles size={14} className="text-primary/40" />
           </div>
-          <span className="text-[12px] font-display tracking-widest text-primary/40 group-hover:text-primary transition-colors mb-2 uppercase">Example Query</span>
-          <span className="text-sm sm:text-base text-muted-foreground group-hover:text-foreground transition-colors font-body">{qp.label}</span>
+          <span className="text-[12px] font-display tracking-widest text-primary/40 group-hover:text-primary transition-colors mb-2 uppercase">
+            Example Query
+          </span>
+          <span className="text-sm sm:text-base text-muted-foreground group-hover:text-foreground transition-colors font-body">
+            {qp.label}
+          </span>
         </button>
       ))}
     </div>
@@ -980,7 +1132,6 @@ const Chat = () => {
   const t = UI_STRINGS[language];
   const quickPrompts = QUICK_PROMPTS_I18N[language];
 
-
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     try {
       const saved = localStorage.getItem("logicia_sidebar_open");
@@ -1010,7 +1161,6 @@ const Chat = () => {
       /* ignore */
     }
   }, [sidebarOpen]);
-
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1258,7 +1408,9 @@ const Chat = () => {
                         : "text-muted-foreground/60 hover:bg-muted/10 hover:text-foreground border border-transparent"
                     }`}
                   >
-                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${activeId === conv.id ? "bg-primary scale-110 shadow-[0_0_8px_primary]" : "bg-muted scale-75 group-hover:bg-primary/40"}`} />
+                    <div
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${activeId === conv.id ? "bg-primary scale-110 shadow-[0_0_8px_primary]" : "bg-muted scale-75 group-hover:bg-primary/40"}`}
+                    />
                     <span className="flex-1 text-[13px] truncate font-body">
                       {conv.title}
                     </span>
@@ -1364,81 +1516,110 @@ const Chat = () => {
           )}
         </main>
 
-        {/* Quick prompt chips */}
-        {(!activeConv || activeConv.messages.length === 0) && (
-          <div
-            className="px-3 sm:px-6 pb-2 flex gap-2 overflow-x-auto flex-shrink-0"
-            style={{ scrollbarWidth: "none" }}
-          >
-            {quickPrompts.slice(0, 3).map((qp) => (
-              <button
-                key={qp.prompt}
-                onClick={() => sendMessage(qp.prompt)}
-                disabled={isTyping}
-                className="flex-shrink-0 flex items-center gap-1.5 text-[10px] font-display tracking-wider px-3 py-1.5 rounded-full border border-border/60 bg-muted/10 text-muted-foreground hover:text-primary hover:border-primary/30 active:scale-95 transition-all disabled:opacity-40 min-h-[34px]"
+        {/* ── Input and Quick Prompts Container ── */}
+        <div className="flex-shrink-0 border-t border-border/10 bg-gradient-to-t from-background via-background/95 to-transparent pt-6 pb-4 sm:pb-8 px-4 z-20">
+          <div className="max-w-3xl mx-auto space-y-4">
+            {/* Quick prompt chips - Now inside the managed space */}
+            {(!activeConv || activeConv.messages.length === 0) && (
+              <div
+                className="flex gap-2 overflow-x-auto no-scrollbar pb-2"
+                style={{ scrollbarWidth: "none" }}
               >
-                <Sparkles size={10} className="text-primary/60 flex-shrink-0" />
-                <span className="whitespace-nowrap">{qp.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* ── Input area ── */}
-        <div className="flex-shrink-0 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-12 pb-4 sm:pb-8 px-4 z-20">
-          <div className="max-w-3xl mx-auto relative">
-            {/* Input Container */}
-            <div
-              className={`relative group bg-muted/20 backdrop-blur-xl border-2 rounded-2xl sm:rounded-[2rem] transition-all duration-500 overflow-hidden shadow-2xl ${
-                isOverLimit
-                  ? "border-destructive/50"
-                  : "border-border/40 focus-within:border-primary/40 focus-within:shadow-[0_0_40px_-10px_hsl(120_100%_54%/0.15)] group-hover:border-border/60"
-              }`}
-            >
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={(e) =>
-                  setInput(e.target.value.slice(0, MAX_CHARS + 20))
-                }
-                onKeyDown={handleKeyDown}
-                placeholder={t.placeholder_detailed}
-                rows={1}
-                className="w-full bg-transparent outline-none resize-none text-[15px] text-foreground placeholder:text-muted-foreground font-body leading-relaxed max-h-[200px] py-4 sm:py-5 pl-5 sm:pl-7 pr-16 sm:pr-20 block custom-scrollbar transition-all"
-              />
-              
-              <div className="absolute right-3 sm:right-4 bottom-3 sm:bottom-4 flex items-center gap-3">
-                {showCounter && (
-                  <span
-                    className={`text-[10px] font-mono tabular-nums font-bold ${isOverLimit ? "text-destructive" : "text-primary/40"}`}
+                {quickPrompts.slice(0, 4).map((qp) => (
+                  <button
+                    key={qp.prompt}
+                    onClick={() => sendMessage(qp.prompt)}
+                    disabled={isTyping}
+                    className="flex-shrink-0 flex items-center gap-1.5 text-[10px] font-display tracking-wider px-4 py-2 rounded-xl border border-border/40 bg-muted/10 text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5 active:scale-95 transition-all disabled:opacity-40"
                   >
-                    {charsLeft}
-                  </span>
-                )}
-                
-                <button
-                  onClick={() => sendMessage(input)}
-                  disabled={isTyping || !input.trim() || isOverLimit || cooldown > 0}
-                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500 flex-shrink-0 shadow-lg ${
-                    input.trim() && !isTyping && !isOverLimit && cooldown === 0
-                      ? "bg-primary text-primary-foreground hover:scale-105 active:scale-95 neon-box shadow-primary/20"
-                      : "bg-muted/40 text-muted-foreground/30 cursor-not-allowed scale-95"
-                  }`}
-                >
-                  {cooldown > 0 ? (
-                    <span className="text-[11px] font-bold font-mono text-primary/60">{cooldown}s</span>
-                  ) : (
-                    <Send size={18} className={input.trim() ? "animate-in zoom-in duration-300" : ""} />
-                  )}
-                </button>
+                    <Sparkles
+                      size={11}
+                      className="text-primary/70 flex-shrink-0"
+                    />
+                    <span className="whitespace-nowrap">{qp.label}</span>
+                  </button>
+                ))}
               </div>
-            </div>
+            )}
 
-            {/* Hint text */}
-            <div className="mt-3 flex justify-center gap-4 text-[10px] text-muted-foreground/40 font-display tracking-widest uppercase">
-              <span className="hidden sm:inline">Press <kbd className="font-mono text-primary/60 border border-primary/20 px-1 rounded bg-primary/5">Enter</kbd> to send</span>
-              <span className="hidden sm:inline">·</span>
-              <span className="hidden sm:inline"><kbd className="font-mono text-primary/60 border border-primary/20 px-1 rounded bg-primary/5">Shift + Enter</kbd> for new line</span>
+            {/* Input Area */}
+            <div className="relative">
+              {/* Input Container */}
+              <div
+                className={`relative group bg-muted/20 backdrop-blur-xl border-2 rounded-2xl sm:rounded-[2rem] transition-all duration-500 overflow-hidden shadow-2xl ${
+                  isOverLimit
+                    ? "border-destructive/50"
+                    : "border-border/40 focus-within:border-primary/40 focus-within:shadow-[0_0_40px_-10px_hsl(120_100%_54%/0.15)] group-hover:border-border/60"
+                }`}
+              >
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) =>
+                    setInput(e.target.value.slice(0, MAX_CHARS + 20))
+                  }
+                  onKeyDown={handleKeyDown}
+                  placeholder={t.placeholder_detailed}
+                  rows={1}
+                  className="w-full bg-transparent outline-none resize-none text-[15px] text-foreground placeholder:text-muted-foreground font-body leading-relaxed max-h-[200px] py-4 sm:py-5 pl-5 sm:pl-7 pr-16 sm:pr-20 block custom-scrollbar transition-all"
+                />
+
+                <div className="absolute right-3 sm:right-4 bottom-3 sm:bottom-4 flex items-center gap-3">
+                  {showCounter && (
+                    <span
+                      className={`text-[10px] font-mono tabular-nums font-bold ${isOverLimit ? "text-destructive" : "text-primary/40"}`}
+                    >
+                      {charsLeft}
+                    </span>
+                  )}
+
+                  <button
+                    onClick={() => sendMessage(input)}
+                    disabled={
+                      isTyping || !input.trim() || isOverLimit || cooldown > 0
+                    }
+                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500 flex-shrink-0 shadow-lg ${
+                      input.trim() &&
+                      !isTyping &&
+                      !isOverLimit &&
+                      cooldown === 0
+                        ? "bg-primary text-primary-foreground hover:scale-105 active:scale-95 neon-box shadow-primary/20"
+                        : "bg-muted/40 text-muted-foreground/30 cursor-not-allowed scale-95"
+                    }`}
+                  >
+                    {cooldown > 0 ? (
+                      <span className="text-[11px] font-bold font-mono text-primary/60">
+                        {cooldown}s
+                      </span>
+                    ) : (
+                      <Send
+                        size={18}
+                        className={
+                          input.trim() ? "animate-in zoom-in duration-300" : ""
+                        }
+                      />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Hint text */}
+              <div className="mt-3 flex justify-center gap-4 text-[10px] text-muted-foreground/30 font-display tracking-widest uppercase">
+                <span className="hidden sm:inline">
+                  Press{" "}
+                  <kbd className="font-mono text-primary/40 border border-primary/20 px-1.5 rounded bg-primary/5">
+                    Enter
+                  </kbd>{" "}
+                  to send
+                </span>
+                <span className="hidden sm:inline">·</span>
+                <span className="hidden sm:inline">
+                  <kbd className="font-mono text-primary/40 border border-primary/20 px-1.5 rounded bg-primary/5">
+                    Shift + Enter
+                  </kbd>{" "}
+                  for new line
+                </span>
+              </div>
             </div>
           </div>
         </div>
