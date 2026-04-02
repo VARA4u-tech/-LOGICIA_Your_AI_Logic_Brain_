@@ -1,4 +1,3 @@
-import json
 import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -11,88 +10,91 @@ from app.services.llm_service import llm_service
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
+GUEST_USER_ID = "global-guest-id"
+
+
 @router.post("/", response_model=ChatResponse)
 async def chat_interaction(
     req: ChatRequest,
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: AsyncIOMotorDatabase = Depends(get_db),
 ):
-    # For now, allow guest users without login
-    GUEST_USER_ID = "global-guest-id"
     now = datetime.now(timezone.utc)
-    
-    # 1. Fetch or create conversation
-    if req.conversation_id:
-        conversation = await db["conversations"].find_one({"_id": req.conversation_id})
-        if not conversation:
-            # Fallback: Create new if ID not found
-            title = req.content[:30] + "..." if len(req.content) > 30 else req.content
-            conversation = {
-                "_id": str(uuid.uuid4()),
-                "user_id": GUEST_USER_ID,
-                "title": title,
-                "created_at": now,
-                "updated_at": now
-            }
-            await db["conversations"].insert_one(conversation)
+
+    # ── 1. Fetch or create conversation (DB optional — fail gracefully) ────────
+    conversation_id = req.conversation_id
+    try:
+        if conversation_id:
+            conversation = await db["conversations"].find_one({"_id": conversation_id})
+            if not conversation:
+                conversation = await _create_conversation(db, conversation_id, req.content, now)
+            else:
+                await db["conversations"].update_one(
+                    {"_id": conversation["_id"]},
+                    {"$set": {"updated_at": now}},
+                )
         else:
-            # Update updated_at
-            await db["conversations"].update_one(
-                {"_id": conversation["_id"]},
-                {"$set": {"updated_at": now}}
-            )
-    else:
-        # Auto-generate title using first few chars of input
-        title = req.content[:30] + "..." if len(req.content) > 30 else req.content
-        conversation = {
-            "_id": str(uuid.uuid4()),
-            "user_id": GUEST_USER_ID,
-            "title": title,
-            "created_at": now,
-            "updated_at": now
-        }
-        await db["conversations"].insert_one(conversation)
+            conversation_id = str(uuid.uuid4())
+            conversation = await _create_conversation(db, conversation_id, req.content, now)
+    except Exception as db_err:
+        # DB unavailable — generate a fallback conversation ID and continue
+        print(f"[DB WARNING] Conversation fetch/create failed: {db_err}")
+        conversation_id = conversation_id or str(uuid.uuid4())
+        conversation = {"_id": conversation_id}
 
-    # 2. Save user message
+    # ── 2. Save user message (best-effort) ────────────────────────────────────
     user_msg_id = str(uuid.uuid4())
-    user_msg = {
-        "_id": user_msg_id,
-        "conversation_id": conversation["_id"],
-        "role": "user",
-        "content": req.content,
-        "mode": "detailed",
-        "created_at": now
-    }
-    await db["messages"].insert_one(user_msg)
+    try:
+        await db["messages"].insert_one({
+            "_id": user_msg_id,
+            "conversation_id": conversation["_id"],
+            "role": "user",
+            "content": req.content,
+            "mode": "detailed",
+            "created_at": now,
+        })
+    except Exception as e:
+        print(f"[DB WARNING] Could not save user message: {e}")
 
-    # 3. Generate AI response (call math engine)
+    # ── 3. Run math engine (local SymPy — always available) ───────────────────
     ai_response_dict = solve_math(req.content, req.language)
-    
-    # 3b. Determine if we need an LLM response (detailed/pedagogical mode ALWAYS)
-    use_llm = True
-    if use_llm:
-        context = ai_response_dict.get("solution")
-        llm_response = await llm_service.generate_response(req.content, context, req.language)
-        ai_response_dict["content"] = llm_response["content"]
-        
-    if not ai_response_dict.get("content"):
-        ai_response_dict["content"] = "I apologize, but I was unable to generate a response."
-    
-    # 4. Save AI message
-    ai_msg_id = str(uuid.uuid4())
-    ai_msg = {
-        "_id": ai_msg_id,
-        "conversation_id": conversation["_id"],
-        "role": "ai",
-        "content": ai_response_dict["content"],
-        "mode": "detailed",
-        "solution": ai_response_dict.get("solution"),
-        "created_at": datetime.now(timezone.utc)
-    }
-    await db["messages"].insert_one(ai_msg)
 
-    # 5. Format return
+    # ── 4. Call LLM (OpenRouter) for intelligent explanation ──────────────────
+    try:
+        context = ai_response_dict.get("solution")
+        llm_response = await llm_service.generate_response(
+            req.content, context, req.language
+        )
+        ai_response_dict["content"] = llm_response["content"]
+    except Exception as llm_err:
+        print(f"[LLM ERROR] {llm_err}")
+        # Fallback: use math engine content if LLM fails
+        if not ai_response_dict.get("content"):
+            ai_response_dict["content"] = (
+                "I'm having trouble connecting to my AI engine right now. "
+                "Please try again in a moment."
+            )
+
+    if not ai_response_dict.get("content"):
+        ai_response_dict["content"] = "I was unable to generate a response. Please try again."
+
+    # ── 5. Save AI message (best-effort) ──────────────────────────────────────
+    ai_msg_id = str(uuid.uuid4())
+    try:
+        await db["messages"].insert_one({
+            "_id": ai_msg_id,
+            "conversation_id": conversation["_id"],
+            "role": "ai",
+            "content": ai_response_dict["content"],
+            "mode": "detailed",
+            "solution": ai_response_dict.get("solution"),
+            "created_at": datetime.now(timezone.utc),
+        })
+    except Exception as e:
+        print(f"[DB WARNING] Could not save AI message: {e}")
+
+    # ── 6. Build and return response ──────────────────────────────────────────
     sol_data = ai_response_dict.get("solution")
-    
+
     return ChatResponse(
         conversation_id=conversation["_id"],
         message=MessageSchema(
@@ -100,23 +102,38 @@ async def chat_interaction(
             role="ai",
             content=ai_response_dict["content"],
             solution=SolutionData(**sol_data) if sol_data else None,
-            timestamp=ai_msg["created_at"],
-        )
+            timestamp=datetime.now(timezone.utc),
+        ),
     )
 
+
+async def _create_conversation(db, conv_id: str, content: str, now: datetime) -> dict:
+    """Helper: insert and return a new conversation document."""
+    title = content[:40] + "..." if len(content) > 40 else content
+    doc = {
+        "_id": conv_id,
+        "user_id": GUEST_USER_ID,
+        "title": title,
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db["conversations"].insert_one(doc)
+    return doc
+
+
 @router.get("/conversations", response_model=list[dict])
-async def list_conversations(
-    db: AsyncIOMotorDatabase = Depends(get_db)
-):
-    # Note: Using GUEST_USER_ID as primary for now since we removed auth
-    GUEST_USER_ID = "global-guest-id"
-    cursor = db["conversations"].find({"user_id": GUEST_USER_ID}).sort("updated_at", -1)
-    convos = await cursor.to_list(length=50)
-    
-    return [
-        {
-            "id": c["_id"],
-            "title": c["title"],
-            "updated_at": c["updated_at"].isoformat()
-        } for c in convos
-    ]
+async def list_conversations(db: AsyncIOMotorDatabase = Depends(get_db)):
+    try:
+        cursor = db["conversations"].find({"user_id": GUEST_USER_ID}).sort("updated_at", -1)
+        convos = await cursor.to_list(length=50)
+        return [
+            {
+                "id": c["_id"],
+                "title": c["title"],
+                "updated_at": c["updated_at"].isoformat(),
+            }
+            for c in convos
+        ]
+    except Exception as e:
+        print(f"[DB WARNING] Could not list conversations: {e}")
+        return []

@@ -8,7 +8,15 @@ db = None
 def get_mongodb_client():
     global client, db
     if client is None:
-        client = AsyncIOMotorClient(settings.MONGODB_URI)
+        # Use proper TLS settings for MongoDB Atlas
+        client = AsyncIOMotorClient(
+            settings.MONGODB_URI,
+            tls=True,
+            tlsAllowInvalidCertificates=False,
+            serverSelectionTimeoutMS=10000,
+            connectTimeoutMS=10000,
+            socketTimeoutMS=20000,
+        )
         db = client[settings.MONGODB_DB]
     return db
 
