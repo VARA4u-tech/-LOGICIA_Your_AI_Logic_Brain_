@@ -144,7 +144,8 @@ const ChatInterface = () => {
       setIsTyping(true);
 
       try {
-        const response = await fetch("http://localhost:8000/chat/", {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+        const response = await fetch(`${backendUrl}/chat/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

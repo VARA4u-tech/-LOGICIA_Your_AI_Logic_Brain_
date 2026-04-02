@@ -1249,7 +1249,8 @@ const Chat = () => {
           payload.conversation_id = convId;
         }
 
-        const res = await fetch("http://localhost:8000/api/chat/", {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+        const res = await fetch(`${backendUrl}/api/chat/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -1258,7 +1259,7 @@ const Chat = () => {
         // If backend 404s (e.g. legacy localStorage conversation not found in DB)
         if (res.status === 404 && payload.conversation_id) {
           delete payload.conversation_id;
-          const retryRes = await fetch("http://localhost:8000/api/chat/", {
+          const retryRes = await fetch(`${backendUrl}/api/chat/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
