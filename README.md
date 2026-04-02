@@ -1,4 +1,8 @@
-# 🧠 LOGICIA — Your AI Exam Brain
+<h1 align="center">
+  🧠 LOGICIA — Your AI Logic Brain
+</h1>
+
+<p align="center"><b>Powering intelligent logic systems</b></p>
 
 [![Agile Methodology](https://img.shields.io/badge/Methodology-Agile-blueviolet.svg)](#-agile-methodology)
 [![Framework](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB.svg)](https://reactjs.org/)
