@@ -112,6 +112,8 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     show_steps: "SHOW STEPS",
     visualization: "VISUALIZATION",
     new_conv_title: "New Conversation",
+    login_title: "Welcome to Logicia",
+    login_subtitle: "Please sign in to start solving with your personal AI math brain.",
   },
   te: {
     new_conversation: "కొత్త సంభాషణ",
@@ -138,6 +140,8 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     show_steps: "దశలు చూపించు",
     visualization: "విజువలైజేషన్",
     new_conv_title: "కొత్త సంభాషణ",
+    login_title: "లాజిషియాకు స్వాగతం",
+    login_subtitle: "మీ వ్యక్తిగత AI గణిత మేధస్సుతో ప్రారంభించడానికి దయచేసి సైన్ ఇన్ చేయండి.",
   },
 };
 
@@ -1093,7 +1097,52 @@ const titleFromMessage = (text: string) =>
 /* ═══════════════════════════════════════════════════════════════
    MAIN CHAT PAGE
 ═══════════════════════════════════════════════════════════════ */
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+
 const Chat = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return !!localStorage.getItem("logicia_token");
+  });
+
+  const [currentUser, setCurrentUser] = useState<{
+    username: string;
+    email: string;
+  } | null>(() => {
+    const saved = localStorage.getItem("logicia_user");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    try {
+      const backendUrl =
+        import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+      const res = await fetch(`${backendUrl}/api/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential: credentialResponse.credential }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem("logicia_token", data.access_token);
+        if (data.user) {
+          localStorage.setItem("logicia_user", JSON.stringify(data.user));
+          setCurrentUser(data.user);
+        }
+        setIsAuthenticated(true);
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("logicia_token");
+    localStorage.removeItem("logicia_user");
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+  };
+
   const [conversations, setConversations] =
     useState<Conversation[]>(loadConversations);
   const [activeId, setActiveId] = useState<string | null>(
@@ -1430,10 +1479,35 @@ const Chat = () => {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-border/5 p-6 space-y-4 flex-shrink-0">
+          <div className="border-t border-border/10 p-4 sm:p-5 space-y-4 flex-shrink-0 bg-black/20">
+            {currentUser && (
+              <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-primary/5 border border-primary/10 group/user transition-all hover:border-primary/30">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-display font-bold text-xs shadow-lg shadow-primary/5 group-hover/user:scale-105 transition-transform">
+                    {currentUser.username[0].toUpperCase()}
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[12px] font-display font-bold text-primary/90 truncate uppercase tracking-wider">
+                      {currentUser.username}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground/50 truncate font-body">
+                      {currentUser.email}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  title="Logout"
+                  className="p-2 rounded-lg text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all duration-300"
+                >
+                  <PanelLeftClose size={14} className="rotate-180" />
+                </button>
+              </div>
+            )}
+
             <Link
               to="/"
-              className="flex items-center gap-3 text-[11px] font-display tracking-widest uppercase text-muted-foreground hover:text-primary transition-all duration-300 group"
+              className="flex items-center gap-3 px-3 py-1 text-[10px] font-display tracking-widest uppercase text-muted-foreground/60 hover:text-primary transition-all duration-300 group"
             >
               <ArrowLeft
                 size={14}
@@ -1627,6 +1701,33 @@ const Chat = () => {
           </div>
         </div>
       </div>
+
+      {/* Login Overlay / Gate */}
+      {!isAuthenticated && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
+          <div className="glass-strong border border-primary/30 p-8 sm:p-12 rounded-[2.5rem] max-w-sm w-full text-center space-y-8 animate-in zoom-in-95 fade-in duration-500">
+            <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto shadow-2xl shadow-primary/20">
+              <Bot size={40} className="text-primary" />
+            </div>
+            <div className="space-y-3">
+              <h1 className="font-display text-xl sm:text-2xl font-black tracking-widest text-primary neon-text uppercase">
+                {t.login_title}
+              </h1>
+              <p className="font-body text-[13px] sm:text-sm text-muted-foreground/80 leading-relaxed">
+                {t.login_subtitle}
+              </p>
+            </div>
+            <div className="flex justify-center pt-4">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => console.log("Login Failed")}
+                theme="filled_black"
+                shape="pill"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

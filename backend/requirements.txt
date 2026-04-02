@@ -15,6 +15,7 @@ pymongo[srv]>=4.9,<4.10   # compatible with motor 3.6.x and supports Atlas srv
 python-jose[cryptography]==3.3.0   # JWT
 passlib[bcrypt]==1.7.4             # password hashing
 python-multipart==0.0.20           # form data (login)
+google-auth==2.37.0                # Google OAuth verification
 
 # ── Config / Validation ────────────────────────────────────────
 pydantic>=2.10.0
@@ -24,6 +25,7 @@ python-dotenv==1.0.1
 
 # ── HTTP client (for AI API calls) ─────────────────────────────
 httpx==0.27.2
+requests==2.32.3
 
 # ── CORS ───────────────────────────────────────────────────────
 # included in fastapi/starlette, no extra package needed

@@ -8,7 +8,60 @@ from app.database import get_db
 from app.schemas.schemas import UserCreate, UserResponse, Token
 from app.services.auth import get_password_hash, verify_password, create_access_token
 
+from app.config import settings
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+@router.post("/google", response_model=Token)
+async def google_login(token_in: dict, db: AsyncIOMotorDatabase = Depends(get_db)) -> Any:
+    # 1. Verify token
+    try:
+        id_info = id_token.verify_oauth2_token(
+            token_in["credential"],
+            requests.Request(),
+            settings.GOOGLE_CLIENT_ID
+        )
+        
+        email = id_info.get("email")
+        if not email:
+            raise ValueError("Token has no email")
+            
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid Google token: {str(e)}",
+        )
+
+    # 2. Find or create user
+    user = await db["users"].find_one({"email": email})
+    
+    if not user:
+        user_id = str(uuid.uuid4())
+        user = {
+            "_id": user_id,
+            "email": email,
+            "username": email.split("@")[0],
+            "hashed_password": "", # No password for Google users
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc),
+            "auth_provider": "google"
+        }
+        await db["users"].insert_one(user)
+    else:
+        user_id = user["_id"]
+
+    # 3. Create access token
+    access_token = create_access_token(data={"sub": user_id})
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "user": {
+            "email": user["email"],
+            "username": user["username"]
+        }
+    }
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(user_in: UserCreate, db: AsyncIOMotorDatabase = Depends(get_db)) -> Any:
