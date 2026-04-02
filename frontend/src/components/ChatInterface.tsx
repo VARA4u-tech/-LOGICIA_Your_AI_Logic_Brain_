@@ -45,7 +45,8 @@ const LANG_KEY = "logicia_language";
 /* ─── UI Translations ────────────────────────────────────────────────────── */
 const UI_STRINGS = {
   en: {
-    welcome: "Welcome! I'm your **AI Math Assistant**. Enter any math problem and I'll solve it step by step with interactive visualizations. 🧮",
+    welcome:
+      "Welcome! I'm your **AI Math Assistant**. Enter any math problem and I'll solve it step by step with interactive visualizations. 🧮",
     chat_interface: "CHAT INTERFACE",
     tagline: "Step-by-step solutions with interactive visualizations",
     solver_version: "LOGICIA SOLVER v1.0",
@@ -56,7 +57,8 @@ const UI_STRINGS = {
     error_backend: "⚠️ Error: {msg}. Please ensure the backend is running.",
   },
   te: {
-    welcome: "స్వాగతం! నేను మీ **AI గణిత సహాయకుడిని**. ఏదైనా గణిత సమస్యను నమోదు చేయండి మరియు నేను దానిని ఇంటరాక్టివ్ విజువలైజేషన్‌లతో దశలవారీగా పరిష్కరిస్తాను. 🧮",
+    welcome:
+      "స్వాగతం! నేను మీ **AI గణిత సహాయకుడిని**. ఏదైనా గణిత సమస్యను నమోదు చేయండి మరియు నేను దానిని ఇంటరాక్టివ్ విజువలైజేషన్‌లతో దశలవారీగా పరిష్కరిస్తాను. 🧮",
     chat_interface: "చాట్ ఇంటర్ఫేస్",
     tagline: "ఇంటరాక్టివ్ విజువలైజేషన్లతో దశలవారీ పరిష్కారాలు",
     solver_version: "లాజిషియా సాల్వర్ v1.0",
@@ -64,8 +66,9 @@ const UI_STRINGS = {
     neural_comp: "న్యూరల్ కంప్యూటేషన్ పురోగతిలో ఉంది...",
     tutor_suggestions: "ట్యూటర్ సూచనలు",
     placeholder: "ఒక ప్రశ్న అడగండి (ఉదా., x² + 2x + 1 సాధించండి)...",
-    error_backend: "⚠️ లోపం: {msg}. దయచేసి బ్యాకెండ్ నడుస్తుందో లేదో తనిఖీ చేయండి.",
-  }
+    error_backend:
+      "⚠️ లోపం: {msg}. దయచేసి బ్యాకెండ్ నడుస్తుందో లేదో తనిఖీ చేయండి.",
+  },
 };
 
 /* ─── Component ──────────────────────────────────────────────────────────── */
@@ -87,11 +90,11 @@ const loadHistory = (lang: "en" | "te"): Message[] => {
 
 const ChatInterface = () => {
   const [language, setLanguage] = useState<"en" | "te">(
-    () => (localStorage.getItem(LANG_KEY) as "en" | "te") ?? "en"
+    () => (localStorage.getItem(LANG_KEY) as "en" | "te") ?? "en",
   );
-  const [messages, setMessages] = useState<Message[]>(() => loadHistory(
-    (localStorage.getItem(LANG_KEY) as "en" | "te") ?? "en"
-  ));
+  const [messages, setMessages] = useState<Message[]>(() =>
+    loadHistory((localStorage.getItem(LANG_KEY) as "en" | "te") ?? "en"),
+  );
 
   // Persist language and reset welcome message on language switch
   const handleLanguageChange = (lang: "en" | "te") => {
@@ -99,8 +102,8 @@ const ChatInterface = () => {
     localStorage.setItem(LANG_KEY, lang);
     setLanguage(lang);
     // Update the first (welcome) message to the new language
-    setMessages(prev => {
-      const rest = prev.filter(m => m.id !== 0);
+    setMessages((prev) => {
+      const rest = prev.filter((m) => m.id !== 0);
       return [getInitialMessage(lang), ...rest];
     });
   };
@@ -145,7 +148,7 @@ const ChatInterface = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("logicia_token") || ""}`,
+            Authorization: `Bearer ${localStorage.getItem("logicia_token") || ""}`,
           },
           body: JSON.stringify({
             content: trimmedText,
@@ -159,14 +162,14 @@ const ChatInterface = () => {
         }
 
         const data = await response.json();
-        
+
         const aiMsg: Message = {
           id: data.message.id,
           role: "ai",
           content: data.message.content,
           solution: data.message.solution,
         };
-        
+
         setMessages((prev) => [...prev, aiMsg]);
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : String(err);
@@ -175,7 +178,10 @@ const ChatInterface = () => {
           {
             id: Date.now() + 1,
             role: "ai",
-            content: UI_STRINGS[language].error_backend.replace("{msg}", errorMessage),
+            content: UI_STRINGS[language].error_backend.replace(
+              "{msg}",
+              errorMessage,
+            ),
           },
         ]);
       } finally {
@@ -231,13 +237,36 @@ const ChatInterface = () => {
     return (
       <>
         {tokens.map((token, i) => {
-          if (token.type === "bold") return <strong key={i} className="text-primary font-semibold">{token.value}</strong>;
-          if (token.type === "math") return <code key={i} className="font-mono text-primary bg-black/30 px-1.5 py-0.5 rounded text-[11px] sm:text-xs border border-primary/15">{token.value}</code>;
+          if (token.type === "bold")
+            return (
+              <strong key={i} className="text-primary font-semibold">
+                {token.value}
+              </strong>
+            );
+          if (token.type === "math")
+            return (
+              <code
+                key={i}
+                className="font-mono text-primary bg-black/30 px-1.5 py-0.5 rounded text-[11px] sm:text-xs border border-primary/15"
+              >
+                {token.value}
+              </code>
+            );
           return (
             <span key={i}>
               {token.value.split(/(⇒|∴)/).map((seg, j) => {
-                if (seg === "⇒") return <span key={j} className="text-primary font-bold mx-1">⇒</span>;
-                if (seg === "∴") return <span key={j} className="text-emerald-400 font-bold mr-1">∴</span>;
+                if (seg === "⇒")
+                  return (
+                    <span key={j} className="text-primary font-bold mx-1">
+                      ⇒
+                    </span>
+                  );
+                if (seg === "∴")
+                  return (
+                    <span key={j} className="text-emerald-400 font-bold mr-1">
+                      ∴
+                    </span>
+                  );
                 return <span key={j}>{seg}</span>;
               })}
             </span>
@@ -262,10 +291,19 @@ const ChatInterface = () => {
             const isShort = /💡|shortcut|షార్ట్/i.test(hText);
             const isGiven = /given|ఇవ్వబడింది/i.test(hText);
             let cls = "text-primary border-primary/30 bg-primary/5";
-            if (isConcl) cls = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5";
-            if (isShort) cls = "text-amber-400 border-amber-500/30 bg-amber-500/5";
+            if (isConcl)
+              cls = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5";
+            if (isShort)
+              cls = "text-amber-400 border-amber-500/30 bg-amber-500/5";
             if (isGiven) cls = "text-sky-400 border-sky-500/30 bg-sky-500/5";
-            return <div key={pIdx} className={`font-display text-[11px] sm:text-xs tracking-wider uppercase px-3 py-2 rounded-lg border ${cls} mt-2`}>{hText}</div>;
+            return (
+              <div
+                key={pIdx}
+                className={`font-display text-[11px] sm:text-xs tracking-wider uppercase px-3 py-2 rounded-lg border ${cls} mt-2`}
+              >
+                {hText}
+              </div>
+            );
           }
 
           const lines = trimmedPara.split("\n");
@@ -276,27 +314,77 @@ const ChatInterface = () => {
                 if (!tl) return null;
 
                 const ilh = tl.match(/^\*\*(.+?)\*\*:?\s*$/);
-                if (ilh && (tl === `**${ilh[1]}**` || tl === `**${ilh[1]}**:`)) {
+                if (
+                  ilh &&
+                  (tl === `**${ilh[1]}**` || tl === `**${ilh[1]}**:`)
+                ) {
                   const hText = ilh[1];
                   const isConcl = /∴|conclusion|నిర్ణయం/i.test(hText);
                   const isShort = /💡|shortcut|షార్ట్/i.test(hText);
                   const isGiven = /given|ఇవ్వబడింది/i.test(hText);
                   let cls = "text-primary border-primary/30 bg-primary/5";
-                  if (isConcl) cls = "text-emerald-400 border-emerald-500/30 bg-emerald-500/5";
-                  if (isShort) cls = "text-amber-400 border-amber-500/30 bg-amber-500/5";
-                  if (isGiven) cls = "text-sky-400 border-sky-500/30 bg-sky-500/5";
-                  return <div key={lIdx} className={`font-display text-[11px] sm:text-xs tracking-wider uppercase px-3 py-2 rounded-lg border ${cls} mt-2`}>{hText}</div>;
+                  if (isConcl)
+                    cls =
+                      "text-emerald-400 border-emerald-500/30 bg-emerald-500/5";
+                  if (isShort)
+                    cls = "text-amber-400 border-amber-500/30 bg-amber-500/5";
+                  if (isGiven)
+                    cls = "text-sky-400 border-sky-500/30 bg-sky-500/5";
+                  return (
+                    <div
+                      key={lIdx}
+                      className={`font-display text-[11px] sm:text-xs tracking-wider uppercase px-3 py-2 rounded-lg border ${cls} mt-2`}
+                    >
+                      {hText}
+                    </div>
+                  );
                 }
                 if (/^[-•]\s/.test(tl)) {
-                  return <div key={lIdx} className="flex gap-2 items-start pl-1"><span className="text-primary mt-1 flex-shrink-0">▸</span><span className="flex-1"><InlineRenderer text={tl.replace(/^[-•]\s*/, "")} /></span></div>;
+                  return (
+                    <div key={lIdx} className="flex gap-2 items-start pl-1">
+                      <span className="text-primary mt-1 flex-shrink-0">▸</span>
+                      <span className="flex-1">
+                        <InlineRenderer text={tl.replace(/^[-•]\s*/, "")} />
+                      </span>
+                    </div>
+                  );
                 }
                 if (/^\\\[/.test(tl) || /\\\]$/.test(tl)) {
-                  const mc = tl.replace(/^\\\[\s*/, "").replace(/\s*\\\]$/, "").trim();
-                  return mc ? <div key={lIdx} className="font-mono text-xs sm:text-sm px-3 py-2 rounded-lg bg-black/40 border border-primary/20 text-primary my-1 overflow-x-auto">{mc}</div> : null;
+                  const mc = tl
+                    .replace(/^\\\[\s*/, "")
+                    .replace(/\s*\\\]$/, "")
+                    .trim();
+                  return mc ? (
+                    <div
+                      key={lIdx}
+                      className="font-mono text-xs sm:text-sm px-3 py-2 rounded-lg bg-black/40 border border-primary/20 text-primary my-1 overflow-x-auto"
+                    >
+                      {mc}
+                    </div>
+                  ) : null;
                 }
-                if (/⇒/.test(tl)) return <div key={lIdx} className="flex gap-2 items-baseline pl-2"><span className="font-mono text-xs sm:text-sm text-foreground leading-relaxed"><InlineRenderer text={tl} /></span></div>;
-                if (/^∴/.test(tl)) return <div key={lIdx} className="px-3 py-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-300 font-semibold text-xs sm:text-sm leading-relaxed mt-1"><InlineRenderer text={tl} /></div>;
-                return <p key={lIdx} className="text-xs sm:text-sm leading-relaxed"><InlineRenderer text={tl} /></p>;
+                if (/⇒/.test(tl))
+                  return (
+                    <div key={lIdx} className="flex gap-2 items-baseline pl-2">
+                      <span className="font-mono text-xs sm:text-sm text-foreground leading-relaxed">
+                        <InlineRenderer text={tl} />
+                      </span>
+                    </div>
+                  );
+                if (/^∴/.test(tl))
+                  return (
+                    <div
+                      key={lIdx}
+                      className="px-3 py-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-300 font-semibold text-xs sm:text-sm leading-relaxed mt-1"
+                    >
+                      <InlineRenderer text={tl} />
+                    </div>
+                  );
+                return (
+                  <p key={lIdx} className="text-xs sm:text-sm leading-relaxed">
+                    <InlineRenderer text={tl} />
+                  </p>
+                );
               })}
             </div>
           );

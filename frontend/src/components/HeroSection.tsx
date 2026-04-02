@@ -35,14 +35,14 @@ const HeroSection = () => {
       />
 
       {/* 🔳 Mathematical Grid Overlay */}
-      <div 
+      <div
         className="absolute inset-0 z-[1] opacity-[0.05]"
         style={{
           backgroundImage: `
             linear-gradient(to right, hsl(120 100% 54% / 0.5) 1px, transparent 1px),
             linear-gradient(to bottom, hsl(120 100% 54% / 0.5) 1px, transparent 1px)
           `,
-          backgroundSize: '40px 40px'
+          backgroundSize: "40px 40px",
         }}
       />
 
@@ -53,16 +53,18 @@ const HeroSection = () => {
       <div
         className="absolute top-1/4 -left-20 w-[400px] h-[400px] sm:w-[800px] sm:h-[800px] rounded-full blur-[120px] animate-pulse-glow z-[2]"
         style={{
-          background: "radial-gradient(circle, hsl(120 100% 54% / 0.08) 0%, transparent 70%)",
-          animationDuration: '10s'
+          background:
+            "radial-gradient(circle, hsl(120 100% 54% / 0.08) 0%, transparent 70%)",
+          animationDuration: "10s",
         }}
       />
       <div
         className="absolute bottom-1/4 -right-20 w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] rounded-full blur-[100px] animate-pulse-glow z-[2]"
         style={{
-          background: "radial-gradient(circle, hsl(200 100% 54% / 0.05) 0%, transparent 70%)",
-          animationDuration: '12s',
-          animationDelay: '1s'
+          background:
+            "radial-gradient(circle, hsl(200 100% 54% / 0.05) 0%, transparent 70%)",
+          animationDuration: "12s",
+          animationDelay: "1s",
         }}
       />
 
@@ -71,7 +73,7 @@ const HeroSection = () => {
         {/* Large Rotating Ring */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] sm:w-[900px] sm:h-[900px] border border-primary/[0.03] rounded-full animate-spin-slow" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[700px] sm:h-[700px] border border-primary/[0.02] rounded-full animate-reverse-spin-slow" />
-        
+
         {/* Floating Accents */}
         <div className="absolute top-[20%] left-[15%] w-24 h-24 border border-primary/10 rounded-3xl rotate-12 animate-float opacity-20" />
         <div className="absolute bottom-[30%] right-[10%] w-32 h-32 border border-primary/5 rounded-full animate-float-delayed opacity-20" />
@@ -79,9 +81,18 @@ const HeroSection = () => {
 
       {/* ✨ Micro-Flares (Interactive feel) */}
       <div className="absolute top-[35%] left-[10%] sm:left-[18%] w-1 sm:w-2 h-1 sm:h-2 rounded-full bg-primary/40 animate-pulse-glow z-[4]" />
-      <div className="absolute top-[38%] right-[10%] sm:right-[18%] w-1 sm:w-2 h-1 sm:h-2 rounded-full bg-primary/40 animate-pulse-glow z-[4]" style={{ animationDelay: "0.5s" }} />
-      <div className="absolute top-[60%] left-[20%] sm:left-[22%] w-1 h-1 rounded-full bg-primary/20 animate-pulse-glow z-[4]" style={{ animationDelay: "1s" }} />
-      <div className="absolute top-[52%] right-[15%] sm:right-[22%] w-1 h-1 rounded-full bg-primary/20 animate-pulse-glow z-[4]" style={{ animationDelay: "1.5s" }} />
+      <div
+        className="absolute top-[38%] right-[10%] sm:right-[18%] w-1 sm:w-2 h-1 sm:h-2 rounded-full bg-primary/40 animate-pulse-glow z-[4]"
+        style={{ animationDelay: "0.5s" }}
+      />
+      <div
+        className="absolute top-[60%] left-[20%] sm:left-[22%] w-1 h-1 rounded-full bg-primary/20 animate-pulse-glow z-[4]"
+        style={{ animationDelay: "1s" }}
+      />
+      <div
+        className="absolute top-[52%] right-[15%] sm:right-[22%] w-1 h-1 rounded-full bg-primary/20 animate-pulse-glow z-[4]"
+        style={{ animationDelay: "1.5s" }}
+      />
 
       {/* Content */}
       <div className="relative z-10 text-center px-4 w-full flex flex-col items-center animate-fade-in-up mt-10 sm:mt-0">

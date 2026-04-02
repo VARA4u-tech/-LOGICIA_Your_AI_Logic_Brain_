@@ -1319,7 +1319,7 @@ const Chat = () => {
         setIsTyping(false);
       }
     },
-    [activeId, isTyping, language, t.error_backend],
+    [activeId, isTyping, language, t.error_backend, cooldown],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
