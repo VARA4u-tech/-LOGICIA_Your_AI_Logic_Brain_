@@ -8,8 +8,8 @@ numpy==2.2.0
 
 # ── Database ───────────────────────────────────────────────────
 sqlalchemy==2.0.36
-motor==3.6.0              # async MongoDB driver
-pymongo[srv]==4.10.1      # required for Atlas srv connections
+motor>=3.6.0              # async MongoDB driver
+pymongo[srv]>=4.9,<4.10   # compatible with motor 3.6.x and supports Atlas srv
 
 # ── Auth ───────────────────────────────────────────────────────
 python-jose[cryptography]==3.3.0   # JWT
