@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const subtitles = [
-  "Your AI Math Brain.",
-  "Step-by-Step Solutions.",
-  "Instant Complex Calculus.",
-  "Zero Guesswork. Just Logic.",
+  "Your AI Exam Brain.",
+  "UPSC · SSC · Banking · Railways.",
+  "GK, Reasoning & Math — All Exams.",
+  "Think Smart. Score Higher.",
+  "Step-by-Step. Zero Guesswork.",
 ];
 
 const HeroSection = () => {
