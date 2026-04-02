@@ -29,7 +29,7 @@ export default function HeroSection() {
       <img
         src={heroBg}
         alt=""
-        className="absolute inset-0 w-full h-full object-cover opacity-[0.65] mix-blend-luminosity scale-110 animate-slow-pan"
+        className="absolute inset-0 w-full h-full object-cover opacity-[0.7] mix-blend-luminosity scale-110 animate-slow-pan"
         width={1920}
         height={1080}
       />
@@ -51,28 +51,28 @@ export default function HeroSection() {
 
       {/* 🔮 Dynamic Ambient Glows */}
       <div
-        className="absolute top-1/4 -left-20 w-[400px] h-[400px] sm:w-[800px] sm:h-[800px] rounded-full blur-[120px] animate-pulse-glow z-[2]"
+        className="absolute top-1/4 -left-20 w-[400px] h-[400px] sm:w-[900px] sm:h-[900px] rounded-full blur-[120px] animate-pulse-glow z-[2]"
         style={{
           background:
-            "radial-gradient(circle, hsl(120 100% 54% / 0.12) 0%, transparent 70%)",
+            "radial-gradient(circle, hsl(120 100% 54% / 0.15) 0%, transparent 70%)",
           animationDuration: "10s",
         }}
       />
       <div
-        className="absolute bottom-1/4 -right-20 w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] rounded-full blur-[100px] animate-pulse-glow z-[2]"
+        className="absolute bottom-1/4 -right-20 w-[300px] h-[300px] sm:w-[700px] sm:h-[700px] rounded-full blur-[100px] animate-pulse-glow z-[2]"
         style={{
           background:
-            "radial-gradient(circle, hsl(200 100% 54% / 0.12) 0%, transparent 70%)",
+            "radial-gradient(circle, hsl(200 100% 54% / 0.15) 0%, transparent 70%)",
           animationDuration: "12s",
           animationDelay: "1s",
         }}
       />
       {/* 🔮 Center Mobile/Tablet Glow - Added for better background fill */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] sm:w-[600px] sm:h-[600px] rounded-full blur-[110px] animate-pulse-glow z-[2] lg:hidden"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] sm:w-[700px] sm:h-[700px] rounded-full blur-[110px] animate-pulse-glow z-[2] lg:hidden"
         style={{
           background:
-            "radial-gradient(circle, hsl(120 100% 54% / 0.1) 0%, transparent 75%)",
+            "radial-gradient(circle, hsl(120 100% 54% / 0.12) 0%, transparent 75%)",
           animationDuration: "15s",
         }}
       />
