@@ -22,6 +22,7 @@ import {
   Zap,
   BookOpen,
   Globe,
+  LogIn,
 } from "lucide-react";
 import {
   LineChart,
@@ -1099,7 +1100,7 @@ const titleFromMessage = (text: string) =>
 /* ═══════════════════════════════════════════════════════════════
    MAIN CHAT PAGE
 ═══════════════════════════════════════════════════════════════ */
-import { useGoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin, TokenResponse } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
@@ -1118,7 +1119,7 @@ const Chat = () => {
 
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+  const handleGoogleSuccess = async (tokenResponse: TokenResponse) => {
     if (isLoggingIn) return;
     setIsLoggingIn(true);
     try {
@@ -1127,7 +1128,7 @@ const Chat = () => {
       const res = await fetch(`${backendUrl}/api/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credential: credentialResponse.credential }),
+        body: JSON.stringify({ access_token: tokenResponse.access_token }),
       });
 
       if (res.ok) {
@@ -1392,7 +1393,7 @@ const Chat = () => {
         setIsTyping(false);
       }
     },
-    [activeId, isTyping, language, t.error_backend, cooldown],
+    [activeId, isTyping, language, t.error_backend, t.error_rate_limit, cooldown, conversations],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
