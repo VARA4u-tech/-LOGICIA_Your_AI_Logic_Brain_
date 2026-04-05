@@ -22,15 +22,32 @@ async def google_login(
     request: Request,
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> Any:
-    # 1. Verify token
+    # 1. Verify token (handle both ID Token or Access Token)
+    email = None
     try:
-        id_info = id_token.verify_oauth2_token(
-            token_in["credential"],
-            requests.Request(),
-            settings.GOOGLE_CLIENT_ID
-        )
-        
-        email = id_info.get("email")
+        if "credential" in token_in:
+            # ID Token flow (Standard Button)
+            id_info = id_token.verify_oauth2_token(
+                token_in["credential"],
+                requests.Request(),
+                settings.GOOGLE_CLIENT_ID
+            )
+            email = id_info.get("email")
+        elif "access_token" in token_in:
+            # Access Token flow (Custom Button)
+            import httpx
+            async with httpx.AsyncClient() as client:
+                res = await client.get(
+                    "https://www.googleapis.com/oauth2/v3/userinfo",
+                    headers={"Authorization": f"Bearer {token_in['access_token']}"}
+                )
+                if res.status_code != 200:
+                    raise ValueError("Failed to fetch user info from Google")
+                user_data = res.json()
+                email = user_data.get("email")
+        else:
+            raise ValueError("No token provided")
+            
         if not email:
             raise ValueError("Token has no email")
             

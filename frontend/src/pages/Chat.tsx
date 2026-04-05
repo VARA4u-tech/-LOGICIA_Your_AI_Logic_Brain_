@@ -1099,9 +1099,11 @@ const titleFromMessage = (text: string) =>
 /* ═══════════════════════════════════════════════════════════════
    MAIN CHAT PAGE
 ═══════════════════════════════════════════════════════════════ */
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return !!localStorage.getItem("logicia_token");
   });
@@ -1136,6 +1138,10 @@ const Chat = () => {
           setCurrentUser(data.user);
         }
         setIsAuthenticated(true);
+        // Requirement: Fast and intuitive entry. Start new chat if empty.
+        if (conversations.length === 0 || (conversations.length === 1 && conversations[0].messages.length === 0)) {
+           newConversation();
+        }
       }
     } catch (err) {
       console.error("Login failed:", err);
@@ -1143,6 +1149,11 @@ const Chat = () => {
       setIsLoggingIn(false);
     }
   };
+
+  const login = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError: () => console.log("Login Failed"),
+  });
 
   const handleLogout = () => {
     localStorage.removeItem("logicia_token");
@@ -1729,13 +1740,16 @@ const Chat = () => {
                 {t.login_subtitle}
               </p>
             </div>
-            <div className={`flex justify-center pt-4 transition-all duration-300 ${isLoggingIn ? "opacity-50 pointer-events-none grayscale" : ""}`}>
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => console.log("Login Failed")}
-                theme="filled_black"
-                shape="pill"
-              />
+            <div
+              className={`flex justify-center pt-4 transition-all duration-300 ${isLoggingIn ? "opacity-30 pointer-events-none grayscale" : ""}`}
+            >
+              <button
+                onClick={() => login()}
+                className="w-full flex items-center justify-center gap-3 px-8 py-3.5 rounded-2xl bg-primary text-primary-foreground font-display text-xs tracking-[0.2em] font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/20 hover:neon-box"
+              >
+                <LogIn size={16} />
+                CONTINUE WITH GOOGLE
+              </button>
             </div>
             {isLoggingIn && (
               <p className="text-[10px] font-display tracking-[0.2em] text-primary animate-pulse">
