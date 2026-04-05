@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from app.limiter import limiter
 
 from app.database import get_db
 from app.schemas.schemas import ChatRequest, ChatResponse, MessageSchema, SolutionData
@@ -12,10 +13,11 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 
 GUEST_USER_ID = "global-guest-id"
 
-
 @router.post("/", response_model=ChatResponse)
+@limiter.limit("10/minute")
 async def chat_interaction(
     req: ChatRequest,
+    request: Request,
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     now = datetime.now(timezone.utc)

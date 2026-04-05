@@ -8,6 +8,10 @@ from fastapi.responses import JSONResponse
 from app.config import settings
 from app.routers import auth, chat
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from app.limiter import limiter
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     from app.database import get_mongodb_client
@@ -20,6 +24,10 @@ app = FastAPI(
     version="2.0.0",
     lifespan=lifespan,
 )
+
+# ── Rate Limiter Registration ───────────────────────────────────
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # ── CORS — must be registered FIRST so headers appear even on errors ──────────
 ALLOWED_ORIGINS = settings.FRONTEND_ORIGINS or [

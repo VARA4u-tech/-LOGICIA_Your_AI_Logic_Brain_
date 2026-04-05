@@ -1,8 +1,9 @@
 import uuid
 from typing import Any
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime, timezone
+from app.limiter import limiter
 
 from app.database import get_db
 from app.schemas.schemas import UserCreate, UserResponse, Token
@@ -15,7 +16,12 @@ from google.auth.transport import requests
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/google", response_model=Token)
-async def google_login(token_in: dict, db: AsyncIOMotorDatabase = Depends(get_db)) -> Any:
+@limiter.limit("10/minute")
+async def google_login(
+    token_in: dict,
+    request: Request,
+    db: AsyncIOMotorDatabase = Depends(get_db)
+) -> Any:
     # 1. Verify token
     try:
         id_info = id_token.verify_oauth2_token(
@@ -64,7 +70,12 @@ async def google_login(token_in: dict, db: AsyncIOMotorDatabase = Depends(get_db
     }
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(user_in: UserCreate, db: AsyncIOMotorDatabase = Depends(get_db)) -> Any:
+@limiter.limit("5/minute")
+async def register(
+    user_in: UserCreate,
+    request: Request,
+    db: AsyncIOMotorDatabase = Depends(get_db)
+) -> Any:
     # Check if username or email exists
     existing = await db["users"].find_one({
         "$or": [{"email": user_in.email}, {"username": user_in.username}]
@@ -96,7 +107,12 @@ async def register(user_in: UserCreate, db: AsyncIOMotorDatabase = Depends(get_d
     )
 
 @router.post("/token", response_model=Token)
-async def login(user_in: UserCreate, db: AsyncIOMotorDatabase = Depends(get_db)) -> Any:
+@limiter.limit("5/minute")
+async def login(
+    user_in: UserCreate,
+    request: Request,
+    db: AsyncIOMotorDatabase = Depends(get_db)
+) -> Any:
     user = await db["users"].find_one({"email": user_in.email})
     
     if not user or not verify_password(user_in.password, user["hashed_password"]):

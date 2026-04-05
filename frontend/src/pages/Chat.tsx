@@ -114,6 +114,7 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     new_conv_title: "New Conversation",
     login_title: "Welcome to Logicia",
     login_subtitle: "Please sign in to start solving with your personal AI math brain.",
+    error_rate_limit: "Slow down! You've reached your message limit. Please wait a minute before sending another.",
   },
   te: {
     new_conversation: "కొత్త సంభాషణ",
@@ -142,6 +143,7 @@ const UI_STRINGS: Record<Language, Record<string, string>> = {
     new_conv_title: "కొత్త సంభాషణ",
     login_title: "లాజిషియాకు స్వాగతం",
     login_subtitle: "మీ వ్యక్తిగత AI గణిత మేధస్సుతో ప్రారంభించడానికి దయచేసి సైన్ ఇన్ చేయండి.",
+    error_rate_limit: "వేగం తగ్గించండి! మీరు మీ సందేశ పరిమితిని మించిపోయారు. దయచేసి మరో సందేశం పంపే ముందు కాసేపు వేచి ఉండండి.",
   },
 };
 
@@ -1112,7 +1114,11 @@ const Chat = () => {
     return saved ? JSON.parse(saved) : null;
   });
 
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    if (isLoggingIn) return;
+    setIsLoggingIn(true);
     try {
       const backendUrl =
         import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
@@ -1133,6 +1139,8 @@ const Chat = () => {
       }
     } catch (err) {
       console.error("Login failed:", err);
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -1329,6 +1337,10 @@ const Chat = () => {
           setActiveId(data.conversation_id);
           setIsTyping(false);
           return;
+        }
+
+        if (res.status === 429) {
+          throw new Error(t.error_rate_limit || "Too many requests. Please wait a moment before trying again.");
         }
 
         if (!res.ok) throw new Error("Backend error");
@@ -1717,7 +1729,7 @@ const Chat = () => {
                 {t.login_subtitle}
               </p>
             </div>
-            <div className="flex justify-center pt-4">
+            <div className={`flex justify-center pt-4 transition-all duration-300 ${isLoggingIn ? "opacity-50 pointer-events-none grayscale" : ""}`}>
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={() => console.log("Login Failed")}
@@ -1725,6 +1737,11 @@ const Chat = () => {
                 shape="pill"
               />
             </div>
+            {isLoggingIn && (
+              <p className="text-[10px] font-display tracking-[0.2em] text-primary animate-pulse">
+                VERIFYING IDENTITY...
+              </p>
+            )}
           </div>
         </div>
       )}
