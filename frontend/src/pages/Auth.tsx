@@ -4,9 +4,14 @@ import { useGoogleLogin, TokenResponse } from "@react-oauth/google";
 import { Bot, Cpu, Sparkles, LogIn, ShieldCheck, ArrowRight, BrainCircuit } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
+interface LocationState {
+  from?: string;
+}
+
 const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const state = location.state as LocationState;
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -36,7 +41,7 @@ const Auth = () => {
         setIsSuccess(true);
         // Seamless redirect to previous page or chat
         setTimeout(() => {
-          const from = (location.state as any)?.from || "/chat";
+          const from = state?.from || "/chat";
           navigate(from);
         }, 1200);
       }
