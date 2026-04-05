@@ -36,6 +36,8 @@ import {
 import AnimatedBackground from "@/components/AnimatedBackground";
 import html2canvas from "html2canvas";
 import { Share } from "lucide-react";
+import "katex/dist/katex.min.css";
+import { BlockMath } from "react-katex";
 
 /* ═══════════════════════════════════════════════════════════════
    TYPES
@@ -256,8 +258,8 @@ const CopyButton = ({ text }: { text: string }) => {
 
 const MathBlock = ({ expr }: { expr: string }) => (
   <div className="flex items-center gap-3 my-2 min-w-0 group/math">
-    <div className="font-mono text-sm sm:text-base px-4 py-2 rounded-xl bg-black/40 border border-primary/20 text-primary inline-block overflow-x-auto max-w-full whitespace-nowrap shadow-lg group-hover/math:border-primary/40 transition-all duration-300">
-      {expr}
+    <div className="math-renderer px-4 py-2 rounded-xl bg-black/40 border border-primary/20 text-primary inline-block overflow-x-auto max-w-full shadow-lg group-hover/math:border-primary/40 transition-all duration-300">
+      <BlockMath math={expr} />
     </div>
     <CopyButton text={expr} />
   </div>
@@ -526,9 +528,7 @@ const SolutionPanel = ({
                 </p>
 
                 <div className="p-4 sm:p-5 rounded-2xl bg-black/40 border border-primary/10 group-hover/step:border-primary/30 transition-all duration-500 shadow-xl overflow-x-auto">
-                  <code className="text-primary font-mono text-base sm:text-lg">
-                    {step.math}
-                  </code>
+                  <MathBlock expr={step.math} />
                 </div>
 
                 {step.explanation && (
@@ -565,9 +565,9 @@ const SolutionPanel = ({
               <p className="font-display text-[11px] tracking-[0.4em] mb-2 uppercase text-primary/40 font-black">
                 {t.final_answer}
               </p>
-              <p className="font-mono text-2xl sm:text-3xl lg:text-4xl font-black text-primary drop-shadow-[0_0_12px_rgba(18,255,18,0.3)] truncate">
-                {finalAnswer}
-              </p>
+              <div className="font-mono text-2xl sm:text-3xl lg:text-4xl font-black text-primary drop-shadow-[0_0_12px_rgba(18,255,18,0.3)] truncate">
+                <MathBlock expr={finalAnswer} />
+              </div>
             </div>
           </div>
           <button
