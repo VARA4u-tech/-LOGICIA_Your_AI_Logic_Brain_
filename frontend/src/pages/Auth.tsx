@@ -105,18 +105,7 @@ const Auth = () => {
               </ul>
             </div>
             
-            <div className="relative z-10 mt-12 pt-12 border-t border-white/5">
-              <div className="flex -space-x-3 mb-4">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-muted overflow-hidden">
-                    <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" />
-                  </div>
-                ))}
-              </div>
-              <p className="text-[10px] font-display tracking-[0.2em] text-muted-foreground uppercase">
-                TRUSTED BY <span className="text-primary font-black">20,000+</span> STUDENTS ACROSS INDIA
-              </p>
-            </div>
+
 
             {/* Subtle Tech Circle Animation */}
             <div className="absolute bottom-[-100px] left-[-100px] w-80 h-80 rounded-full border border-primary/10 animate-spin-slow" />
