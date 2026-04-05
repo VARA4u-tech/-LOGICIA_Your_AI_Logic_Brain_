@@ -1161,6 +1161,7 @@ const Chat = () => {
     localStorage.removeItem("logicia_user");
     setIsAuthenticated(false);
     setCurrentUser(null);
+    navigate("/");
   };
 
   const [conversations, setConversations] =
