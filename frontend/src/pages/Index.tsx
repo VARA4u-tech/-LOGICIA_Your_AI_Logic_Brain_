@@ -129,7 +129,7 @@ const Index = () => {
           </div>
 
           {/* Minimal Links */}
-          <div className="mt-12 flex items-center gap-8 text-[9px] font-display tracking-[0.25em] text-muted-foreground/50">
+          <div className="mt-12 flex items-center gap-6 sm:gap-8 flex-wrap justify-center text-[9px] font-display tracking-[0.25em] text-muted-foreground/50">
             <Link
               to="/login"
               className="hover:text-primary transition-colors hover:tracking-[0.35em] duration-300"
@@ -142,6 +142,22 @@ const Index = () => {
               className="hover:text-primary transition-colors hover:tracking-[0.35em] duration-300"
             >
               DOCS
+            </Link>
+            <span className="w-1 h-1 rounded-full bg-border/40" />
+            <Link
+              to="/docs"
+              state={{ section: "terms" }}
+              className="hover:text-primary transition-colors hover:tracking-[0.35em] duration-300"
+            >
+              TERMS
+            </Link>
+            <span className="w-1 h-1 rounded-full bg-border/40" />
+            <Link
+              to="/docs"
+              state={{ section: "privacy" }}
+              className="hover:text-primary transition-colors hover:tracking-[0.35em] duration-300"
+            >
+              PRIVACY
             </Link>
           </div>
         </div>
