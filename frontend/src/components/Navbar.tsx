@@ -29,35 +29,6 @@ const Navbar = () => {
 
   const closeMobile = () => setOpen(false);
 
-  const handleGoogleSuccess = async (tokenResponse: TokenResponse) => {
-    try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
-      const res = await fetch(`${backendUrl}/api/auth/google`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ access_token: tokenResponse.access_token }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("logicia_token", data.access_token);
-        if (data.user) {
-          localStorage.setItem("logicia_user", JSON.stringify(data.user));
-        }
-        setIsAuthenticated(true);
-        // Seamless redirect to chat
-        navigate("/chat");
-      }
-    } catch (err) {
-      console.error("Login failed:", err);
-    }
-  };
-
-  const login = useGoogleLogin({
-    onSuccess: handleGoogleSuccess,
-    onError: () => console.log("Login Failed"),
-  });
-
   const handleLogout = () => {
     localStorage.removeItem("logicia_token");
     localStorage.removeItem("logicia_user");
@@ -122,13 +93,13 @@ const Navbar = () => {
               </button>
             </>
           ) : (
-            <button
-              onClick={() => login()}
+            <Link
+              to="/login"
               className="flex items-center gap-2 font-display text-xs tracking-[0.2em] px-5 py-2 rounded-xl border border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/60 transition-all duration-200 active:scale-95"
             >
               <LogIn size={13} />
               LOGIN
-            </button>
+            </Link>
           )}
         </div>
 
@@ -144,13 +115,13 @@ const Navbar = () => {
               CHAT
             </Link>
           ) : (
-            <button
-              onClick={() => login()}
+            <Link
+              to="/login"
               className="flex items-center gap-1.5 font-display text-[10px] tracking-wider text-primary border border-primary/20 bg-primary/5 px-3 py-1.5 rounded-lg transition-all"
             >
               <LogIn size={11} />
               LOGIN
-            </button>
+            </Link>
           )}
           <button
             onClick={() => setOpen((p) => !p)}

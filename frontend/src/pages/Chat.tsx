@@ -1100,7 +1100,6 @@ const titleFromMessage = (text: string) =>
 /* ═══════════════════════════════════════════════════════════════
    MAIN CHAT PAGE
 ═══════════════════════════════════════════════════════════════ */
-import { useGoogleLogin, TokenResponse } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
@@ -1117,44 +1116,14 @@ const Chat = () => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  const handleGoogleSuccess = async (tokenResponse: TokenResponse) => {
-    if (isLoggingIn) return;
-    setIsLoggingIn(true);
-    try {
-      const backendUrl =
-        import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
-      const res = await fetch(`${backendUrl}/api/auth/google`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ access_token: tokenResponse.access_token }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("logicia_token", data.access_token);
-        if (data.user) {
-          localStorage.setItem("logicia_user", JSON.stringify(data.user));
-          setCurrentUser(data.user);
-        }
-        setIsAuthenticated(true);
-        // Requirement: Fast and intuitive entry. Start new chat if empty.
-        if (conversations.length === 0 || (conversations.length === 1 && conversations[0].messages.length === 0)) {
-           newConversation();
-        }
-      }
-    } catch (err) {
-      console.error("Login failed:", err);
-    } finally {
-      setIsLoggingIn(false);
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login", { state: { from: "/chat" } });
     }
-  };
+  }, [isAuthenticated, navigate]);
 
-  const login = useGoogleLogin({
-    onSuccess: handleGoogleSuccess,
-    onError: () => console.log("Login Failed"),
-  });
+
 
   const handleLogout = () => {
     localStorage.removeItem("logicia_token");
@@ -1727,40 +1696,6 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* Login Overlay / Gate */}
-      {!isAuthenticated && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-          <div className="glass-strong border border-primary/30 p-8 sm:p-12 rounded-[2.5rem] max-w-sm w-full text-center space-y-8 animate-in zoom-in-95 fade-in duration-500">
-            <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto shadow-2xl shadow-primary/20">
-              <Bot size={40} className="text-primary" />
-            </div>
-            <div className="space-y-3">
-              <h1 className="font-display text-xl sm:text-2xl font-black tracking-widest text-primary neon-text uppercase">
-                {t.login_title}
-              </h1>
-              <p className="font-body text-[13px] sm:text-sm text-muted-foreground/80 leading-relaxed">
-                {t.login_subtitle}
-              </p>
-            </div>
-            <div
-              className={`flex justify-center pt-4 transition-all duration-300 ${isLoggingIn ? "opacity-30 pointer-events-none grayscale" : ""}`}
-            >
-              <button
-                onClick={() => login()}
-                className="w-full flex items-center justify-center gap-3 px-8 py-3.5 rounded-2xl bg-primary text-primary-foreground font-display text-xs tracking-[0.2em] font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/20 hover:neon-box"
-              >
-                <LogIn size={16} />
-                CONTINUE WITH GOOGLE
-              </button>
-            </div>
-            {isLoggingIn && (
-              <p className="text-[10px] font-display tracking-[0.2em] text-primary animate-pulse">
-                VERIFYING IDENTITY...
-              </p>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

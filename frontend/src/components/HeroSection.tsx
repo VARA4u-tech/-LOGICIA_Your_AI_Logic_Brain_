@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const subtitles = [
@@ -120,12 +121,8 @@ export default function HeroSection() {
           </p>
         </div>
 
-        <a
-          href="/chat"
-          onClick={(e) => {
-            e.preventDefault();
-            window.location.href = "/chat";
-          }}
+        <Link
+          to="/login"
           className="group relative inline-flex items-center justify-center mt-10 sm:mt-12 md:mt-16 px-8 sm:px-10 md:px-12 py-3.5 sm:py-4 border border-primary/50 bg-primary/5 rounded font-display text-[10px] sm:text-xs md:text-sm tracking-[0.2em] sm:tracking-[0.3em] text-primary transition-all duration-300 hover:scale-[1.03] overflow-hidden"
         >
           {/* Hover glow background */}
@@ -149,7 +146,7 @@ export default function HeroSection() {
           </span>
 
           <div className="absolute inset-0 border border-primary/0 group-hover:border-primary/80 group-hover:neon-box rounded transition-all duration-300" />
-        </a>
+        </Link>
       </div>
     </section>
   );

@@ -47,7 +47,7 @@ const Index = () => {
         <div className="max-w-3xl mx-auto grid sm:grid-cols-2 gap-5">
           {/* Chat CTA */}
           <Link
-            to="/chat"
+            to="/login"
             className="group glass-strong rounded-2xl p-8 text-center border border-primary/20 hover:border-primary/50 hover:neon-box transition-all duration-500 hover:scale-[1.01] hover:-translate-y-0.5"
           >
             <div className="w-12 h-12 rounded-xl border border-primary/30 bg-primary/8 flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/15 transition-colors">
@@ -131,7 +131,7 @@ const Index = () => {
           {/* Minimal Links */}
           <div className="mt-12 flex items-center gap-8 text-[9px] font-display tracking-[0.25em] text-muted-foreground/50">
             <Link
-              to="/chat"
+              to="/login"
               className="hover:text-primary transition-colors hover:tracking-[0.35em] duration-300"
             >
               CHAT
