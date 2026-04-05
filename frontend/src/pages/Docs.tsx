@@ -1135,26 +1135,29 @@ const Docs = () => {
         <main className="flex-1 px-6 sm:px-12 py-12 md:py-16 max-w-5xl mx-auto w-full overflow-hidden">
           <div className="max-w-4xl mx-auto">{renderContent()}</div>
 
-          <footer className="mt-24 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-muted-foreground/40 text-[9px] font-display tracking-widest uppercase">
-            <span>© 2026 LOGICIA SYSTEMS</span>
-            <div className="flex gap-6">
+          <footer className="mt-40 py-24 border-t border-white/5 flex flex-col items-center justify-center gap-10 text-muted-foreground/40 text-[10px] font-display tracking-[0.3em] uppercase">
+            <div className="flex flex-col items-center gap-3">
+              <span className="font-bold text-primary/60">© {new Date().getFullYear()} LOGICIA SYSTEMS</span>
+              <div className="h-px w-12 bg-white/10" />
+            </div>
+            <div className="flex flex-wrap justify-center gap-8 sm:gap-12">
               <button
                 onClick={() => setActive("features")}
-                className="hover:text-primary transition-colors"
+                className="hover:text-primary transition-all hover:tracking-[0.4em] duration-300"
               >
-                Documentation
+                DOCUMENTATION
               </button>
               <button
                 onClick={() => setActive("terms")}
-                className="hover:text-primary transition-colors"
+                className="hover:text-primary transition-all hover:tracking-[0.4em] duration-300"
               >
-                Terms
+                TERMS
               </button>
               <button
                 onClick={() => setActive("privacy")}
-                className="hover:text-primary transition-colors"
+                className="hover:text-primary transition-all hover:tracking-[0.4em] duration-300"
               >
-                Privacy
+                PRIVACY
               </button>
             </div>
           </footer>
