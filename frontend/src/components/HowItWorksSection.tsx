@@ -14,48 +14,48 @@ const steps = [
     step: "01",
     title: "INPUT",
     description:
-      "You type any math problem — from basic arithmetic to advanced calculus — in natural language or math notation.",
-    example: '"Solve x² − 5x + 6 = 0"',
+      "Submit any competitive exam question — from UPSC Polity to SSC Math — using natural language or regional scripts.",
+    example: '"Explain Article 370 for UPSC"',
   },
   {
     icon: Cpu,
     step: "02",
-    title: "CLASSIFY",
+    title: "ANALYZE",
     description:
-      "The AI engine instantly identifies the problem type — Algebra, Calculus, Statistics, or Geometry — and routes it correctly.",
-    example: "→ Quadratic Algebra",
+      "The engine classifies the query into GK, Reasoning, or Quant domains, identifying the specific syllabus context instantly.",
+    example: "→ Indian Constitution | UPSC",
   },
   {
     icon: FlaskConical,
     step: "03",
-    title: "SOLVE",
+    title: "REASON-SOLVE",
     description:
-      "A symbolic math engine computes the accurate result. No AI guessing — pure mathematical precision guaranteed.",
-    example: "x₁ = 3, x₂ = 2",
+      "Symbolic engines handle the math, while specialized LLMs process logical reasoning for 100% verifiable answers.",
+    example: "Deterministic & Proof-based",
   },
   {
     icon: BookOpen,
     step: "04",
-    title: "EXPLAIN",
+    title: "PEDAGOGY",
     description:
-      "AI converts the raw solution into step-by-step human-readable explanations, just like a real math tutor would.",
-    example: '"Apply the quadratic formula..."',
+      "Raw logic is transformed into a structured peer-to-peer lesson, including shortcuts, mnemonics, and difficulty tags.",
+    example: '"Shortcut: Article 370 Timeline"',
   },
   {
     icon: BarChart2,
     step: "05",
-    title: "VISUALIZE",
+    title: "SYNTHESIS",
     description:
-      "Where applicable, graphs and visual aids are generated to help you truly understand the problem intuitively.",
-    example: "Graph of f(x) = x² − 5x + 6",
+      "Interactive graphs or logical maps are generated to help you visualize trends, data, and conceptual relationships.",
+    example: "Trend Graph | Data Visuals",
   },
   {
     icon: Send,
     step: "06",
-    title: "DELIVER",
+    title: "DISPATCH",
     description:
-      "The complete solution — steps, explanation, and visuals — is delivered back instantly in the chat interface.",
-    example: "< 1 second response",
+      "The complete logical breakdown — available in English and Telugu — is delivered to your personal dashboard.",
+    example: "< 1s Response Sync",
   },
 ];
 

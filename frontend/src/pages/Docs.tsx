@@ -30,8 +30,12 @@ import {
   X,
   ShieldAlert,
   Fingerprint,
+  Sparkles,
+  Search,
 } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import "katex/dist/katex.min.css";
+import { BlockMath } from "react-katex";
 
 /* ═══════════════════════════════════════════════════════════════
    DATA
@@ -39,82 +43,70 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 
 const features = [
   {
+    icon: Sparkles,
+    title: "Exam-Ready Intelligence",
+    description:
+      "Specialized reasoning for India's competitive exams including UPSC, SSC, Banking, and Railways with deep domain knowledge.",
+    highlights: ["General Studies", "Reasoning", "Current Affairs"],
+  },
+  {
     icon: Triangle,
-    title: "Algebraic Intelligence",
+    title: "Symbolic Math Engine",
     description:
-      "Advanced symbolic manipulation for solving linear, quadratic, and higher-order equations with literal precision.",
-    highlights: [
-      "Polynomial Analysis",
-      "Systems of Equations",
-      "Inequality Solving",
-    ],
+      "Advanced algebraic manipulation for solving complex equations with literal precision beyond standard numerical models.",
+    highlights: ["Polynomials", "Calculus", "Linear Algebra"],
   },
   {
-    icon: TrendingUp,
-    title: "Calculus & Analysis",
+    icon: BarChart2,
+    title: "Visual Synthesis",
     description:
-      "Compute derivatives, definite and indefinite integrals, and limits with full step-by-step derivational logic.",
-    highlights: [
-      "Partial Derivatives",
-      "Integration by Parts",
-      "Taylor Series",
-    ],
+      "Interactive time-series and coordinate graphs generated in real-time to provide intuitive understanding of mathematical trends.",
+    highlights: ["2D Plotting", "Statistical Charts", "Real-time UI"],
   },
   {
-    icon: BarChart3,
-    title: "Statistical Modeling",
+    icon: Globe,
+    title: "Bilingual Expertise",
     description:
-      "Evaluate probability distributions, perform hypothesis testing, and compute multidimensional regressions.",
-    highlights: ["Normal Distribution", "ANOVA", "Pearson Correlation"],
-  },
-  {
-    icon: Hexagon,
-    title: "Projective Geometry",
-    description:
-      "Precise computation of spatial properties, transformations, and trigonometric relationships in N-dimensions.",
-    highlights: ["Vector Calculus", "Spherical Trig", "Matrix Transforms"],
+      "Native support for English and Telugu, ensuring high-quality pedagogical explanations in regional languages.",
+    highlights: ["Multi-lang UI", "Native Scripts", "Contextual Translation"],
   },
 ];
 
 const mathReference = [
   {
-    category: "Arithmetic & Core",
+    category: "Competitive Reasoning",
     items: [
-      { op: "Addition / Sub.", syntax: "x + y, x - y", example: "125 + 75" },
-      { op: "Multiplication", syntax: "x * y or x y", example: "12x" },
-      { op: "Division", syntax: "x / y or x \u00F7 y", example: "100 / 4" },
-      { op: "Exponentiation", syntax: "x^y or x**y", example: "x^2" },
+      { op: "UPSC/SSC GK", syntax: "Explain Article 370", example: "Detailed constitutional history" },
+      { op: "Blood Relations", syntax: "A is B's brother...", example: "Step-by-step logic map" },
+      { op: "Profit & Loss", syntax: "Shortcut for CP/SP", example: "Percentage trick 💡" },
     ],
   },
   {
-    category: "Calculus",
+    category: "Arithmetic & Core",
+    items: [
+      { op: "Exponentiation", syntax: "x^y or x**y", example: "x^2" },
+      { op: "Complex Num", syntax: "a + bi", example: "2 + 3i" },
+      { op: "Root Solver", syntax: "sqrt(x) or solve(..)", example: "\\sqrt{x} = 5" },
+    ],
+  },
+  {
+    category: "Calculus & Algebra",
     items: [
       {
         op: "Derivative",
-        syntax: "diff(f, x) or d/dx",
-        example: "derivative of x^2",
+        syntax: "diff(f, x)",
+        example: "\\frac{d}{dx} x^2 = 2x",
       },
       {
         op: "Integral",
-        syntax: "integrate(f, x) or \u222B",
-        example: "integrate x dx",
+        syntax: "integrate(f, x)",
+        example: "\\int x dx = \\frac{x^2}{2}",
       },
       {
-        op: "Limits",
-        syntax: "limit(f, x, a)",
-        example: "limit of 1/x as x -> 0",
+        op: "Matrices",
+        syntax: "Matrix([[..]])",
+        example: "\\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}",
       },
-    ],
-  },
-  {
-    category: "Linear Algebra",
-    items: [
-      {
-        op: "Matrix Mul",
-        syntax: "Matrix([[..]]) * ..",
-        example: "Matrix multiplication",
-      },
-      { op: "Determinant", syntax: "det(A)", example: "det of [[1,2],[3,4]]" },
     ],
   },
 ];
@@ -350,9 +342,9 @@ const ReferenceContent = () => {
               <table className="w-full text-left text-[11px] font-body transition-colors">
                 <thead className="bg-white/5 text-muted-foreground font-display tracking-widest text-[9px] uppercase">
                   <tr>
-                    <th className="px-4 py-3">Operation</th>
-                    <th className="px-4 py-3">Syntax</th>
-                    <th className="px-4 py-3">Example</th>
+                    <th className="px-4 py-3 w-1/4">Operation</th>
+                    <th className="px-4 py-3 w-1/4 text-center">Syntax / Query</th>
+                    <th className="px-4 py-3 w-1/2 text-right">Example / Rendering</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -361,14 +353,20 @@ const ReferenceContent = () => {
                       key={item.op}
                       className="hover:bg-white/[0.02] transition-colors group"
                     >
-                      <td className="px-4 py-3 text-foreground/80 group-hover:text-primary transition-colors">
+                      <td className="px-4 py-4 text-foreground/80 group-hover:text-primary transition-colors font-medium">
                         {item.op}
                       </td>
-                      <td className="px-4 py-3 font-mono text-primary/70">
-                        {item.syntax}
+                      <td className="px-4 py-4 font-mono text-primary/70 text-center">
+                        <span className="px-2 py-1 rounded bg-white/5 border border-white/10">{item.syntax}</span>
                       </td>
-                      <td className="px-4 py-3 italic text-muted-foreground">
-                        {item.example}
+                      <td className="px-4 py-4 text-muted-foreground text-right text-[10px]">
+                        {item.example.includes("\\") ? (
+                          <div className="inline-block scale-90 origin-right">
+                             <BlockMath math={item.example} />
+                          </div>
+                        ) : (
+                          <span className="italic">{item.example}</span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -474,22 +472,20 @@ const AboutContent = () => {
 
   return (
     <div ref={ref} className="space-y-12 max-w-3xl">
-      <SectionHeader title="Origins" subtitle="The mission behind Logicia." />
+      <SectionHeader title="Aspirant Centric" subtitle="The mission behind Logicia's evolution into a general exam brain." />
       <div
         className={`space-y-6 text-foreground/70 leading-relaxed font-body text-sm ${visible ? "animate-fade-in-up" : "opacity-0"}`}
       >
         <p>
-          LOGICIA was conceived at the intersection of symbolic logic and neural
-          language processing. Traditional AI models often struggle with
-          "mathematical hallucination"—where the output appears correct but
-          lacks structural validity.
+          LOGICIA was originally conceived as a symbolic math solver, but it quickly evolved into a comprehensive 
+          <strong> Competitive Exam Intelligence</strong> platform. We recognized that Indian aspirants (UPSC, SSC, Banking) 
+          need more than just answers—they need logical frameworks, pedagogical clarity, and regional language support.
         </p>
         <p>
-          Our mission is to bridge this gap by leveraging the power of{" "}
-          <strong>OpenRouter-orchestrated AI models</strong> exclusively for
-          pedagogical explanation, while delegating the actual computation to a
-          deterministic symbolic math engine. This ensures that every step
-          provided to the user is not just "likely," but mathematically proven.
+          Today, we leverage <strong>OpenRouter-orchestrated Gemini models</strong> for pedagogical explanation and reasoning, 
+          while maintaining a rigid deterministic symbolic engine for mathematical integrity. This hybrid "Reason-solv" architecture 
+          ensures that whether you are calculating a compound interest shortcut or analyzing a constitutional amendment, 
+          the result is structurally sound and exam-ready.
         </p>
 
         <div className="pt-6 grid grid-cols-2 gap-4">

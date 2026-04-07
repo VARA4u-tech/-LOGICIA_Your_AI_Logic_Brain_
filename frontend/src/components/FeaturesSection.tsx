@@ -8,36 +8,39 @@ import {
   Brain,
   Clock,
   Globe,
+  Sparkles,
+  Search,
+  MessageSquare,
 } from "lucide-react";
 
 const features = [
   {
+    icon: Sparkles,
+    title: "EXAM LOGIC",
+    description:
+      "Specialized reasoning for UPSC, SSC, Banking, and Railways — providing deep pedagogical insights.",
+    highlights: ["General Studies", "Reasoning", "Exam Mnemonics"],
+  },
+  {
     icon: Triangle,
-    title: "ALGEBRA",
+    title: "SYMBOLIC MATH",
     description:
-      "Solve equations, simplify expressions, factor polynomials, and work with inequalities instantly.",
-    highlights: ["Linear & Quadratic", "Polynomials", "Systems of Equations"],
+      "Deterministic calculation engine solving complex equations with 100% structural validity.",
+    highlights: ["Algebra", "Calculus", "Perfect Accuracy"],
   },
   {
-    icon: TrendingUp,
-    title: "CALCULUS",
+    icon: Globe,
+    title: "BILINGUAL AI",
     description:
-      "Derivatives, integrals, limits, and series — all computed with full step-by-step breakdowns.",
-    highlights: ["Derivatives", "Integrals", "Limits & Series"],
+      "Fluent instruction in English and Telugu, breaking language barriers for aspirants across India.",
+    highlights: ["Regional Support", "Telugu Logic", "Easy Translation"],
   },
   {
-    icon: BarChart3,
-    title: "STATISTICS",
+    icon: MessageSquare,
+    title: "INTERACTIVE",
     description:
-      "Probability, distributions, hypothesis testing, and regression analysis made simple.",
-    highlights: ["Probability", "Distributions", "Regression"],
-  },
-  {
-    icon: Hexagon,
-    title: "GEOMETRY",
-    description:
-      "Areas, volumes, transformations, and proofs — visualized and solved with precision.",
-    highlights: ["2D & 3D Shapes", "Transformations", "Trigonometry"],
+      "Dynamic chat interface with real-time graph rendering and high-fidelity math notation.",
+    highlights: ["KaTeX Rendering", "Live Graphs", "24/7 Access"],
   },
 ];
 
