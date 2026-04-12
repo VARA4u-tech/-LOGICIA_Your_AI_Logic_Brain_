@@ -37,7 +37,7 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 import html2canvas from "html2canvas";
 import { Share } from "lucide-react";
 import "katex/dist/katex.min.css";
-import { BlockMath } from "react-katex";
+import { BlockMath, InlineMath } from "react-katex";
 
 /* ═══════════════════════════════════════════════════════════════
    TYPES
@@ -771,23 +771,7 @@ const RenderContent = ({ content }: { content: string }) => {
                     .trim();
 
                   if (mathContent) {
-                    return (
-                      <div
-                        key={lIdx}
-                        className="font-mono text-xs sm:text-sm px-5 py-4 rounded-2xl bg-black/60 border border-primary/20 text-primary my-3 overflow-x-auto shadow-2xl relative group"
-                      >
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <CopyButton text={mathContent} />
-                        </div>
-                        <code className="whitespace-pre-wrap leading-relaxed block pr-8">
-                          {mathContent.split(/\s*\\\\s*/).map((mLine, mi) => (
-                            <div key={mi} className="min-h-[1.5em]">
-                              {mLine.trim()}
-                            </div>
-                          ))}
-                        </code>
-                      </div>
-                    );
+                    return <MathBlock key={lIdx} expr={mathContent} />;
                   }
                   return null;
                 }
@@ -869,48 +853,10 @@ const InlineRenderer = ({ text }: { text: string }) => {
           );
         }
         if (token.type === "math") {
-          // Clean common math commands for cleaner inline display
-          const cleanMath = token.value
-            .replace(/\\equiv/g, " ≡ ")
-            .replace(/\\pmod\{(.+?)\}/g, " (mod $1)")
-            .replace(/\\pmod/g, " mod ")
-            .replace(/\\times/g, " × ")
-            .replace(/\\cdot/g, " · ")
-            .replace(/\\div/g, " ÷ ")
-            .replace(/\\implies/g, " ⇒ ")
-            .replace(/\\therefore/g, " ∴ ")
-            .replace(/\\text\{(.+?)\}/g, " $1 ")
-            .replace(/\\frac\{(.+?)\}\{(.+?)\}/g, "($1/$2)")
-            .replace(/\\left\(/g, "(")
-            .replace(/\\right\)/g, ")")
-            .replace(/\\left\[/g, "[")
-            .replace(/\\right\]/g, "]")
-            .replace(/\\%/g, "%")
-            .replace(/\\quad/g, "   ")
-            .replace(/\\rightarrow/g, " → ")
-            .replace(/\\Rightarrow/g, " ⇒ ")
-            .replace(/\\&/g, "&")
-            .replace(/\\;/g, " ")
-            .replace(/\\,/g, " ")
-            .replace(/\\dots/g, "...")
-            .replace(/\\ldots/g, "...")
-            .replace(/\\begin\{array\}\{.*?\}/g, "")
-            .replace(/\\end\{array\}/g, "")
-            .replace(/\\hline/g, "")
-            .replace(/\\begin\{aligned\}/g, "")
-            .replace(/\\end\{aligned\}/g, "")
-            .replace(/&/g, "")
-            .replace(/\\\\/g, "\n")
-            .replace(/\\\{/g, "{")
-            .replace(/\\\}/g, "}");
-
           return (
-            <code
-              key={i}
-              className="font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded-md text-[11px] sm:text-xs border border-primary/20 mx-0.5"
-            >
-              {cleanMath}
-            </code>
+            <span key={i} className="inline-math px-0.5">
+              <InlineMath math={token.value} />
+            </span>
           );
         }
         return (
@@ -1363,7 +1309,7 @@ const Chat = () => {
         setIsTyping(false);
       }
     },
-    [activeId, isTyping, language, t.error_backend, t.error_rate_limit, cooldown, conversations],
+    [activeId, isTyping, language, t.error_backend, t.error_rate_limit, cooldown],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

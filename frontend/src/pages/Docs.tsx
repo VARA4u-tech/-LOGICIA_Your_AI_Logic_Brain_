@@ -35,7 +35,7 @@ import {
 } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import "katex/dist/katex.min.css";
-import { BlockMath } from "react-katex";
+import { BlockMath, InlineMath } from "react-katex";
 
 /* ═══════════════════════════════════════════════════════════════
    DATA
@@ -359,13 +359,13 @@ const ReferenceContent = () => {
                       <td className="px-4 py-4 font-mono text-primary/70 text-center">
                         <span className="px-2 py-1 rounded bg-white/5 border border-white/10">{item.syntax}</span>
                       </td>
-                      <td className="px-4 py-4 text-muted-foreground text-right text-[10px]">
-                        {item.example.includes("\\") ? (
+                      <td className="px-4 py-4 text-muted-foreground text-right">
+                        {/[\\^_{}(]/.test(item.example) ? (
                           <div className="inline-block scale-90 origin-right">
-                             <BlockMath math={item.example} />
+                            <InlineMath math={item.example} />
                           </div>
                         ) : (
-                          <span className="italic">{item.example}</span>
+                          <span className="italic text-[10px]">{item.example}</span>
                         )}
                       </td>
                     </tr>

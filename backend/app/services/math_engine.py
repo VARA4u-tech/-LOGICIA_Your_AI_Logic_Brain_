@@ -115,26 +115,26 @@ def solve_math(input_text: str, language: str = "en") -> Dict[str, Any]:
             expr = parse_math(expr_str)
             x = sp.Symbol('x')
             result = sp.diff(expr, x)
-            str_expr = str(expr).replace('**', '^')
-            str_res = str(result).replace('**', '^')
+            latex_expr = sp.latex(expr)
+            latex_res = sp.latex(result)
             
             return {
-                "content": t["diff_content"].format(expr=str_expr),
+                "content": t["diff_content"].format(expr=f"\\({latex_expr}\\)"),
                 "solution": {
                     "method": t["diff_method"],
                     "steps": [
                         {
                             "label": t["diff_step1"],
-                            "math": f"f(x) = {str_expr}",
+                            "math": f"f(x) = {latex_expr}",
                             "explanation": t["diff_step1_expl"]
                         },
                         {
                             "label": t["diff_step2"],
-                            "math": f"f'(x) = d/dx [{str_expr}] = {str_res}",
+                            "math": f"f'(x) = \\frac{{d}}{{dx}} \\left[ {latex_expr} \\right] = {latex_res}",
                             "explanation": t["diff_step2_expl"]
                         }
                     ],
-                    "finalAnswer": f"f'(x) = {str_res}",
+                    "finalAnswer": f"f'(x) = {latex_res}",
                     "graphData": generate_graph_data(result),
                 }
             }
@@ -148,31 +148,31 @@ def solve_math(input_text: str, language: str = "en") -> Dict[str, Any]:
             expr = parse_math(expr_str)
             x = sp.Symbol('x')
             result = sp.integrate(expr, x)
-            str_expr = str(expr).replace('**', '^')
-            str_res = str(result).replace('**', '^')
+            latex_expr = sp.latex(expr)
+            latex_res = sp.latex(result)
             
             return {
-                "content": t["int_content"].format(expr=str_expr),
+                "content": t["int_content"].format(expr=f"\\({latex_expr}\\)"),
                 "solution": {
                     "method": t["int_indef"],
                     "steps": [
                         {
                             "label": t["int_step1"],
-                            "math": f"∫ {str_expr} dx",
+                            "math": f"\\int {latex_expr} \\, dx",
                             "explanation": t["int_step1_expl"]
                         },
                         {
                             "label": t["int_step2"],
-                            "math": f"∫ {str_expr} dx = {str_res}",
+                            "math": f"\\int {latex_expr} \\, dx = {latex_res}",
                             "explanation": t["int_step2_expl"]
                         },
                         {
                             "label": t["int_step3"],
-                            "math": f"{str_res} + C",
+                            "math": f"{latex_res} + C",
                             "explanation": t["int_step3_expl"]
                         }
                     ],
-                    "finalAnswer": f"{str_res} + C",
+                    "finalAnswer": f"{latex_res} + C",
                     "graphData": generate_graph_data(result),
                 }
             }
@@ -191,21 +191,21 @@ def solve_math(input_text: str, language: str = "en") -> Dict[str, Any]:
                 
             x = sp.Symbol('x')
             results = sp.solve(eq, x)
-            str_eq = str(eq).replace('**', '^').replace('Eq(', '(').replace(', 0)', ' = 0)')
+            latex_eq = sp.latex(eq)
             
             answers = []
             for idx, res in enumerate(results):
-                answers.append(f"x_{idx+1} = {str(res).replace('**', '^')}")
+                answers.append(f"x_{{{idx+1}}} = {sp.latex(res)}")
             final_ans_str = ", ".join(answers) if answers else "No solution found"
             
             return {
-                "content": t["solve_content"].format(eq=str_eq),
+                "content": t["solve_content"].format(eq=f"\\({latex_eq}\\)"),
                 "solution": {
                     "method": t["solve_method"],
                     "steps": [
                         {
                             "label": t["solve_step1"],
-                            "math": str_eq,
+                            "math": latex_eq,
                             "explanation": t["solve_step1_expl"]
                         },
                         {
@@ -223,8 +223,8 @@ def solve_math(input_text: str, language: str = "en") -> Dict[str, Any]:
         expr = parse_math(trimmed)
         result = expr.evalf() if expr.is_number else sp.simplify(expr)
         
-        str_expr = str(expr).replace('**', '^')
-        str_res = str(result).replace('**', '^')
+        latex_expr = sp.latex(expr)
+        latex_res = sp.latex(result)
         
         return {
             "content": t["eval_content"],
@@ -233,16 +233,16 @@ def solve_math(input_text: str, language: str = "en") -> Dict[str, Any]:
                 "steps": [
                     {
                         "label": t["eval_step1"],
-                        "math": str_expr,
+                        "math": latex_expr,
                         "explanation": t["eval_step1_expl"]
                     },
                     {
                         "label": t["eval_step2"],
-                        "math": f"{str_expr} = {str_res}",
+                        "math": f"{latex_expr} = {latex_res}",
                         "explanation": t["eval_step2_expl"]
                     }
                 ],
-                "finalAnswer": str_res,
+                "finalAnswer": latex_res,
             }
         }
 

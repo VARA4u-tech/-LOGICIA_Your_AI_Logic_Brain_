@@ -9,6 +9,8 @@ import {
   Check,
   BarChart2,
 } from "lucide-react";
+import "katex/dist/katex.min.css";
+import { BlockMath } from "react-katex";
 import {
   LineChart,
   Line,
@@ -66,9 +68,9 @@ const CopyButton = ({ text }: { text: string }) => {
 };
 
 const MathBlock = ({ expr }: { expr: string }) => (
-  <div className="flex items-center gap-2 flex-wrap">
-    <div className="font-mono text-sm md:text-base px-3 py-1.5 rounded bg-primary/5 border border-primary/20 text-primary neon-text inline-block break-all">
-      {expr}
+  <div className="flex items-center gap-3 my-2 min-w-0 group/math">
+    <div className="math-renderer px-4 py-2 rounded-xl bg-black/40 border border-primary/20 text-primary inline-block overflow-x-auto max-w-full shadow-lg group-hover/math:border-primary/40 transition-all duration-300">
+      <BlockMath math={expr} />
     </div>
     <CopyButton text={expr} />
   </div>
