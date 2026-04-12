@@ -44,31 +44,31 @@ import { BlockMath } from "react-katex";
 const features = [
   {
     icon: Sparkles,
-    title: "Exam-Ready Intelligence",
+    title: "Exam Intelligence",
     description:
-      "Specialized reasoning for India's competitive exams including UPSC, SSC, Banking, and Railways with deep domain knowledge.",
+      "Built for India's top exams like UPSC, SSC, Banking, and Railways with deep expert knowledge.",
     highlights: ["General Studies", "Reasoning", "Current Affairs"],
   },
   {
     icon: Triangle,
-    title: "Symbolic Math Engine",
+    title: "Accurate Math Solver",
     description:
-      "Advanced algebraic manipulation for solving complex equations with literal precision beyond standard numerical models.",
-    highlights: ["Polynomials", "Calculus", "Linear Algebra"],
+      "Solves complex math and algebra with perfect precision, going beyond simple calculators.",
+    highlights: ["Algebra", "Calculus", "Geometry"],
   },
   {
     icon: BarChart2,
-    title: "Visual Synthesis",
+    title: "Visual Charts",
     description:
-      "Interactive time-series and coordinate graphs generated in real-time to provide intuitive understanding of mathematical trends.",
-    highlights: ["2D Plotting", "Statistical Charts", "Real-time UI"],
+      "Automatically creates interactive graphs and charts to help you visualize math trends and data.",
+    highlights: ["2D Graphs", "Stats", "Real-time"],
   },
   {
     icon: Globe,
-    title: "Bilingual Expertise",
+    title: "Multiple Languages",
     description:
-      "Native support for English and Telugu, ensuring high-quality pedagogical explanations in regional languages.",
-    highlights: ["Multi-lang UI", "Native Scripts", "Contextual Translation"],
+      "Full support for English and Telugu, providing clear explanations in your own language.",
+    highlights: ["English UI", "Telugu UI", "Translations"],
   },
 ];
 
@@ -112,60 +112,60 @@ const mathReference = [
 ];
 
 const stats = [
-  { icon: Zap, value: 0.8, suffix: "s", label: "Latency", prefix: "<" },
-  { icon: Brain, value: 99.9, suffix: "%", label: "Symbolic Accuracy" },
-  { icon: Globe, value: 120, suffix: "+", label: "Mathematical Functions" },
-  { icon: Cpu, value: 1.2, suffix: "B", label: "Parameters" },
+  { icon: Zap, value: 0.8, suffix: "s", label: "Response Speed", prefix: "<" },
+  { icon: Brain, value: 99.9, suffix: "%", label: "Math Accuracy" },
+  { icon: Globe, value: 120, suffix: "+", label: "Math Functions" },
+  { icon: Cpu, value: 1.2, suffix: "B", label: "AI IQ" },
 ];
 
 const steps = [
   {
     icon: MessageSquare,
     step: "01",
-    title: "Problem Ingestion",
+    title: "Asking Questions",
     description:
-      "Submit queries via natural language or LaTeX notation. The system handles ambiguous phrasing with intent-matching.",
-    example: '"Differentiate cos(x^2)"',
+      "Type your question in simple English or math symbols. The AI understands what you're looking for.",
+    example: '"Solve x^2 - 5x + 6"',
   },
   {
     icon: Cpu,
     step: "02",
-    title: "Semantic Analysis",
+    title: "Understanding Logic",
     description:
-      "The query is parsed into a syntax tree, classifying the mathematical domain and identifying constants vs variables.",
-    example: "Class: Calculus | Var: x",
+      "The system breaks down your question to identify the math topic and key variables.",
+    example: "Topic: Algebra | Variable: x",
   },
   {
     icon: FlaskConical,
     step: "03",
-    title: "Symbolic Execution",
+    title: "Precise Solving",
     description:
-      "Our proprietary engine solves the problem using symbolic logic, avoiding numerical rounding errors of LLMs.",
-    example: "Ans: -2x sin(x^2)",
+      "Our math engine solves the problem with perfect logic, avoiding common errors found in basic AI.",
+    example: "Result: (x-2)(x-3)",
   },
   {
     icon: BookOpen,
     step: "04",
-    title: "Pedagogical Refactoring",
+    title: "Step-by-Step Help",
     description:
-      "The raw symbolic result is processed through OpenRouter-orchestrated LLMs to generate a structured pedagogical breakdown, contextualized with relevant undergraduate-level theorems.",
-    example: '"Apply the Chain Rule via Gemini-2.0..."',
+      "The solution is explained in simple language, highlighting the rules and formulas used.",
+    example: '"Apply the Quadratic Formula..."',
   },
   {
     icon: BarChart2,
     step: "05",
-    title: "Visual Synthesis",
+    title: "Interactive Charts",
     description:
-      "Mathematical functions are sampled and rendered into interactive time-series or coordinate graphs for intuition.",
-    example: "Interactive Plot Generation",
+      "If needed, the AI generates a live chart to show you how the answer looks visually.",
+    example: "Generating Graph...",
   },
   {
     icon: Send,
     step: "06",
-    title: "Response Delivery",
+    title: "Final Answer",
     description:
-      "The final payload is delivered via a low-latency websocket or REST interface with full LaTeX support.",
-    example: "JSON/LaTeX Payload",
+      "The complete, easy-to-read solution is delivered instantly to your chat screen.",
+    example: "Showing Solution...",
   },
 ];
 
@@ -266,8 +266,8 @@ const FeaturesContent = () => {
   return (
     <div ref={ref} className="space-y-16">
       <SectionHeader
-        title="Technical Capabilities"
-        subtitle="A high-performance mathematical engine designed for accuracy and pedagogical clarity."
+        title="How It Works"
+        subtitle="A high-performance AI engine built for perfect accuracy and clear explanations."
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -380,9 +380,9 @@ const ReferenceContent = () => {
       <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 text-amber-200/60 text-[10px] leading-relaxed flex gap-3">
         <Zap size={14} className="text-amber-500 flex-shrink-0 mt-0.5" />
         <p>
-          <strong className="text-amber-400">Pro Tip:</strong> You can often
-          type in plain natural English like "solve for x in x plus five equals
-          ten" and the system will auto-canonicalize the query.
+          <strong className="text-amber-400">Tip:</strong> You can often
+          type in plain English like "solve for x in x plus five equals
+          ten" and the system will understand it automatically.
         </p>
       </div>
     </div>
@@ -404,8 +404,8 @@ const HowItWorksContent = () => {
   return (
     <div ref={ref} className="space-y-16">
       <SectionHeader
-        title="Processing Pipeline"
-        subtitle="An intelligent multi-stage architecture delivering precision-grade mathematical results."
+        title="How It Processes"
+        subtitle="A smart multi-stage process that delivers fast and accurate results."
       />
 
       <div className="relative">
@@ -477,15 +477,15 @@ const AboutContent = () => {
         className={`space-y-6 text-foreground/70 leading-relaxed font-body text-sm ${visible ? "animate-fade-in-up" : "opacity-0"}`}
       >
         <p>
-          LOGICIA was originally conceived as a symbolic math solver, but it quickly evolved into a comprehensive 
-          <strong> Competitive Exam Intelligence</strong> platform. We recognized that Indian aspirants (UPSC, SSC, Banking) 
-          need more than just answers—they need logical frameworks, pedagogical clarity, and regional language support.
+          Logicia was originally built to solve math, but it quickly evolved into a full 
+          <strong> Intelligence platform for exams</strong>. We realized that students preparing for exams like UPSC, SSC, and Banking 
+          need more than just answers—they need clear logic, simple explanations, and support in their own language.
         </p>
         <p>
-          Today, we leverage <strong>OpenRouter-orchestrated Gemini models</strong> for pedagogical explanation and reasoning, 
-          while maintaining a rigid deterministic symbolic engine for mathematical integrity. This hybrid "Reason-solv" architecture 
-          ensures that whether you are calculating a compound interest shortcut or analyzing a constitutional amendment, 
-          the result is structurally sound and exam-ready.
+          Today, we use <strong>advanced AI models</strong> to explain concepts simply, 
+          while our core engine ensures every math calculation is 100% correct. This 
+          ensures that whether you're solving a shortcut trick or studying history, 
+          the result is reliable and ready for your exam.
         </p>
 
         <div className="pt-6 grid grid-cols-2 gap-4">
@@ -564,17 +564,17 @@ const ContactContent = () => {
           <CheckCircle size={32} className="text-primary" />
         </div>
         <h2 className="font-display text-2xl font-bold text-foreground tracking-tight">
-          MESSAGE DISPATCHED
+          MESSAGE SENT
         </h2>
         <p className="text-muted-foreground font-body text-sm max-w-sm mx-auto leading-relaxed">
-          Your transmission has been received by our mathematical advisory team.
-          We typically synchronize within 24 standard business hours.
+          Your message has been received by our support team.
+          We typically get back to you within 24 hours.
         </p>
         <button
           onClick={() => setStatus("idle")}
           className="mt-8 px-8 py-3 rounded-xl border border-primary/30 text-[10px] font-display tracking-widest text-primary hover:bg-primary/5 transition-colors"
         >
-          SEND ANOTHER TRANSMISSION
+          SEND ANOTHER MESSAGE
         </button>
       </div>
     );
@@ -596,9 +596,9 @@ const ContactContent = () => {
             </h3>
             <div className="grid grid-cols-1 gap-3">
               {[
-                { label: "API Rate-Limiting Docs", icon: Zap },
-                { label: "Pedagogical Theory Whitepaper", icon: BookOpen },
-                { label: "Security & Data Governance", icon: Cpu },
+                { label: "Using the API", icon: Zap },
+                { label: "Teaching Methods", icon: BookOpen },
+                { label: "Security & Privacy", icon: Cpu },
               ].map((faq) => (
                 <button
                   key={faq.label}
@@ -625,17 +625,17 @@ const ContactContent = () => {
             <div className="space-y-6">
               {[
                 {
-                  label: "Admin E-Mail",
+                  label: "Admin Email",
                   val: "pappuridurgavaraprasad4pl@gamil.com",
                   icon: Mail,
                 },
                 {
-                  label: "Institutional Relations",
+                  label: "University Relations",
                   val: "DVR & DR.HS MIC College Of Technology",
                   icon: Globe,
                 },
                 {
-                  label: "Research Lab",
+                  label: "Location",
                   val: "Vijayawada, Andhra Pradesh",
                   icon: MapPin,
                 },
@@ -670,7 +670,7 @@ const ContactContent = () => {
             <div className="grid sm:grid-cols-2 gap-6 relative">
               <div className="space-y-2">
                 <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">
-                  Identity
+                  Name
                 </label>
                 <div className="relative">
                   <User
@@ -689,7 +689,7 @@ const ContactContent = () => {
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">
-                  Electronic Mail
+                  Email
                 </label>
                 <div className="relative">
                   <Mail
@@ -712,7 +712,7 @@ const ContactContent = () => {
 
             <div className="space-y-2 relative">
               <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">
-                Inquiry Vector
+                Topic
               </label>
               <select
                 value={form.inquiry}
@@ -740,7 +740,7 @@ const ContactContent = () => {
 
             <div className="space-y-2 relative">
               <label className="text-[10px] font-display tracking-widest text-muted-foreground/60 uppercase ml-1">
-                Message Breakdown
+                Your Message
               </label>
               <textarea
                 required
@@ -760,17 +760,17 @@ const ContactContent = () => {
               {status === "sending" ? (
                 <>
                   <Loader2 className="animate-spin" size={14} />
-                  SYNCHRONIZING...
+                  SENDING...
                 </>
               ) : (
                 <>
                   <Send size={14} />
-                  INITIATE CONTACT
+                  SEND MESSAGE
                 </>
               )}
             </button>
             <p className="text-[9px] text-muted-foreground/40 text-center uppercase tracking-widest">
-              By initiating, you agree to our data governance protocols.
+              By sending, you agree to our privacy policy.
             </p>
           </form>
         </div>

@@ -12,50 +12,50 @@ const steps = [
   {
     icon: MessageSquare,
     step: "01",
-    title: "INPUT",
+    title: "ASK",
     description:
-      "Submit any competitive exam question — from UPSC Polity to SSC Math — using natural language or regional scripts.",
-    example: '"Explain Article 370 for UPSC"',
+      "Type any exam question — from UPSC history to SSC math — using simple English or math symbols.",
+    example: '"Solve x^2 - 5x + 6"',
   },
   {
     icon: Cpu,
     step: "02",
-    title: "ANALYZE",
+    title: "THINK",
     description:
-      "The engine classifies the query into GK, Reasoning, or Quant domains, identifying the specific syllabus context instantly.",
-    example: "→ Indian Constitution | UPSC",
+      "The engine identifies your question's topic instantly, whether it's Math, Reason, or GK.",
+    example: "→ Math | Algebra",
   },
   {
     icon: FlaskConical,
     step: "03",
-    title: "REASON-SOLVE",
+    title: "SOLVE",
     description:
-      "Symbolic engines handle the math, while specialized LLMs process logical reasoning for 100% verifiable answers.",
-    example: "Deterministic & Proof-based",
+      "Our math engine calculates the answer with perfect logic, ensuring every calculation is 100% correct.",
+    example: "Accurate & Logical",
   },
   {
     icon: BookOpen,
     step: "04",
-    title: "PEDAGOGY",
+    title: "EXPLAIN",
     description:
-      "Raw logic is transformed into a structured peer-to-peer lesson, including shortcuts, mnemonics, and difficulty tags.",
-    example: '"Shortcut: Article 370 Timeline"',
+      "The result is turned into a simple step-by-step lesson, including shortcuts and easy tricks to remember.",
+    example: '"Shortcut: Quadratic Trick"',
   },
   {
     icon: BarChart2,
     step: "05",
-    title: "SYNTHESIS",
+    title: "VISUALIZE",
     description:
-      "Interactive graphs or logical maps are generated to help you visualize trends, data, and conceptual relationships.",
-    example: "Trend Graph | Data Visuals",
+      "If helpful, interactive charts or maps are created to help you visualize what you're learning.",
+    example: "Interactive Graph",
   },
   {
     icon: Send,
     step: "06",
-    title: "DISPATCH",
+    title: "DELIVER",
     description:
-      "The complete logical breakdown — available in English and Telugu — is delivered to your personal dashboard.",
-    example: "< 1s Response Sync",
+      "The complete logical answer — in English or Telugu — is shown instantly on your screen.",
+    example: "< 1s Response Speed",
   },
 ];
 
@@ -85,8 +85,7 @@ const HowItWorksSection = () => {
           HOW IT WORKS
         </h2>
         <p className="text-center text-muted-foreground text-xs sm:text-sm font-body tracking-wider mb-12 sm:mb-16 max-w-xl mx-auto">
-          A six-stage intelligent pipeline — from your input to the perfect
-          answer
+          A smart six-stage process — from your question to the final solution
         </p>
 
         {/* Timeline grid */}

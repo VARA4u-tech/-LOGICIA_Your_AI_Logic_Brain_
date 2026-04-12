@@ -16,31 +16,31 @@ import {
 const features = [
   {
     icon: Sparkles,
-    title: "EXAM LOGIC",
+    title: "EXAM EXPERT",
     description:
-      "Specialized reasoning for UPSC, SSC, Banking, and Railways — providing deep pedagogical insights.",
-    highlights: ["General Studies", "Reasoning", "Exam Mnemonics"],
+      "Intelligent help for UPSC, SSC, Banking, and Railways — providing clear steps for every answer.",
+    highlights: ["General Studies", "Reasoning", "Learning Tricks"],
   },
   {
     icon: Triangle,
-    title: "SYMBOLIC MATH",
+    title: "ACCURATE MATH",
     description:
-      "Deterministic calculation engine solving complex equations with 100% structural validity.",
-    highlights: ["Algebra", "Calculus", "Perfect Accuracy"],
+      "Smart math engine that solves complex equations with perfect logic and no errors.",
+    highlights: ["Algebra", "Calculus", "100% Correct"],
   },
   {
     icon: Globe,
-    title: "BILINGUAL AI",
+    title: "LOCAL LANGUAGES",
     description:
-      "Fluent instruction in English and Telugu, breaking language barriers for aspirants across India.",
-    highlights: ["Regional Support", "Telugu Logic", "Easy Translation"],
+      "Full support in English and Telugu, making it easy for students across India to learn.",
+    highlights: ["Regional Support", "Telugu Help", "Easy to Read"],
   },
   {
     icon: MessageSquare,
-    title: "INTERACTIVE",
+    title: "LIVE CHAT",
     description:
-      "Dynamic chat interface with real-time graph rendering and high-fidelity math notation.",
-    highlights: ["KaTeX Rendering", "Live Graphs", "24/7 Access"],
+      "Ask questions in a real-time chat with instant graphs and clear math symbols.",
+    highlights: ["Math Symbols", "Live Graphs", "24/7 Access"],
   },
 ];
 
@@ -151,7 +151,7 @@ const FeaturesSection = () => {
     >
       <div className="max-w-6xl mx-auto">
         <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-center font-bold text-primary neon-text mb-3">
-          CAPABILITIES
+          FEATURES
         </h2>
         <p className="text-center text-muted-foreground text-xs sm:text-sm font-body tracking-wider mb-12 sm:mb-16 max-w-xl mx-auto">
           Powered by advanced AI to solve any mathematical challenge

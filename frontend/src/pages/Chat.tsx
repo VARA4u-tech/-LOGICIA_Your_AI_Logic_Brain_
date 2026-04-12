@@ -91,33 +91,33 @@ type Language = "en" | "te";
 ═══════════════════════════════════════════════════════════════ */
 const UI_STRINGS: Record<Language, Record<string, string>> = {
   en: {
-    new_conversation: "NEW CONVERSATION",
-    no_conversations: "No conversations yet. Start one!",
+    new_conversation: "NEW CHAT",
+    no_conversations: "No chats yet. Start one!",
     history: "HISTORY",
     back_to_home: "Back to Home",
     clear: "CLEAR",
-    ask_anything: "Ask me anything — Exams, GK, Math & More",
+    ask_anything: "Ask me anything — Exams, Intelligence & Math",
     ask_subtitle:
-      "UPSC, SSC, Banking, Railways, GK, Reasoning, Science, Math — intelligent step-by-step answers.",
+      "UPSC, SSC, Banking, Railways, GK, Reasoning, Science, Math — smart step-by-step answers.",
     placeholder_detailed:
-      "Ask any competitive exam question (UPSC, SSC, GK, Math, Reasoning…)",
-    placeholder_quick: "Ask for a quick answer (GK, shortcut, formula…)",
+      "Ask a question for a full step-by-step solution...",
+    placeholder_quick: "Ask for a quick fact, formula, or shortcut...",
     enter_to_send: "Press",
     to_send: "to send ·",
     new_line: "for new line",
-    computing: "Computing...",
+    computing: "Thinking...",
     error_backend:
-      "Sorry, I am having trouble connecting to the Logicia server right now. Please make sure the backend is running on :8000.",
+      "I'm having trouble connecting to the server. Please check your internet connection or try again in a moment.",
     logicia_ai: "LOGICIA AI",
     you: "YOU",
     final_answer: "Final Answer",
     hide: "HIDE",
     show_steps: "SHOW STEPS",
-    visualization: "VISUALIZATION",
-    new_conv_title: "New Conversation",
+    visualization: "GRAPH",
+    new_conv_title: "New Chat",
     login_title: "Welcome to Logicia",
-    login_subtitle: "Please sign in to start solving with your personal AI math brain.",
-    error_rate_limit: "Slow down! You've reached your message limit. Please wait a minute before sending another.",
+    login_subtitle: "Please sign in to start solving with your personal AI brain.",
+    error_rate_limit: "Slow down! You've sent too many messages. Please wait a minute or two.",
   },
   te: {
     new_conversation: "కొత్త సంభాషణ",
@@ -418,7 +418,7 @@ const SolutionPanel = ({
                     : "group-hover:scale-110 transition-transform"
                 }
               />
-              <span>{isExporting ? "EXPORTING..." : "SHARE SOLUTION"}</span>
+              <span>{isExporting ? "SAVING..." : "SAVE AS IMAGE"}</span>
             </button>
           )}
 
@@ -429,12 +429,12 @@ const SolutionPanel = ({
             >
               {expanded ? (
                 <>
-                  <span>COLLAPSE</span>
+                  <span>SHOW LESS</span>
                   <ChevronUp size={12} />
                 </>
               ) : (
                 <>
-                  <span>EXPAND STEPS</span>
+                  <span>SHOW MORE</span>
                   <ChevronDown size={12} />
                 </>
               )}

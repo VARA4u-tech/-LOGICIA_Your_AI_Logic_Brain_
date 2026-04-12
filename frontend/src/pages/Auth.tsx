@@ -100,8 +100,8 @@ const Auth = () => {
               </div>
 
               <h1 className="text-4xl font-display font-black tracking-tight text-white mb-6 leading-tight">
-                Empower Your{" "}
-                <span className="text-primary italic">Intelligence</span> with
+                Master your{" "}
+                <span className="text-primary italic">Exams</span> with
                 Logicia AI.
               </h1>
 
@@ -109,7 +109,7 @@ const Auth = () => {
                 {[
                   {
                     icon: <Cpu className="w-4 h-4" />,
-                    text: "Step-by-step Math Intelligence",
+                    text: "Step-by-step math help",
                   },
                   {
                     icon: <Sparkles className="w-4 h-4" />,
@@ -177,7 +177,7 @@ const Auth = () => {
                   ) : isLoggingIn ? (
                     <div className="flex items-center gap-3">
                       <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                      <span>AUTHENTICATING...</span>
+                      <span>SIGNING IN...</span>
                     </div>
                   ) : (
                     <>
@@ -196,17 +196,17 @@ const Auth = () => {
                 </button>
 
                 <p className="text-[10px] text-center font-display tracking-widest text-muted-foreground/80 uppercase">
-                  Logicia uses 256-bit encryption for secure sessions.
+                  Your session is protected with secure encryption.
                 </p>
               </div>
 
               {/* Bottom Decoration */}
               <div className="pt-12 flex justify-center lg:justify-start gap-8 opacity-70 grayscale hover:opacity-100 transition-all duration-500">
                 <div className="flex items-center gap-2 text-[10px] font-display tracking-widest text-muted-foreground/80">
-                  <Cpu size={12} /> AI ENGINE
+                  <Cpu size={12} /> SMART AI
                 </div>
                 <div className="flex items-center gap-2 text-[10px] font-display tracking-widest text-muted-foreground/80">
-                  <ShieldCheck size={12} /> RSA SECURE
+                  <ShieldCheck size={12} /> PRIVATE & SECURE
                 </div>
               </div>
             </div>
@@ -219,7 +219,7 @@ const Auth = () => {
         {/* Footer info */}
         <div className="mt-8 flex flex-col items-center gap-4">
           <p className="text-[10px] font-display tracking-widest text-muted-foreground/30 uppercase">
-            &copy; 2026 Logicia Intelligence Systems. All rights reserved.
+            &copy; 2026 Logicia. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-[9px] font-display tracking-[0.2em] text-muted-foreground/40">
             <Link

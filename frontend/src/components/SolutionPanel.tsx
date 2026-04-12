@@ -100,11 +100,11 @@ const SolutionPanel = ({
         >
           {expanded ? (
             <>
-              HIDE STEPS <ChevronUp size={11} />
+              SHOW LESS <ChevronUp size={11} />
             </>
           ) : (
             <>
-              SHOW STEPS <ChevronDown size={11} />
+              SHOW MORE <ChevronDown size={11} />
             </>
           )}
         </button>
@@ -115,7 +115,7 @@ const SolutionPanel = ({
         <div className="animate-fade-in-up">
           <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground font-display tracking-widest uppercase">
             <BarChart2 size={13} className="text-primary" />
-            VISUALIZATION
+            GRAPH
           </div>
           <div className="h-[200px] sm:h-[250px] w-full glass rounded-xl p-2 sm:p-4 border border-primary/10">
             <ResponsiveContainer width="100%" height="100%">
